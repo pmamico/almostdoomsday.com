@@ -145,7 +145,6 @@
   }
 
   .alert { border: 1px solid var(--rule); background: var(--panel); }
-  .alert.live { border-color: rgba(194, 69, 79, .55); }
   .alert-head {
     display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap;
     padding: .8rem 1.1rem; border-bottom: 1px solid var(--rule-soft);
@@ -163,9 +162,8 @@
   }
   .rows .v { font-family: var(--data); font-size: .82rem; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
   .rows .v.ok { color: var(--ok-bright); }
-  .rows .v.bad { color: var(--critical); }
   .rows .v.flash { animation: flash .5s ease 2; }
-  @keyframes flash { 50% { color: var(--ink); background: rgba(194, 69, 79, .22); } }
+  @keyframes flash { 50% { background: rgba(228, 230, 227, .14); } }
 
   .controls-pair { display: grid; gap: .8rem; margin-top: 1.4rem; }
   .act {
@@ -1009,15 +1007,15 @@
   function runMainEvent() {
     return new Promise(resolve => {
       stageEl.innerHTML =
-        '<div class="alert live">' +
+        '<div class="alert">' +
           '<div class="alert-head"><span class="tstamp">00:15:00</span><h2>Missile attack \u00b7 United States</h2></div>' +
           '<div class="rows">' +
             '<div><span class="k">Source</span><span class="v">Oko satellite 5</span></div>' +
-            '<div><span class="k">Reliability</span><span class="v bad">Highest</span></div>' +
+            '<div><span class="k">Reliability</span><span class="v">Highest</span></div>' +
             '<div><span class="k">Ground radar</span><span class="v"></span></div>' +
             '<div><span class="k">Advance notice</span><span class="v">None</span></div>' +
-            '<div><span class="k">Objects</span><span class="v bad" id="obj-count">1</span></div>' +
-            '<div><span class="k">Time to impact</span><span class="v bad" id="impact">23:00</span></div>' +
+            '<div><span class="k">Objects</span><span class="v" id="obj-count">1</span></div>' +
+            '<div><span class="k">Time to impact</span><span class="v" id="impact">23:00</span></div>' +
           '</div>' +
         '</div>' +
         '<div class="controls-pair">' +
