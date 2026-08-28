@@ -369,6 +369,48 @@ lathatoan kulon szekcio legyen, indexpontszam nelkul. Ez a tetel szovege a JSON-
 
 Kovetkezo lepes ehhez: kulon event URL-ek, terkepes nezet, tobb kidolgozott story, OG kepek.
 
+## Uzemeltetes
+
+Ket kulon szolgaltatas, egyik sem tudja ledonteni a masikat.
+
+| | Hol | Koltseg |
+| --- | --- | --- |
+| `almostdoomsday.com` + `www` | DigitalOcean App Platform, statikus site, CDN mogott | 0 USD |
+| `stats.almostdoomsday.com` | `ad-stats` droplet (fra1, 512 MB), Caddy + GoatCounter + SQLite | 4 USD/ho |
+
+Mindketto automatikus, megujulo Let's Encrypt tanusitvanyt hasznal.
+
+### Miert nem az App Platformon fut a GoatCounter is
+
+Az App Platform fajlrendszere efemer, nincs perzisztens volume - az SQLite adatbazis
+minden deploynal elveszne. Ott managed Postgres kellene (15.15 USD/ho) egy 5 dollaros
+konteneren felul. Egy dropleten eleg egy fajl.
+
+### Deploy
+
+```
+node build.mjs          # site/index.html regeneralasa
+git push origin main    # gitea ES github egyszerre
+```
+
+Az App Platform a GitHub `main` branchet figyeli, es pusholasra magatol deployol.
+A `site/` konyvtar tisztan build kimenet - az App Platform a `source_dir: site`-ban
+futtatja a buildpack felismerest, ezert nem lehet ott forrasfajl.
+
+Infrastruktura a repoban:
+
+```
+.do/app.yaml                      App Platform spec (apex + www, fra regio)
+.do/goatcounter-cloud-init.yaml   a droplet teljes receptje
+```
+
+### Analitika
+
+Sajat uzemeltetesu GoatCounter. A `count.js` is a sajat gepunkrol jon, nincs harmadik
+fel es nincs suti, ezert nem kell cookie banner. A beacon csak az eles domainen fut,
+lokalisan es elonezetben nem. Az SQLite adatbazis az egyetlen allapot a gepen; ejszakai
+`sqlite3 .backup` keszul rola 14 napos megorzessel.
+
 ## MVP scope
 
 1. Statikus, gyors weboldal `AlmostDoomsday.com` branddel.
