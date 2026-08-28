@@ -293,7 +293,7 @@ Az oldal egy leszolgalt ugyelettel indul, nem egy fooldallal. Fuggo ora, Serpukh
 
 | Ido | Esemeny | Helyes gomb |
 | --- | --- | --- |
-| 23:41 | Briefing gepel be soronkent: ki vagy, mi a dolgod, mi a protokoll | - |
+| 23:41 | Briefing: hat blokk, karakterenkent gepelve, Enterre lep tovabb | - |
 | 23:47 | Vandenberg teszt, elore bejelentve. Muhold jelzi, **radar megerositi** | REPORT |
 | 00:04 | Termikus esemeny a Csendes-ocean felett. Muhold jelzi, **radar felveszi** | REPORT |
 | 00:15 | Legmagasabb megbizhatosag. **Radar: semmi.** Darabszam 1 -> 5 | - |
@@ -305,6 +305,9 @@ meg a szabalyt. A valodi esemenynel pontosan az hianyzik, amin a szabaly allt: a
 - A masik gombnak nincs szine, harom surlodasi mondat all alatta, es **nyomva kell tartani 2,5
   masodpercig**, mikozben a becsapodasig hatralevo ido fut. Elengedesre visszaall.
 - Nincs idotullepes: az olvasas a lenyeg, ezert megvar.
+- Az ora akkor jar, amikor a szekvencia mozog; megall, amikor rad var.
+- Minden megallonal Enter (vagy kattintas) leptet. Gepeles kozben egy billentyu
+  befejezi az adott blokkot, nem ugorja at.
 - REPORT eseten counterfactual eszkalacios szekvencia indul (eszaki polaris radarplot, canvas),
   vegig `COUNTERFACTUAL / THIS DID NOT HAPPEN` savval. Skippelheto.
 - Hold eseten a masik ag: lefut a 23 perc, es nem tortenik semmi.
