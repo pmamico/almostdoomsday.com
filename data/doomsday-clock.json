@@ -1,0 +1,37 @@
+{
+  "source": {
+    "title": "Bulletin of the Atomic Scientists - Doomsday Clock timeline",
+    "url": "https://thebulletin.org/doomsday-clock/timeline/"
+  },
+  "note": "Official settings announced by the Bulletin of the Atomic Scientists. Since 2007 the Clock has also weighed climate change, and more recently biosecurity and disruptive technologies, so it is not a nuclear-only measure.",
+  "settings": [
+    { "year": 1947, "seconds_to_midnight": 420, "display": "7 minutes", "reason": "The Clock's first setting, two years into the nuclear age." },
+    { "year": 1949, "seconds_to_midnight": 180, "display": "3 minutes", "reason": "The Soviet Union tests its first atomic device." },
+    { "year": 1953, "seconds_to_midnight": 120, "display": "2 minutes", "reason": "The United States and the Soviet Union test thermonuclear devices months apart." },
+    { "year": 1960, "seconds_to_midnight": 420, "display": "7 minutes", "reason": "Growing scientific cooperation and public awareness of shared risk." },
+    { "year": 1963, "seconds_to_midnight": 720, "display": "12 minutes", "reason": "The Partial Test Ban Treaty ends atmospheric testing by its signatories." },
+    { "year": 1968, "seconds_to_midnight": 420, "display": "7 minutes", "reason": "War in Vietnam and the Middle East; France and China build up arsenals." },
+    { "year": 1969, "seconds_to_midnight": 600, "display": "10 minutes", "reason": "The Non-Proliferation Treaty is ratified by nearly all nuclear powers." },
+    { "year": 1972, "seconds_to_midnight": 720, "display": "12 minutes", "reason": "SALT I and the Anti-Ballistic Missile Treaty are signed." },
+    { "year": 1974, "seconds_to_midnight": 540, "display": "9 minutes", "reason": "Arms talks stall; India tests a nuclear device." },
+    { "year": 1980, "seconds_to_midnight": 420, "display": "7 minutes", "reason": "Deadlocked talks and rising nationalism." },
+    { "year": 1981, "seconds_to_midnight": 240, "display": "4 minutes", "reason": "Afghanistan, Poland and open superpower hostility." },
+    { "year": 1984, "seconds_to_midnight": 180, "display": "3 minutes", "reason": "The arms race accelerates and dialogue nearly stops." },
+    { "year": 1988, "seconds_to_midnight": 360, "display": "6 minutes", "reason": "The INF Treaty eliminates a whole class of missiles." },
+    { "year": 1990, "seconds_to_midnight": 600, "display": "10 minutes", "reason": "The Iron Curtain falls." },
+    { "year": 1991, "seconds_to_midnight": 1020, "display": "17 minutes", "reason": "START is signed; the safest setting in the Clock's history." },
+    { "year": 1995, "seconds_to_midnight": 840, "display": "14 minutes", "reason": "Post-Soviet arsenals and materials are poorly secured." },
+    { "year": 1998, "seconds_to_midnight": 540, "display": "9 minutes", "reason": "India and Pakistan test nuclear weapons." },
+    { "year": 2002, "seconds_to_midnight": 420, "display": "7 minutes", "reason": "The US withdraws from the ABM Treaty; concern over unsecured material." },
+    { "year": 2007, "seconds_to_midnight": 300, "display": "5 minutes", "reason": "Climate change is added to the Clock's criteria alongside nuclear risk." },
+    { "year": 2010, "seconds_to_midnight": 360, "display": "6 minutes", "reason": "New START negotiations and the Copenhagen climate accord." },
+    { "year": 2012, "seconds_to_midnight": 300, "display": "5 minutes", "reason": "Inadequate action on nuclear weapons and on climate." },
+    { "year": 2015, "seconds_to_midnight": 180, "display": "3 minutes", "reason": "Unchecked climate change and arsenal modernisation." },
+    { "year": 2017, "seconds_to_midnight": 150, "display": "2.5 minutes", "reason": "Nuclear rhetoric escalates; the Clock moves in half-minutes for the first time." },
+    { "year": 2018, "seconds_to_midnight": 120, "display": "2 minutes", "reason": "Breakdown of the international order and of arms-control diplomacy." },
+    { "year": 2020, "seconds_to_midnight": 100, "display": "100 seconds", "reason": "The Clock switches to seconds: nuclear risk, climate and information warfare." },
+    { "year": 2023, "seconds_to_midnight": 90, "display": "90 seconds", "reason": "Russia's war in Ukraine and its nuclear signalling." },
+    { "year": 2025, "seconds_to_midnight": 89, "display": "89 seconds", "reason": "Nuclear risk, climate, biological threats and disruptive technologies." },
+    { "year": 2026, "seconds_to_midnight": 85, "display": "85 seconds", "reason": "The closest setting in the Clock's history.", "source": "https://thebulletin.org/2026/01/press-release-it-is-85-seconds-to-midnight/" }
+  ]
+}

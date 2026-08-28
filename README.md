@@ -321,6 +321,35 @@ Kesobbi fajl: `data/doomsday-clock.yaml`.
 - Tipografia: jo olvashatosag, sziklaszilard adatvizualizacio, keves dramatikus display tipografia.
 - Mozgas: lassu scanline, timeline reveal, threshold pulse 80% felett; ne legyen zavaros vagy olvashatatlan.
 
+## MVP first version (elkeszult)
+
+Statikus, fuggoseg nelkuli egyoldalas site. Adat -> template -> kesz HTML.
+
+```
+data/close-calls.json      26 kuralt close call, komponensenkenti pontszammal es forrasokkal
+data/doomsday-clock.json   28 hivatalos Doomsday Clock allas 1947-2026
+site/template.html         markup, stilus, chartok, interakcio (__EVENTS__ / __CLOCK__ placeholderek)
+build.mjs                  beinjektalja az adatot, es ellenorzi hogy a komponensek osszege = total
+site/index.html            a build kimenete, ez a publikalt fajl
+```
+
+Build: `node build.mjs`. Nincs npm install, nincs dependency.
+
+Ami benne van: interaktiv Almost Doomsday Index scatter es kulon Official Doomsday Clock
+step chart kozos idotengelyen, kategoria- es szoveges szures, event ledger, event story panel
+komponensenkenti pontszambontassal es "known uncertainty" blokkal, Petrov scenario prototipus,
+metodologia es forrasoldal.
+
+Szandekos dontesek:
+
+- A ket adatsor kulon chartra kerult. Egy tengelyen abrazolva azt sugallnak, hogy osszemerhetok.
+- Az index sulyozasa miatt egy bekebeli fegyverbaleset (Goldsboro) nem erhet el olyan magas
+  pontszamot, mint egy valsagesemeny. Ez a metodologia oldalon nyiltan ki van irva.
+- Az 5 pilot esemenynek van teljes sztorija es perces bontasa, a tobbi `draft` jelolest kap.
+- UI nyelve angol, a domain es a tema miatt.
+
+Kovetkezo lepes ehhez: kulon event URL-ek, terkepes nezet, tobb kidolgozott story, OG kepek.
+
 ## MVP scope
 
 1. Statikus, gyors weboldal `AlmostDoomsday.com` branddel.

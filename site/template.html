@@ -1,0 +1,950 @@
+<title>Almost Doomsday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+
+<style>
+  /* ---- tokens ------------------------------------------------------------ */
+  /* Single committed visual world: an instrument console reading an archive.
+     Every colour is painted explicitly so the page holds on any host ground. */
+  :root {
+    --ground: #0a0e13;
+    --panel: #111821;
+    --panel-2: #16202b;
+    --rule: #24313f;
+    --rule-soft: #1a2531;
+
+    --ink: #e4e6e3;
+    --ink-2: #93a1ae;
+    --ink-3: #67757f;
+
+    --signal: #c0812a;          /* Almost Doomsday Index */
+    --signal-bright: #edbe6e;
+    --instrument: #159fc4;      /* Official Doomsday Clock */
+    --critical: #b84e38;        /* extreme threshold only */
+
+    --s0: #8f6a28;
+    --s1: #a87527;
+    --s2: #c0812a;
+    --s3: #d69b3f;
+    --s4: #edbe6e;
+
+    --display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+    --prose: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --gut: clamp(1.1rem, 3vw, 2.6rem);
+    --maxw: 1240px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* faint instrument grid behind everything */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, rgba(36, 49, 63, .32) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(36, 49, 63, .32) 1px, transparent 1px);
+    background-size: 88px 88px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 78%);
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gut); }
+
+  a { color: var(--instrument); text-decoration-color: rgba(21, 159, 196, .4); text-underline-offset: 2px; }
+  a:hover { text-decoration-color: var(--instrument); }
+  :focus-visible { outline: 2px solid var(--signal-bright); outline-offset: 2px; }
+
+  .mono { font-family: var(--data); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .eyebrow {
+    font-family: var(--data);
+    font-size: .68rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* ---- masthead ---------------------------------------------------------- */
+  .masthead {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(10, 14, 19, .92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .masthead .wrap {
+    display: flex; align-items: center; gap: 1.4rem;
+    min-height: 54px; flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--data);
+    font-size: .8rem; font-weight: 500;
+    letter-spacing: .26em; text-transform: uppercase;
+    color: var(--ink); white-space: nowrap;
+  }
+  .brand b { color: var(--signal); font-weight: 500; }
+  .masthead nav { margin-left: auto; display: flex; gap: 1.1rem; flex-wrap: wrap; }
+  .masthead nav a {
+    font-family: var(--data); font-size: .72rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-2); text-decoration: none;
+  }
+  .masthead nav a:hover { color: var(--ink); }
+
+  /* ---- hero -------------------------------------------------------------- */
+  .hero { padding: clamp(2.4rem, 7vw, 5.2rem) 0 clamp(1.6rem, 4vw, 2.6rem); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.4rem); align-items: end; }
+  h1 {
+    font-size: clamp(2.9rem, 8.4vw, 6.1rem);
+    line-height: .93;
+    font-weight: 600;
+    letter-spacing: -.022em;
+    margin: .5rem 0 0;
+    text-wrap: balance;
+  }
+  h1 em { font-family: var(--prose); font-style: italic; font-weight: 400; color: var(--signal-bright); letter-spacing: -.01em; }
+  .deck {
+    font-family: var(--prose);
+    font-size: clamp(1rem, 1.5vw, 1.14rem);
+    line-height: 1.62;
+    color: var(--ink-2);
+    max-width: 60ch;
+    margin: 1.5rem 0 0;
+  }
+  .readout { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .readout div { background: var(--panel); padding: .85rem 1rem; display: flex; align-items: baseline; gap: .75rem; }
+  .readout dt, .readout .k {
+    font-family: var(--data); font-size: .68rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-3); flex: 1;
+  }
+  .readout .v { font-family: var(--data); font-size: 1.28rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .readout .v.amber { color: var(--signal-bright); }
+  .readout .v.cyan { color: var(--instrument); }
+
+  /* ---- section scaffolding ----------------------------------------------- */
+  section { padding: clamp(2.2rem, 5vw, 3.6rem) 0; scroll-margin-top: 62px; }
+  .sec-head { display: flex; align-items: baseline; gap: 1rem; border-bottom: 1px solid var(--rule); padding-bottom: .7rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .sec-head h2 { font-size: clamp(1.25rem, 2.4vw, 1.7rem); font-weight: 600; letter-spacing: -.01em; margin: 0; }
+  .sec-head p { margin: 0; font-family: var(--prose); font-size: .93rem; color: var(--ink-2); max-width: 56ch; }
+  .sec-head .spacer { flex: 1; }
+
+  /* corner-bracketed console panel */
+  .panel { position: relative; background: var(--panel); border: 1px solid var(--rule); }
+  .panel::before, .panel::after {
+    content: ""; position: absolute; width: 9px; height: 9px; pointer-events: none;
+    border-color: var(--signal); border-style: solid; opacity: .55;
+  }
+  .panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+  .panel::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+  .panel-head {
+    display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
+    padding: .7rem 1rem; border-bottom: 1px solid var(--rule-soft);
+  }
+  .panel-head h3 { margin: 0; font-family: var(--data); font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--ink); }
+  .panel-head .sub { font-family: var(--data); font-size: .68rem; color: var(--ink-3); letter-spacing: .06em; }
+  .swatch { width: 9px; height: 9px; flex: 0 0 auto; }
+  .swatch.amber { background: var(--signal); }
+  .swatch.cyan { background: var(--instrument); }
+
+  /* ---- controls ---------------------------------------------------------- */
+  .controls { display: flex; gap: .55rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+  .chip {
+    font-family: var(--data); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-2); background: transparent; border: 1px solid var(--rule);
+    padding: .42rem .7rem; cursor: pointer; transition: color .15s, border-color .15s, background .15s;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--ink-3); }
+  .chip[aria-pressed="true"] { color: var(--ground); background: var(--signal); border-color: var(--signal); }
+  .search {
+    font-family: var(--data); font-size: .78rem; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--rule); padding: .42rem .7rem;
+    min-width: 190px; flex: 1 1 190px; max-width: 280px;
+  }
+  .search::placeholder { color: var(--ink-3); }
+
+  /* ---- charts ------------------------------------------------------------ */
+  .chart-stack { display: grid; gap: 0; }
+  .chart-stack .panel + .panel { border-top: 0; }
+  .chart-body { padding: .4rem .3rem 0; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .grid-line { stroke: var(--rule-soft); stroke-width: 1; }
+  .axis-label { font-family: var(--data); font-size: 10px; fill: var(--ink-3); letter-spacing: .08em; }
+  .threshold { stroke: var(--critical); stroke-width: 1; stroke-dasharray: 3 4; opacity: .75; }
+  .threshold-label { font-family: var(--data); font-size: 9.5px; fill: var(--critical); letter-spacing: .12em; }
+  .dot { cursor: pointer; stroke: var(--panel); stroke-width: 2; transition: opacity .18s; }
+  .dot.dim { opacity: .1; pointer-events: none; }
+  .dot-hit { cursor: pointer; fill: transparent; }
+  .sel-ring { fill: none; stroke: var(--signal-bright); stroke-width: 1.5; }
+  .sel-stem { stroke: var(--signal-bright); stroke-width: 1; stroke-dasharray: 2 3; opacity: .5; }
+  .dot-label { font-family: var(--data); font-size: 10px; fill: var(--ink-2); letter-spacing: .04em; pointer-events: none; }
+  .clock-line { fill: none; stroke: var(--instrument); stroke-width: 2; stroke-linejoin: miter; }
+  .clock-area { fill: var(--instrument); opacity: .1; }
+  .clock-end { fill: var(--instrument); stroke: var(--panel); stroke-width: 2; }
+  .clock-end-label { font-family: var(--data); font-size: 11px; fill: var(--instrument); letter-spacing: .06em; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dot { animation: fade-in .5s ease both; }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .pulse { animation: pulse 3.4s ease-out infinite; transform-origin: center; }
+    @keyframes pulse {
+      0% { r: 7; opacity: .5; }
+      70% { r: 19; opacity: 0; }
+      100% { r: 19; opacity: 0; }
+    }
+  }
+
+  .tooltip {
+    position: fixed; z-index: 60; pointer-events: none; opacity: 0;
+    background: var(--panel-2); border: 1px solid var(--rule);
+    padding: .5rem .65rem; max-width: 240px;
+    transition: opacity .12s;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .55);
+  }
+  .tooltip strong { display: block; font-size: .88rem; font-weight: 600; }
+  .tooltip span { font-family: var(--data); font-size: .68rem; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+  .tooltip .val { color: var(--signal-bright); }
+
+  details.table-view { border-top: 1px solid var(--rule-soft); }
+  details.table-view summary {
+    font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); padding: .55rem 1rem; cursor: pointer; list-style: none;
+  }
+  details.table-view summary::marker { content: ""; }
+  details.table-view summary:hover { color: var(--ink); }
+  .table-scroll { overflow-x: auto; padding: 0 1rem 1rem; }
+  table { border-collapse: collapse; width: 100%; font-family: var(--data); font-size: .74rem; }
+  th, td { text-align: left; padding: .35rem .8rem .35rem 0; border-bottom: 1px solid var(--rule-soft); white-space: nowrap; }
+  th { color: var(--ink-3); font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: .64rem; }
+  td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  td.reason { white-space: normal; min-width: 22ch; }
+
+  /* ---- explorer ---------------------------------------------------------- */
+  .explorer { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); background: var(--panel); border: 1px solid var(--rule); align-items: start; }
+  .ledger { background: var(--panel); max-height: calc(100vh - 90px); overflow-y: auto; border-right: 1px solid var(--rule); position: sticky; top: 55px; }
+  .ledger-row {
+    display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) 2rem;
+    gap: .6rem; align-items: center; width: 100%; text-align: left;
+    padding: .6rem .8rem; background: transparent; border: 0;
+    border-bottom: 1px solid var(--rule-soft); cursor: pointer; color: var(--ink-2);
+    font-family: var(--display); font-size: .9rem;
+  }
+  .ledger-row:hover { background: var(--panel-2); color: var(--ink); }
+  .ledger-row[aria-current="true"] { background: var(--panel-2); color: var(--ink); box-shadow: inset 2px 0 0 var(--signal-bright); }
+  .ledger-row .yr { font-family: var(--data); font-size: .74rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .ledger-row .ttl { line-height: 1.25; }
+  .ledger-row .sc { font-family: var(--data); font-size: .82rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .ledger-empty { padding: 1.2rem; font-family: var(--data); font-size: .76rem; color: var(--ink-3); }
+
+  .story { background: var(--panel); padding: clamp(1.1rem, 2.4vw, 1.9rem); }
+  .story-top { display: flex; gap: 1.4rem; align-items: flex-start; flex-wrap: wrap; border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
+  .story-top h3 { margin: .1rem 0 .35rem; font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 600; letter-spacing: -.015em; }
+  .story-meta { font-family: var(--data); font-size: .72rem; color: var(--ink-3); letter-spacing: .06em; }
+  .score-block { margin-left: auto; text-align: right; }
+  .score-block .big { font-family: var(--data); font-size: 2.9rem; line-height: 1; color: var(--signal-bright); font-variant-numeric: tabular-nums; }
+  .score-block .big span { font-size: 1rem; color: var(--ink-3); }
+  .score-block .band { font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-top: .3rem; }
+
+  .tags { display: flex; gap: .35rem; flex-wrap: wrap; margin-top: .55rem; }
+  .tag {
+    font-family: var(--data); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-2); border: 1px solid var(--rule); padding: .16rem .42rem;
+  }
+  .tag.curated { color: var(--signal-bright); border-color: rgba(237, 190, 110, .4); }
+  .tag.draft { color: var(--ink-3); }
+
+  .story-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.2rem, 3vw, 2.4rem); margin-top: 1.4rem; }
+  .story h4 { font-family: var(--data); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin: 0 0 .5rem; }
+  .story p { font-family: var(--prose); font-size: .96rem; line-height: 1.68; color: var(--ink); margin: 0 0 .9rem; max-width: 65ch; }
+  .story .stopped p { color: var(--ink); }
+
+  .breakdown { margin-top: 1.5rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
+  .bar-row { display: grid; grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr) 3.2rem; gap: .8rem; align-items: center; padding: .28rem 0; }
+  .bar-row .lbl { font-family: var(--data); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .bar-track { display: block; height: 8px; background: var(--panel-2); border: 1px solid var(--rule-soft); }
+  .bar-fill { display: block; height: 100%; background: var(--signal); }
+  .bar-row .val { font-family: var(--data); font-size: .72rem; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .beats { margin-top: 1.5rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
+  .beat { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: .9rem; padding: .38rem 0; border-left: 1px solid var(--rule); padding-left: 1rem; margin-left: .2rem; }
+  .beat .t { font-family: var(--data); font-size: .7rem; color: var(--signal); letter-spacing: .06em; }
+  .beat .x { font-family: var(--prose); font-size: .9rem; color: var(--ink-2); line-height: 1.5; }
+
+  .note {
+    margin-top: 1.4rem; padding: .85rem 1rem; background: var(--panel-2);
+    border-left: 2px solid var(--critical);
+  }
+  .note h4 { color: var(--critical); }
+  .note p { font-size: .9rem; color: var(--ink-2); margin: 0; }
+
+  .src-list { margin-top: 1.4rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; display: grid; gap: .5rem; }
+  .src-list li { list-style: none; display: flex; gap: .7rem; align-items: baseline; font-size: .88rem; }
+  .src-list ul { margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .qual {
+    font-family: var(--data); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-3); border: 1px solid var(--rule); padding: .1rem .35rem; flex: 0 0 auto;
+  }
+  .qual.declassified, .qual.official { color: var(--instrument); border-color: rgba(21, 159, 196, .35); }
+
+  /* ---- scenario ---------------------------------------------------------- */
+  .scenario-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .scenario-grid > div { background: var(--panel); padding: clamp(1.1rem, 2.4vw, 1.6rem); }
+  .console-rows { display: grid; gap: 1px; background: var(--rule-soft); margin-top: 1rem; }
+  .console-rows > div { background: var(--panel-2); padding: .6rem .8rem; display: flex; gap: 1rem; align-items: baseline; }
+  .console-rows .k { font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); flex: 1; }
+  .console-rows .v { font-family: var(--data); font-size: .82rem; color: var(--ink); }
+  .console-rows .v.warn { color: var(--critical); }
+  .choices { display: grid; gap: .7rem; margin-top: 1.2rem; }
+  .choice {
+    text-align: left; background: var(--panel-2); border: 1px solid var(--rule); color: var(--ink);
+    padding: .85rem 1rem; cursor: pointer; font-family: var(--display); font-size: 1rem;
+    transition: border-color .15s, background .15s;
+  }
+  .choice:hover { border-color: var(--signal); background: #1b2430; }
+  .choice span { display: block; font-family: var(--data); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-top: .25rem; }
+  .choice[disabled] { cursor: default; opacity: .45; }
+  .choice.picked { border-color: var(--signal-bright); opacity: 1; }
+  .debrief { display: none; }
+  .debrief.on { display: block; }
+  .debrief p { font-family: var(--prose); font-size: .95rem; line-height: 1.65; color: var(--ink-2); }
+  .debrief p strong { color: var(--ink); font-weight: 500; }
+  .verdict { font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; padding: .5rem .8rem; border: 1px solid var(--rule); display: inline-block; margin-bottom: 1rem; }
+  .verdict.match { color: var(--signal-bright); border-color: rgba(237, 190, 110, .45); }
+  .verdict.diff { color: var(--critical); border-color: rgba(184, 78, 56, .5); }
+
+  /* ---- method / sources -------------------------------------------------- */
+  .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.4rem, 3.5vw, 3rem); }
+  .prose { font-family: var(--prose); font-size: .96rem; line-height: 1.68; color: var(--ink-2); max-width: 66ch; }
+  .prose strong { color: var(--ink); font-weight: 500; }
+  .method-table th, .method-table td { white-space: normal; padding: .5rem .9rem .5rem 0; }
+  .method-table td.w { color: var(--signal-bright); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bands { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 1.2rem; }
+  .bands > div { background: var(--panel); padding: .6rem .9rem; display: flex; gap: .9rem; align-items: baseline; }
+  .bands .r { font-family: var(--data); font-size: .74rem; font-variant-numeric: tabular-nums; flex: 0 0 4.8rem; }
+  .bands .d { font-family: var(--prose); font-size: .9rem; color: var(--ink-2); }
+
+  .source-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.6rem; }
+  .source-groups ul { margin: .7rem 0 0; padding: 0; display: grid; gap: .55rem; }
+  .source-groups li { list-style: none; font-size: .88rem; line-height: 1.45; }
+
+  footer { border-top: 1px solid var(--rule); padding: 2rem 0 3rem; margin-top: 1rem; }
+  footer .wrap { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: baseline; }
+  footer p { font-family: var(--data); font-size: .7rem; color: var(--ink-3); letter-spacing: .06em; margin: 0; max-width: 70ch; line-height: 1.7; }
+
+  /* ---- responsive -------------------------------------------------------- */
+  @media (max-width: 940px) {
+    .hero-grid, .story-cols, .two-col, .scenario-grid { grid-template-columns: minmax(0, 1fr); }
+    .explorer { grid-template-columns: minmax(0, 1fr); }
+    .ledger { max-height: 320px; }
+    .readout { margin-top: 1.5rem; }
+  }
+  @media (max-width: 560px) {
+    .masthead nav { display: none; }
+    .score-block { margin-left: 0; text-align: left; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">Almost<b>Doomsday</b></div>
+    <nav>
+      <a href="#timeline">Timeline</a>
+      <a href="#events">Events</a>
+      <a href="#scenario">Scenario</a>
+      <a href="#method">Method</a>
+      <a href="#sources">Sources</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">A record of the times it nearly went wrong</p>
+        <h1>How close<br>did we <em>come</em>?</h1>
+        <p class="deck">
+          Twenty-six moments when nuclear weapons, the systems built to control them, or the
+          people reading the screens came close to producing a catastrophe. Each one is scored
+          on a transparent 0&ndash;100 index and set against the official Doomsday Clock,
+          so you can see what actually stopped it.
+        </p>
+      </div>
+      <dl class="readout">
+        <div><dt class="k">Events documented</dt><dd class="v num" id="stat-count">&mdash;</dd></div>
+        <div><dt class="k">Highest index</dt><dd class="v amber num" id="stat-max">&mdash;</dd></div>
+        <div><dt class="k">Official clock, 2026</dt><dd class="v cyan num" id="stat-clock">&mdash;</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="timeline">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Two records, one century</h2>
+        <p>The index scores individual incidents. The Clock is an annual expert judgement. They are
+          drawn separately because they measure different things.</p>
+      </div>
+
+      <div class="controls">
+        <input class="search" id="search" type="search" placeholder="Search events" aria-label="Search events">
+        <button class="chip" data-cat="all" aria-pressed="true">All</button>
+        <button class="chip" data-cat="false_alarm" aria-pressed="false">False alarm</button>
+        <button class="chip" data-cat="broken_arrow" aria-pressed="false">Broken arrow</button>
+        <button class="chip" data-cat="crisis_escalation" aria-pressed="false">Crisis</button>
+        <button class="chip" data-cat="command_control" aria-pressed="false">Command &amp; control</button>
+        <button class="chip" data-cat="public_warning" aria-pressed="false">Public warning</button>
+      </div>
+
+      <div class="chart-stack">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="swatch amber"></span>
+            <h3>Almost Doomsday Index</h3>
+            <span class="sub">editorial score, 0&ndash;100 &middot; click a point</span>
+          </div>
+          <div class="chart-body" id="chart-index"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <span class="swatch cyan"></span>
+            <h3>Official Doomsday Clock</h3>
+            <span class="sub">Bulletin of the Atomic Scientists &middot; higher is closer to midnight</span>
+          </div>
+          <div class="chart-body" id="chart-clock"></div>
+          <details class="table-view">
+            <summary>Clock settings as a table</summary>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Year</th><th>Setting</th><th>Seconds</th><th class="reason">Stated reason</th></tr></thead>
+                <tbody id="clock-table"></tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="events">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Event ledger</h2>
+        <p>Select an incident to read what almost happened, what stopped it, and how the score was built.</p>
+        <span class="spacer"></span>
+        <button class="chip" id="sort-toggle" aria-pressed="false">Sort: chronological</button>
+      </div>
+      <div class="explorer">
+        <div class="ledger" id="ledger" role="listbox" aria-label="Close-call events"></div>
+        <article class="story" id="story" aria-live="polite"></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="scenario">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Decision point</h2>
+        <p>One reconstructed moment, with only the information the person on duty actually had.
+          There is no score and nothing to win.</p>
+      </div>
+      <div class="scenario-grid">
+        <div>
+          <p class="eyebrow">Serpukhov-15, 26 September 1983, 00:15 Moscow time</p>
+          <h3 style="margin:.4rem 0 0;font-size:1.4rem;font-weight:600;">You are the duty officer for the Oko early-warning system.</h3>
+          <div class="console-rows">
+            <div><span class="k">Incoming</span><span class="v warn">5 ICBM launches, United States</span></div>
+            <div><span class="k">System reliability</span><span class="v warn">Highest</span></div>
+            <div><span class="k">Ground radar confirmation</span><span class="v">None &mdash; targets below horizon</span></div>
+            <div><span class="k">Political context</span><span class="v">KAL 007 shot down 3 weeks ago</span></div>
+            <div><span class="k">Standing procedure</span><span class="v">Report attack up the chain</span></div>
+            <div><span class="k">Time available</span><span class="v">Minutes</span></div>
+          </div>
+          <div class="choices">
+            <button class="choice" data-choice="report">Report a missile attack<span>Follow the procedure you were trained on</span></button>
+            <button class="choice" data-choice="false">Report a system malfunction<span>Trust your own reading of the data</span></button>
+          </div>
+        </div>
+        <div class="debrief on" id="debrief"><p class="eyebrow">Awaiting your call</p><p>Pick one. Whatever you choose, you will see what the officer on duty actually did that night, what the record supports, and where the dramatisation stops.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="method">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>How the index is built</h2>
+        <p>An editorial model, published in full so you can disagree with it.</p>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="table-scroll" style="padding:0">
+            <table class="method-table">
+              <thead><tr><th>Component</th><th>Weight</th><th>Question</th></tr></thead>
+              <tbody>
+                <tr><td>Weapon readiness</td><td class="w">25</td><td>Was a live weapon, warhead or launch capability directly involved?</td></tr>
+                <tr><td>Decision proximity</td><td class="w">25</td><td>How many human or technical steps remained before use or detonation?</td></tr>
+                <tr><td>Information failure</td><td class="w">20</td><td>Did sensors, alarms or communications produce a false picture?</td></tr>
+                <tr><td>Escalation context</td><td class="w">20</td><td>Did a crisis, war or exercise raise the odds of escalation?</td></tr>
+                <tr><td>Recovery fragility</td><td class="w">10</td><td>Did one person, device or coincidence stop it?</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bands">
+            <div><span class="r">0&ndash;30</span><span class="d">A serious nuclear safety incident, but not a direct civilisational risk.</span></div>
+            <div><span class="r">31&ndash;60</span><span class="d">A real close call; several defensive layers held, or use was still distant.</span></div>
+            <div><span class="r">61&ndash;85</span><span class="d">Critical; one wrong decision or one skipped check could have been catastrophic.</span></div>
+            <div><span class="r">86&ndash;100</span><span class="d">Extreme; nuclear use came down to very few remaining steps.</span></div>
+          </div>
+        </div>
+        <div class="prose">
+          <p><strong>This is not a probability.</strong> The Almost Doomsday Index is a curated
+            editorial score, not a scientific estimate and not a competitor to the Doomsday Clock.
+            The Clock is an annual judgement by the Bulletin of the Atomic Scientists about the state
+            of the world; the index rates single incidents. Never read them off the same axis, which is
+            why this site does not draw them on one.</p>
+          <p><strong>The weighting has a known bias.</strong> Because escalation context and information
+            failure together carry 40 points, a peacetime weapons accident cannot score as high as a
+            crisis incident &mdash; even one, like Goldsboro, that came down to a single switch. That is a
+            deliberate choice: the index measures how close the <em>system</em> came to nuclear war,
+            not only how close one weapon came to detonating. Read the component breakdown, not just
+            the total.</p>
+          <p><strong>Confidence varies.</strong> Some entries rest on declassified documents; others on
+            memoirs recorded decades later. Every event carries a source-quality label and, where
+            historians disagree, a &ldquo;known uncertainty&rdquo; note. Where an account is contested,
+            the disagreement is part of the story rather than something to smooth over.</p>
+          <p><strong>Status: first version.</strong> The scores are hand-curated from a single research
+            pass. Five events have fully written stories; the rest are working drafts marked as such.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Sources</h2>
+        <p>Every source cited on an event page, grouped by the kind of evidence it offers.</p>
+      </div>
+      <div class="source-groups" id="source-groups"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      AlmostDoomsday.com &middot; first version, built from a single research pass.<br>
+      Doomsday Clock settings are the property of the Bulletin of the Atomic Scientists and are
+      reproduced here as reported. The Almost Doomsday Index is an independent editorial score and
+      carries no official standing. Corrections welcome.
+    </p>
+  </div>
+</footer>
+
+<div class="tooltip" id="tooltip" role="status"></div>
+
+<script>
+  const EVENTS = __EVENTS__;
+  const CLOCK = __CLOCK__;
+
+  const CAT_LABELS = {
+    false_alarm: "False alarm",
+    broken_arrow: "Broken arrow",
+    crisis_escalation: "Crisis escalation",
+    command_control: "Command & control",
+    public_warning: "Public warning"
+  };
+  const COMPONENTS = [
+    ["weapon_readiness", "Weapon readiness", 25],
+    ["decision_proximity", "Decision proximity", 25],
+    ["information_failure", "Information failure", 20],
+    ["escalation_context", "Escalation context", 20],
+    ["recovery_fragility", "Recovery fragility", 10]
+  ];
+  const RAMP = ["--s0", "--s1", "--s2", "--s3", "--s4"];
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  const X0 = 1945, X1 = 2027.5;
+  const state = { cat: "all", q: "", sort: "date", selected: "1962-b59-arkhipov" };
+
+  EVENTS.forEach(e => {
+    const d = new Date(e.date_start + "T00:00:00Z");
+    e.x = d.getUTCFullYear() + (d.getUTCMonth() * 30.4 + d.getUTCDate()) / 365;
+    e.year = d.getUTCFullYear();
+  });
+
+  const scoreColor = (t) => css(RAMP[t >= 86 ? 4 : t >= 71 ? 3 : t >= 56 ? 2 : t >= 36 ? 1 : 0]);
+  const bandName = (t) => t >= 86 ? "Extreme" : t >= 61 ? "Critical" : t >= 31 ? "Close call" : "Safety incident";
+  const visible = () => EVENTS.filter(e =>
+    (state.cat === "all" || e.categories.includes(state.cat)) &&
+    (!state.q || (e.title + " " + e.story.summary + " " + e.location).toLowerCase().includes(state.q))
+  );
+
+  /* ---- stats ------------------------------------------------------------- */
+  document.getElementById("stat-count").textContent = EVENTS.length;
+  document.getElementById("stat-max").textContent = Math.max(...EVENTS.map(e => e.index.total));
+  const latest = CLOCK.settings[CLOCK.settings.length - 1];
+  document.getElementById("stat-clock").textContent = latest.seconds_to_midnight + "s";
+
+  /* ---- tooltip ----------------------------------------------------------- */
+  const tip = document.getElementById("tooltip");
+  function showTip(evt, html) {
+    tip.innerHTML = html;
+    tip.style.opacity = "1";
+    const pad = 14;
+    const r = tip.getBoundingClientRect();
+    let x = evt.clientX + pad, y = evt.clientY + pad;
+    if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - pad;
+    if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - pad;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+  const hideTip = () => { tip.style.opacity = "0"; };
+
+  /* ---- index chart ------------------------------------------------------- */
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const el = (n, attrs = {}, text) => {
+    const node = document.createElementNS(SVG_NS, n);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (text != null) node.textContent = text;
+    return node;
+  };
+
+  function drawIndexChart() {
+    const host = document.getElementById("chart-index");
+    const w = host.clientWidth || 900;
+    const h = Math.max(240, Math.min(340, w * 0.34));
+    const pad = { t: 18, r: 22, b: 26, l: 46 };
+    const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+    const sx = (x) => pad.l + (x - X0) / (X1 - X0) * iw;
+    const sy = (v) => pad.t + (1 - v / 100) * ih;
+
+    const svg = el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, role: "img",
+      "aria-label": "Scatter plot of close-call events from 1945 to 2026 scored 0 to 100. The full data is in the event ledger below." });
+
+    [0, 25, 50, 75, 100].forEach(v => {
+      svg.appendChild(el("line", { class: "grid-line", x1: pad.l, x2: w - pad.r, y1: sy(v), y2: sy(v) }));
+      svg.appendChild(el("text", { class: "axis-label", x: pad.l - 10, y: sy(v) + 3.5, "text-anchor": "end" }, v));
+    });
+    svg.appendChild(el("line", { class: "threshold", x1: pad.l, x2: w - pad.r, y1: sy(86), y2: sy(86) }));
+    svg.appendChild(el("text", { class: "threshold-label", x: w - pad.r, y: sy(86) - 6, "text-anchor": "end" }, "EXTREME 86+"));
+
+    for (let y = 1950; y <= 2020; y += 10) {
+      svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: pad.t, y2: pad.t + ih }));
+      svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" }, y));
+    }
+    svg.appendChild(el("text", { class: "axis-label", x: pad.l - 10, y: pad.t - 6, "text-anchor": "end" }, "INDEX"));
+
+    const vis = new Set(visible().map(e => e.id));
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    EVENTS.slice().sort((a, b) => a.index.total - b.index.total).forEach((e, i) => {
+      const on = vis.has(e.id);
+      const cx = sx(e.x), cy = sy(e.index.total);
+      const r = 4 + e.index.total / 100 * 4.5;
+
+      if (e.index.total >= 86 && on && !reduced) {
+        svg.appendChild(el("circle", { class: "pulse", cx, cy, r: 7, fill: "none",
+          stroke: scoreColor(e.index.total), "stroke-width": 1 }));
+      }
+      const dot = el("circle", {
+        class: "dot" + (on ? "" : " dim"), cx, cy, r,
+        fill: scoreColor(e.index.total), "data-id": e.id
+      });
+      if (!reduced) dot.style.animationDelay = (i * 22) + "ms";
+      svg.appendChild(dot);
+
+      if (on) {
+        const hit = el("circle", { class: "dot-hit", cx, cy, r: Math.max(r + 8, 13), "data-id": e.id });
+        hit.addEventListener("mousemove", (ev) => showTip(ev,
+          `<strong>${e.title}</strong><span>${e.date_display} &middot; index <b class="val">${e.index.total}</b></span>`));
+        hit.addEventListener("mouseleave", hideTip);
+        hit.addEventListener("click", () => { select(e.id); document.getElementById("events").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); });
+        svg.appendChild(hit);
+      }
+
+      if (e.id === state.selected) {
+        svg.appendChild(el("line", { class: "sel-stem", x1: cx, x2: cx, y1: cy, y2: pad.t + ih }));
+        svg.appendChild(el("circle", { class: "sel-ring", cx, cy, r: r + 5 }));
+        const anchor = cx > w * 0.72 ? "end" : "start";
+        svg.appendChild(el("text", { class: "dot-label", x: cx + (anchor === "end" ? -(r + 9) : r + 9), y: cy + 3.5, "text-anchor": anchor }, e.title));
+      }
+    });
+
+    host.replaceChildren(svg);
+  }
+
+  /* ---- clock chart ------------------------------------------------------- */
+  function drawClockChart() {
+    const host = document.getElementById("chart-clock");
+    const w = host.clientWidth || 900;
+    const h = Math.max(150, Math.min(200, w * 0.2));
+    const pad = { t: 18, r: 22, b: 26, l: 46 };
+    const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+    const sx = (x) => pad.l + (x - X0) / (X1 - X0) * iw;
+    const lo = Math.log(80), hi = Math.log(1100);
+    const sy = (s) => pad.t + (Math.log(s) - lo) / (hi - lo) * ih;
+
+    const svg = el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, role: "img",
+      "aria-label": "Step chart of official Doomsday Clock settings from 1947 to 2026. The full data is in the table below the chart." });
+
+    [[1020, "17m"], [420, "7m"], [180, "3m"], [100, "100s"]].forEach(([s, lab]) => {
+      svg.appendChild(el("line", { class: "grid-line", x1: pad.l, x2: w - pad.r, y1: sy(s), y2: sy(s) }));
+      svg.appendChild(el("text", { class: "axis-label", x: pad.l - 10, y: sy(s) + 3.5, "text-anchor": "end" }, lab));
+    });
+    for (let y = 1950; y <= 2020; y += 10) {
+      svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: pad.t, y2: pad.t + ih }));
+      svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" }, y));
+    }
+
+    const S = CLOCK.settings;
+    let d = "";
+    S.forEach((st, i) => {
+      const x = sx(st.year), y = sy(st.seconds_to_midnight);
+      const xEnd = sx(i < S.length - 1 ? S[i + 1].year : X1);
+      d += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`) + ` L ${xEnd} ${y}`;
+    });
+    const bottom = pad.t + ih;
+    svg.appendChild(el("path", { class: "clock-area", d: d + ` L ${sx(X1)} ${bottom} L ${sx(S[0].year)} ${bottom} Z` }));
+    svg.appendChild(el("path", { class: "clock-line", d }));
+
+    const last = S[S.length - 1];
+    svg.appendChild(el("circle", { class: "clock-end", cx: sx(last.year), cy: sy(last.seconds_to_midnight), r: 5 }));
+    svg.appendChild(el("text", { class: "clock-end-label", x: sx(last.year) - 10, y: sy(last.seconds_to_midnight) - 9, "text-anchor": "end" },
+      last.display + " \u2014 closest ever"));
+
+    S.forEach((st, i) => {
+      const x = sx(st.year), xEnd = sx(i < S.length - 1 ? S[i + 1].year : X1);
+      const hit = el("rect", { x, y: pad.t, width: Math.max(xEnd - x, 4), height: ih, fill: "transparent", style: "cursor:crosshair" });
+      hit.addEventListener("mousemove", (ev) => showTip(ev,
+        `<strong>${st.year} &middot; ${st.display} to midnight</strong><span>${st.reason}</span>`));
+      hit.addEventListener("mouseleave", hideTip);
+      svg.appendChild(hit);
+    });
+
+    host.replaceChildren(svg);
+  }
+
+  document.getElementById("clock-table").innerHTML = CLOCK.settings.map(s =>
+    `<tr><td>${s.year}</td><td>${s.display}</td><td>${s.seconds_to_midnight}</td><td class="reason">${s.reason}</td></tr>`
+  ).join("");
+
+  /* ---- ledger ------------------------------------------------------------ */
+  function drawLedger() {
+    const host = document.getElementById("ledger");
+    const list = visible().sort((a, b) =>
+      state.sort === "date" ? a.x - b.x : b.index.total - a.index.total);
+
+    if (!list.length) {
+      host.innerHTML = '<p class="ledger-empty">No events match this filter.</p>';
+      return;
+    }
+    host.replaceChildren(...list.map(e => {
+      const b = document.createElement("button");
+      b.className = "ledger-row";
+      b.setAttribute("role", "option");
+      b.setAttribute("aria-current", String(e.id === state.selected));
+      b.setAttribute("aria-selected", String(e.id === state.selected));
+      b.innerHTML =
+        `<span class="yr num">${e.year}</span>` +
+        `<span class="ttl">${e.title}</span>` +
+        `<span class="sc" style="color:${scoreColor(e.index.total)}">${e.index.total}</span>`;
+      b.addEventListener("click", () => select(e.id));
+      return b;
+    }));
+  }
+
+  /* ---- story ------------------------------------------------------------- */
+  function drawStory() {
+    const e = EVENTS.find(x => x.id === state.selected);
+    const host = document.getElementById("story");
+    const bars = COMPONENTS.map(([key, label, max]) => {
+      const v = e.index[key];
+      return `<div class="bar-row">
+        <span class="lbl">${label}</span>
+        <span class="bar-track"><span class="bar-fill" style="width:${v / max * 100}%"></span></span>
+        <span class="val">${v}<span style="color:var(--ink-3)">/${max}</span></span>
+      </div>`;
+    }).join("");
+
+    const beats = e.beats ? `<div class="beats">
+        <h4>How it unfolded</h4>
+        ${e.beats.map(b => `<div class="beat"><span class="t">${b.time}</span><span class="x">${b.text}</span></div>`).join("")}
+      </div>` : "";
+
+    const uncertainty = e.story.uncertainty ? `<div class="note">
+        <h4>Known uncertainty</h4><p>${e.story.uncertainty}</p></div>` : "";
+
+    host.innerHTML = `
+      <div class="story-top">
+        <div>
+          <p class="eyebrow">${e.date_display}</p>
+          <h3>${e.title}</h3>
+          <p class="story-meta">${e.location} &middot; ${e.actors.join(" / ")}</p>
+          <div class="tags">
+            ${e.categories.map(c => `<span class="tag">${CAT_LABELS[c] || c}</span>`).join("")}
+            <span class="tag ${e.depth}">${e.depth === "curated" ? "Curated story" : "Draft entry"}</span>
+            <span class="tag">Source base: ${e.confidence}</span>
+          </div>
+        </div>
+        <div class="score-block">
+          <div class="big">${e.index.total}<span>/100</span></div>
+          <div class="band">${bandName(e.index.total)}</div>
+        </div>
+      </div>
+      <div class="story-cols">
+        <div>
+          <h4>What almost happened</h4>
+          <p>${e.story.almost_happened}</p>
+        </div>
+        <div class="stopped">
+          <h4>What stopped it</h4>
+          <p>${e.story.stopped_by}</p>
+        </div>
+      </div>
+      <div class="breakdown">
+        <h4>Why this score</h4>
+        ${bars}
+      </div>
+      ${beats}
+      ${uncertainty}
+      <div class="src-list">
+        <h4>Sources</h4>
+        <ul>${e.sources.map(s =>
+          `<li><span class="qual ${s.quality}">${s.quality}</span><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title}</a></li>`
+        ).join("")}</ul>
+      </div>`;
+  }
+
+  function select(id) {
+    state.selected = id;
+    drawStory();
+    drawLedger();
+    drawIndexChart();
+  }
+
+  function refresh() {
+    const vis = visible();
+    if (vis.length && !vis.some(e => e.id === state.selected)) state.selected = vis[0].id;
+    drawIndexChart();
+    drawLedger();
+    drawStory();
+  }
+
+  /* ---- controls ---------------------------------------------------------- */
+  document.querySelectorAll(".chip[data-cat]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.cat = btn.dataset.cat;
+      document.querySelectorAll(".chip[data-cat]").forEach(b =>
+        b.setAttribute("aria-pressed", String(b === btn)));
+      refresh();
+    });
+  });
+  let t;
+  document.getElementById("search").addEventListener("input", (e) => {
+    clearTimeout(t);
+    t = setTimeout(() => { state.q = e.target.value.trim().toLowerCase(); refresh(); }, 120);
+  });
+  const sortBtn = document.getElementById("sort-toggle");
+  sortBtn.addEventListener("click", () => {
+    state.sort = state.sort === "date" ? "score" : "date";
+    sortBtn.textContent = "Sort: " + (state.sort === "date" ? "chronological" : "by index");
+    sortBtn.setAttribute("aria-pressed", String(state.sort === "score"));
+    drawLedger();
+  });
+
+  /* ---- scenario ---------------------------------------------------------- */
+  const DEBRIEF = {
+    report: {
+      verdict: ["diff", "Petrov did not do this"],
+      body: `<p><strong>What you chose.</strong> Passing the warning up the chain was the correct
+        procedure. The system had rated the launch detection at its highest reliability, and the duty
+        officer's written job was to report, not to adjudicate.</p>
+        <p><strong>What happened instead.</strong> Stanislav Petrov reported a system malfunction. He
+        reasoned that a genuine American first strike would involve hundreds of missiles rather than
+        five, and that ground radar had not confirmed anything. Twenty-three minutes later, nothing
+        had arrived.</p>
+        <p><strong>Where the drama stops.</strong> A report would not have launched missiles by itself.
+        Soviet doctrine required corroboration and a political decision, and there were more checks
+        after Petrov's console. What is documented is that a false warning reached a human being who
+        was expected to forward it, and that he did not.</p>`
+    },
+    "false": {
+      verdict: ["match", "This is what Petrov did"],
+      body: `<p><strong>What you chose.</strong> The same call Petrov made: report the alert as a
+        malfunction, on the strength of two observations. Five missiles is not how a first strike
+        begins. And the ground radars had shown nothing &mdash; though at that range they would not
+        have yet, which is why the reasoning was a judgement rather than a proof.</p>
+        <p><strong>What happened.</strong> Sunlight reflecting off high-altitude clouds had been read by
+        the Oko satellites as launch plumes. Petrov spent the next twenty-three minutes waiting to find
+        out whether he had been right. He received no award; the incident was classified, and the
+        satellite system's flaw was quietly corrected.</p>
+        <p><strong>Where the drama stops.</strong> Petrov did not personally hold the fate of the world
+        in his hands, and he said so himself. Corroboration and a political decision would still have
+        been required. What the record does show is a warning system that was confidently wrong, and a
+        procedure that expected a person to pass that confidence upward.</p>`
+    }
+  };
+  document.querySelectorAll(".choice").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const d = DEBRIEF[btn.dataset.choice];
+      document.querySelectorAll(".choice").forEach(b => { b.disabled = true; b.classList.toggle("picked", b === btn); });
+      const host = document.getElementById("debrief");
+      host.className = "debrief on";
+      host.innerHTML =
+        `<span class="verdict ${d.verdict[0]}">${d.verdict[1]}</span>${d.body}
+         <p style="font-size:.85rem"><a href="https://www.pbs.org/wgbh/nova/missileers/falsealarms.html" target="_blank" rel="noopener noreferrer">PBS/NOVA &mdash; False Alarms on the Nuclear Front</a>
+         &middot; <a href="https://www.chathamhouse.org/2014/04/too-close-comfort-cases-near-nuclear-use-and-options-policy" target="_blank" rel="noopener noreferrer">Chatham House &mdash; Too Close for Comfort</a></p>
+         <p style="font-size:.85rem"><button class="chip" id="scenario-reset">Reset</button></p>`;
+      document.getElementById("scenario-reset").addEventListener("click", () => {
+        document.querySelectorAll(".choice").forEach(b => { b.disabled = false; b.classList.remove("picked"); });
+        host.className = "debrief";
+        host.innerHTML = "";
+      });
+    });
+  });
+
+  /* ---- sources ----------------------------------------------------------- */
+  const GROUPS = {
+    declassified: "Declassified documents",
+    official: "Official reports",
+    academic: "Academic and institutional",
+    journalistic: "Journalism and compilations"
+  };
+  const seen = new Map();
+  EVENTS.forEach(e => e.sources.forEach(s => { if (!seen.has(s.url)) seen.set(s.url, s); }));
+  document.getElementById("source-groups").innerHTML = Object.entries(GROUPS).map(([q, label]) => {
+    const items = [...seen.values()].filter(s => s.quality === q);
+    if (!items.length) return "";
+    return `<div><h3 class="eyebrow">${label}</h3><ul>${items.map(s =>
+      `<li><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title}</a></li>`).join("")}</ul></div>`;
+  }).join("") + `<div><h3 class="eyebrow">The Clock itself</h3><ul>
+      <li><a href="${CLOCK.source.url}" target="_blank" rel="noopener noreferrer">${CLOCK.source.title}</a></li>
+      <li><a href="https://thebulletin.org/2026/01/press-release-it-is-85-seconds-to-midnight/" target="_blank" rel="noopener noreferrer">Bulletin of the Atomic Scientists &mdash; 85 seconds to midnight (2026)</a></li>
+    </ul></div>`;
+
+  /* ---- boot -------------------------------------------------------------- */
+  refresh();
+  drawClockChart();
+
+  let rt;
+  addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { drawIndexChart(); drawClockChart(); }, 140);
+  });
+</script>
