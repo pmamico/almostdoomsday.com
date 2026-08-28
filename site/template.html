@@ -491,7 +491,7 @@
   .ladder { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
   .rung {
     background: var(--panel); padding: .95rem 1.1rem;
-    display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
+    display: grid; grid-template-columns: 2.2rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
   }
   .rung .amt { font-family: var(--data); font-size: .98rem; color: var(--signal-bright); font-variant-numeric: tabular-nums; }
   .rung h3 { margin: 0 0 .35rem; font-size: 1.02rem; font-weight: 500; letter-spacing: -.005em; }
@@ -728,6 +728,7 @@
           </p>
         </div>
         <div>
+          <p class="eyebrow" style="margin:0 0 .7rem">Roadmap</p>
           <div class="ladder" id="ladder"></div>
           <p class="beyond" id="beyond"></p>
         </div>
@@ -1629,18 +1630,20 @@
     '<span class="d"><b style="color:var(--ink);font-weight:500">' + b.name + '.</b> ' + b.text + '</span></div>').join("");
 
   /* ---- support ----------------------------------------------------------- */
-  const STATUS_LABEL = { shipped: "Shipped", in_progress: "In progress", not_funded: "Not funded" };
+  const STATUS_LABEL = { shipped: "Shipped", next: "Next" };
   const give = FUNDING.presets.map(a =>
     '<a class="lead" href="' + FUNDING.paypal + '/' + a + FUNDING.currency + '" target="_blank" rel="noopener noreferrer">'
     + FUNDING.symbol + a + '</a>').join("")
     + '<a href="' + FUNDING.paypal + '" target="_blank" rel="noopener noreferrer">Choose an amount</a>';
   document.getElementById("give").innerHTML = give;
 
-  document.getElementById("ladder").innerHTML = FUNDING.tiers.map(t =>
+  document.getElementById("ladder").innerHTML = FUNDING.roadmap.map((r, i) =>
     '<div class="rung">' +
-      '<span class="amt">' + FUNDING.symbol + t.amount + '</span>' +
-      '<div class="rung-body"><h3>' + t.title + '</h3><p>' + t.detail + '</p></div>' +
-      '<span class="status ' + t.status + '">' + (STATUS_LABEL[t.status] || t.status) + '</span>' +
+      '<span class="amt">' + String(i + 1).padStart(2, "0") + '</span>' +
+      '<div class="rung-body"><h3>' + r.title + '</h3><p>' + r.detail + '</p></div>' +
+      (STATUS_LABEL[r.status]
+        ? '<span class="status ' + r.status + '">' + STATUS_LABEL[r.status] + '</span>'
+        : '<span></span>') +
     '</div>').join("");
 
   document.getElementById("beyond").textContent = FUNDING.beyond;

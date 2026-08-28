@@ -279,7 +279,7 @@ Statikus, fuggoseg nelkuli egyoldalas site. Adat -> template -> kesz HTML.
 
 ```
 data/close-calls.json   26 kuralt close call, komponensenkenti pontszammal es forrasokkal
-data/funding.json       PayPal link, elore beirt osszegek, es a roadmap rungok allapottal
+data/funding.json       PayPal link, elore beirt osszegek, es a roadmap tetelek allapottal
 site/template.html      markup, stilus, chart, a nyitany allapotgepe (__EVENTS__ placeholder)
 build.mjs               beinjektalja az adatot, es ellenorzi hogy a komponensek osszege = total
 site/index.html         a build kimenete, ez a publikalt fajl
@@ -322,33 +322,37 @@ szekcioban ki van irva, ahogy az is, hogy az eszkalacios szekvencia spekulativ.
 
 ### Tamogatas es roadmap
 
-`data/funding.json` tartja a PayPal linket es a rungokat; a `#support` szekcio ebbol rajzolodik.
-Statikus oldal, nincs backend, es a PayPal nem ad publikus egyenleget - ezert nincs "raised X / Y"
-sav, ami ket het utan elavulna. Helyette **allapot rungonkent**: `shipped` / `in_progress` /
-`not_funded`. Uj rung vagy statuszvaltas egy sor a JSON-ban.
+`data/funding.json` tartja a PayPal linket, az elore beirt osszegeket es a roadmapot; a `#support`
+szekcio ebbol rajzolodik.
 
-| | Cel | Mit valt ki |
+Az osszeg es a roadmap **el van valasztva**. Balra a kereses es a PayPal gombok (EUR 5 / 15 / 50 es
+szabad osszeg), jobbra egy szamozott roadmap ar nelkul. Ok: ha egy tetel mellett osszeg all, az
+elorendelesnek olvashato. Igy a tamogatas a projektnek szol, a lista pedig sorrend, nem arlista.
+A jogi sor ki is mondja: nincs ellenszolgaltatas, nem adolevonhato, es nem szallitasi igeret.
+
+| | Roadmap | |
 | --- | --- | --- |
-| EUR 120 | Fenntartas egy evre | Domain + szerver. Semmi uj, csak online marad. |
-| EUR 350 | Scenario engine + 2 uj ugyelet | A watch most a kodba van drotozva. Ez adatvezerelte teszi, utana B-59 es a norveg raketa. |
-| EUR 800 | Minden esemenynek teljes sztorija | A 21 draft kidolgozasa, plusz masodik kutatasi passz a vitatott eseteken. |
-| EUR 2000 | Masodik domain a nuklearis mellett | Egy uj kockazati terulet, sajat indexszel, 20-30 forrasolt esettel. |
+| 01 | Scenario engine + 2 uj ugyelet | `next` |
+| 02 | Minden esemenynek teljes sztorija | `planned` |
+| 03 | Masodik domain a nuklearis mellett | `planned` |
+
+Alatta egy sor a tavolabbi celrol (atlas), datum nelkul.
+
+Nincs "raised X / Y" sav: statikus oldal, a PayPal nem ad publikus egyenleget, egy kezzel irt szam
+ket het utan hiteltelen. A roadmap allapota (`next` / `planned` / `shipped`) egy sor a JSON-ban.
 
 A `#support` szekcio a Sources utan van, kozvetlenul a footer elott - miutan a latogato latta a
-metodologiat, a bizonytalansagi jegyzeteket es a forrasokat. **Sehol maskor**, es kulonosen nem
-az ugyeletben: aki epp vegignezte a szimulalt atomhaborut, annak nem lehet a kovetkezo kepernyon
+metodologiat, a bizonytalansagi jegyzeteket es a forrasokat. **Sehol maskor**, es kulonosen nem az
+ugyeletben: aki epp vegignezte a szimulalt atomhaborut, annak nem lehet a kovetkezo kepernyon
 adomanygombot mutatni.
-
-Keretezes: nem elorendeles. A szoveg kimondja, hogy ez egy sorrend, amit tamogatas eseten
-megepitek, nem szallitasi igeret, es hogy nincs ellenszolgaltatas es nem adolevonhato.
 
 ### Domain bovites: nyitott dontes
 
-A EUR 2000-es rung **megtortent incidenseket** feltetelez (autonom rendszerek, biosafety,
+A roadmap 03-as tetele **megtortent incidenseket** feltetelez (autonom rendszerek, biosafety,
 kritikus infrastruktura), nem spekulativ jovoket. Ok: az oldal hitele azon all, hogy ezek
 megtortentek es itt vannak a dokumentumok; egy spekulativ szal ugyanazon a skalan pont azt a
 tisztasagot rontana, amiert a Doomsday Clock kikerult. Ha megis kell spekulativ tartalom, az
-lathatoan kulon szekcio legyen, indexpontszam nelkul. Ez a rung szovege a JSON-ban, egy sor.
+lathatoan kulon szekcio legyen, indexpontszam nelkul. Ez a tetel szovege a JSON-ban, egy sor.
 
 ### Szandekos dontesek
 

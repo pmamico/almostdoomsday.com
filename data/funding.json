@@ -2,30 +2,25 @@
   "currency": "EUR",
   "symbol": "€",
   "paypal": "https://paypal.me/pmamico",
-  "presets": [5, 15, 50],
+  "presets": [
+    5,
+    15,
+    50
+  ],
   "beyond": "Beyond that: the atlas — every domain in one place, a cross-domain view, a map, an address for each event and shareable cards. No date promised.",
-  "tiers": [
+  "roadmap": [
     {
-      "amount": 120,
-      "status": "in_progress",
-      "title": "Keep the site up for a year",
-      "detail": "Domain and server. Nothing new gets built; the archive just stays online and stays fast. Currently paid out of my own pocket."
-    },
-    {
-      "amount": 350,
-      "status": "not_funded",
+      "status": "next",
       "title": "The scenario engine, and two more watches",
       "detail": "The watch is written into the code today, which is why there is only one. This turns a scenario into authored data — several decision points, branching, a source on every beat — and then adds B-59 Arkhipov, 1962 and the Norwegian rocket, 1995."
     },
     {
-      "amount": 800,
-      "status": "not_funded",
+      "status": "planned",
       "title": "A full story for every event",
       "detail": "The twenty-one entries still marked as drafts get what the five curated ones have: a written reconstruction, a minute-by-minute, and a second research pass on the cases where historians disagree."
     },
     {
-      "amount": 2000,
-      "status": "not_funded",
+      "status": "planned",
       "title": "A second domain beyond nuclear",
       "detail": "One new risk area — autonomous systems, biosafety or critical infrastructure — with twenty to thirty documented incidents and its own published index. Scores would not be comparable across domains, and the site would say so."
     }
