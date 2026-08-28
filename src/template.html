@@ -149,7 +149,6 @@
     display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap;
     padding: .8rem 1.1rem; border-bottom: 1px solid var(--rule-soft);
   }
-  .alert-head .tstamp { font-family: var(--data); font-size: .72rem; color: var(--ink-3); letter-spacing: .1em; }
   .alert-head h2 {
     margin: 0; font-family: var(--data); font-weight: 500;
     font-size: clamp(.86rem, 2vw, 1.02rem); letter-spacing: .14em; text-transform: uppercase; color: var(--ink);
@@ -161,7 +160,6 @@
     text-transform: uppercase; color: var(--ink-3); flex: 1; min-width: 9rem;
   }
   .rows .v { font-family: var(--data); font-size: .82rem; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
-  .rows .v.ok { color: var(--ok-bright); }
   .rows .v.flash { animation: flash .5s ease 2; }
   @keyframes flash { 50% { background: rgba(228, 230, 227, .14); } }
 
@@ -861,7 +859,7 @@
     { lines: ["Ground radar is your second opinion.",
               "When the radar agrees with the satellite, you have a track."] },
     { lines: ["Three weeks ago a Soviet fighter shot down a Korean airliner.",
-              "Nobody upstairs is in a mood to be told the machines are wrong."] }
+              "Two hundred and sixty-nine people died. Relations are the worst in twenty years."] }
   ];
 
   // Two rehearsals. In both, the green control is correct - and it is correct
@@ -874,7 +872,7 @@
       rows: [
         ["Source", "Oko satellite 4", ""],
         ["Reliability", "Medium", ""],
-        ["Ground radar", "Track confirmed", "ok"],
+        ["Ground radar", "Track confirmed", ""],
         ["Advance notice", "Filed 6 days ago \u2014 scheduled test", ""],
         ["Objects", "1", ""]
       ],
@@ -890,7 +888,7 @@
       rows: [
         ["Source", "Oko satellite 6", ""],
         ["Reliability", "Low", ""],
-        ["Ground radar", "Track acquired", "ok"],
+        ["Ground radar", "Track acquired", ""],
         ["Advance notice", "None", ""],
         ["Objects", "1", ""]
       ],
@@ -994,7 +992,7 @@
     return new Promise(resolve => {
       stageEl.innerHTML =
         '<div class="alert">' +
-          '<div class="alert-head"><span class="tstamp">' + beat.stamp + '</span><h2>' + beat.title + '</h2></div>' +
+          '<div class="alert-head"><h2>' + beat.title + '</h2></div>' +
           rowsHtml(beat.rows) +
         '</div>' +
         '<div class="controls-pair">' +
@@ -1028,7 +1026,7 @@
     return new Promise(resolve => {
       stageEl.innerHTML =
         '<div class="alert">' +
-          '<div class="alert-head"><span class="tstamp">00:15:00</span><h2>Missile attack \u00b7 United States</h2></div>' +
+          '<div class="alert-head"><h2>Missile attack \u00b7 United States</h2></div>' +
           '<div class="rows">' +
             '<div><span class="k">Source</span><span class="v">Oko satellite 5</span></div>' +
             '<div><span class="k">Reliability</span><span class="v">Highest</span></div>' +
@@ -1044,8 +1042,6 @@
             '<span class="lbl">Log as system malfunction</span>' +
             '<ul class="frictions">' +
               '<li>No fault is indicated. The system reports its highest confidence.</li>' +
-              '<li>Nothing in your orders covers this.</li>' +
-              '<li>If this is real, no one else will warn them.</li>' +
             '</ul>' +
             '<span class="hold">Press and hold to log</span>' +
             '<span class="fill" id="dev-fill"></span>' +
