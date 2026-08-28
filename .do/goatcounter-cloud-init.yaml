@@ -19,13 +19,6 @@ packages:
   - sqlite3
 
 write_files:
-  - path: /etc/caddy/Caddyfile
-    content: |
-      stats.almostdoomsday.com {
-              encode zstd gzip
-              reverse_proxy 127.0.0.1:8081
-      }
-
   - path: /etc/systemd/system/goatcounter.service
     content: |
       [Unit]
@@ -69,11 +62,19 @@ write_files:
       17 4 * * * root /usr/local/bin/goatcounter-backup
 
 runcmd:
-  # Caddy from the official repository.
+  # Caddy from the official repository. The Caddyfile is written only after the
+  # package is configured, so dpkg never hits a conffile prompt.
   - curl -fsSL https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   - curl -fsSL https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt | tee /etc/apt/sources.list.d/caddy-stable.list
   - apt-get update
-  - apt-get install -y caddy
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::=--force-confold caddy
+  - |
+    cat > /etc/caddy/Caddyfile <<'CADDY'
+    stats.almostdoomsday.com {
+            encode zstd gzip
+            reverse_proxy 127.0.0.1:8081
+    }
+    CADDY
 
   # GoatCounter, pinned.
   - curl -fsSL -o /tmp/gc.gz https://github.com/arp242/goatcounter/releases/download/v2.7.0/goatcounter-v2.7.0-linux-amd64.gz
@@ -87,6 +88,7 @@ runcmd:
 
   - systemctl daemon-reload
   - systemctl enable --now goatcounter
+  - systemctl enable --now caddy
   - systemctl reload caddy || systemctl restart caddy
 
   # Only SSH and HTTP(S) reach this box; GoatCounter itself listens on loopback.

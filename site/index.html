@@ -742,7 +742,8 @@
     <p>
       AlmostDoomsday.com &middot; first version, built from a single research pass.<br>
       The Almost Doomsday Index is an independent editorial score and carries no official standing.
-      Corrections welcome.
+      Corrections welcome.<br>
+      No cookies, no third-party trackers. Anonymous page counts on a server I run myself.
     </p>
   </div>
 </footer>
@@ -1655,6 +1656,18 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(drawIndexChart, 140);
   });
+
+  /* ---- analytics --------------------------------------------------------- */
+  // Self-hosted GoatCounter: no cookies, no third party, and the script itself
+  // comes from our own box. Only loaded on the live domain, so local work and
+  // preview hosts never record a hit.
+  if (location.hostname === "almostdoomsday.com" || location.hostname === "www.almostdoomsday.com") {
+    const beacon = document.createElement("script");
+    beacon.async = true;
+    beacon.dataset.goatcounter = "https://stats.almostdoomsday.com/count";
+    beacon.src = "https://stats.almostdoomsday.com/count.js";
+    document.body.appendChild(beacon);
+  }
 
   /* ---- boot: the watch runs once per browser ------------------------------ */
   let watchDone = false;
