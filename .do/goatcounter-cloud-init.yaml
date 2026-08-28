@@ -1,0 +1,100 @@
+#cloud-config
+# Provisions the analytics box: Caddy (automatic Let's Encrypt) in front of a
+# self-hosted GoatCounter on SQLite. One droplet, one service, no database server.
+#
+#   doctl compute droplet create ad-stats \
+#     --region fra1 --size s-1vcpu-512mb-10gb --image ubuntu-24-04-x64 \
+#     --user-data-file .do/goatcounter-cloud-init.yaml --ssh-keys <ids>
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - curl
+  - ufw
+  - unattended-upgrades
+  - sqlite3
+
+write_files:
+  - path: /etc/caddy/Caddyfile
+    content: |
+      stats.almostdoomsday.com {
+              encode zstd gzip
+              reverse_proxy 127.0.0.1:8081
+      }
+
+  - path: /etc/systemd/system/goatcounter.service
+    content: |
+      [Unit]
+      Description=GoatCounter
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      User=goatcounter
+      Group=goatcounter
+      ExecStart=/usr/local/bin/goatcounter serve \
+        -listen 127.0.0.1:8081 \
+        -tls proxy \
+        -db "sqlite+/var/lib/goatcounter/db.sqlite3" \
+        -automigrate
+      Restart=always
+      RestartSec=5
+      # The database directory is the only state this service owns.
+      ReadWritePaths=/var/lib/goatcounter
+      ProtectSystem=strict
+      ProtectHome=true
+      PrivateTmp=true
+      NoNewPrivileges=true
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /usr/local/bin/goatcounter-backup
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      # Nightly consistent snapshot. The SQLite file is the only thing worth keeping.
+      set -eu
+      mkdir -p /var/backups/goatcounter
+      sqlite3 /var/lib/goatcounter/db.sqlite3 \
+        ".backup '/var/backups/goatcounter/db-$(date +%F).sqlite3'"
+      find /var/backups/goatcounter -name 'db-*.sqlite3' -mtime +14 -delete
+
+  - path: /etc/cron.d/goatcounter-backup
+    content: |
+      17 4 * * * root /usr/local/bin/goatcounter-backup
+
+runcmd:
+  # Caddy from the official repository.
+  - curl -fsSL https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  - curl -fsSL https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt | tee /etc/apt/sources.list.d/caddy-stable.list
+  - apt-get update
+  - apt-get install -y caddy
+
+  # GoatCounter, pinned.
+  - curl -fsSL -o /tmp/gc.gz https://github.com/arp242/goatcounter/releases/download/v2.7.0/goatcounter-v2.7.0-linux-amd64.gz
+  - gunzip -f /tmp/gc.gz
+  - install -m 0755 /tmp/gc /usr/local/bin/goatcounter
+  - rm -f /tmp/gc
+
+  - useradd --system --home /var/lib/goatcounter --shell /usr/sbin/nologin goatcounter || true
+  - mkdir -p /var/lib/goatcounter
+  - chown -R goatcounter:goatcounter /var/lib/goatcounter
+
+  - systemctl daemon-reload
+  - systemctl enable --now goatcounter
+  - systemctl reload caddy || systemctl restart caddy
+
+  # Only SSH and HTTP(S) reach this box; GoatCounter itself listens on loopback.
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow OpenSSH
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+
+  - systemctl enable --now unattended-upgrades
