@@ -769,6 +769,33 @@
   /* ======================================================================== */
   /* THE WATCH                                                                 */
   /* ======================================================================== */
+  // Anonymous counters for the watch, so the drop-off and the split at each
+  // decision are visible. The beacon loads asynchronously and the watch starts
+  // immediately, so events are queued until it is ready and dropped if it never
+  // arrives — which is the case locally, in preview, and behind a blocker.
+  const trackQueue = [];
+  let trackTimer = null;
+  function flushTrack() {
+    const gc = window.goatcounter;
+    if (!gc || typeof gc.count !== "function") return;
+    while (trackQueue.length) {
+      try { gc.count(trackQueue.shift()); } catch (e) { /* never break the watch */ }
+    }
+    if (trackTimer) { clearInterval(trackTimer); trackTimer = null; }
+  }
+  const track = (name, title) => {
+    trackQueue.push({ path: name, title, event: true });
+    flushTrack();
+    // Give the beacon a while to show up, then stop waiting.
+    if (trackQueue.length && !trackTimer) {
+      let tries = 0;
+      trackTimer = setInterval(() => {
+        flushTrack();
+        if (++tries > 20) { clearInterval(trackTimer); trackTimer = null; trackQueue.length = 0; }
+      }, 1000);
+    }
+  };
+
   const WATCH_KEY = "almostdoomsday.watch.v1";
   const watchEl = document.getElementById("watch");
   const stageEl = document.getElementById("watch-stage");
@@ -828,7 +855,7 @@
   const BEATS = [
     {
       at: [23, 47, 12],
-      stamp: "23:47:12",
+      slug: "beat1",
       title: "Launch detection \u00b7 Vandenberg AFB",
       rows: [
         ["Source", "Oko satellite 4", ""],
@@ -844,7 +871,7 @@
     },
     {
       at: [0, 4, 38],
-      stamp: "00:04:38",
+      slug: "beat2",
       title: "Thermal event \u00b7 northern Pacific",
       rows: [
         ["Source", "Oko satellite 6", ""],
@@ -965,6 +992,7 @@
       const finish = (which) => {
         const v = beat[which];
         stopClock();
+        track("watch/" + beat.slug + "-" + which, "Watch \u00b7 " + beat.title + " \u00b7 " + which);
         if (which === "report") filed++; else errors++;
         document.getElementById("act-go").disabled = true;
         document.getElementById("act-dev").disabled = true;
@@ -1029,7 +1057,11 @@
       const dev = document.getElementById("act-dev");
       const fill = document.getElementById("dev-fill");
 
-      go.addEventListener("click", () => { cleanup(); resolve("report"); });
+      go.addEventListener("click", () => {
+        cleanup();
+        track("watch/decision-report", "Watch \u00b7 the decision \u00b7 report");
+        resolve("report");
+      });
       go.focus();
 
       // Deviating takes a deliberate, sustained press. Letting go resets it.
@@ -1038,7 +1070,12 @@
       const step = (now) => {
         const p = Math.min(1, (now - start) / HOLD);
         fill.style.width = (p * 100) + "%";
-        if (p >= 1) { cancel(); cleanup(); resolve("deviate"); return; }
+        if (p >= 1) {
+          cancel(); cleanup();
+          track("watch/decision-malfunction", "Watch \u00b7 the decision \u00b7 malfunction");
+          resolve("deviate");
+          return;
+        }
         raf = requestAnimationFrame(step);
       };
       const cancel = () => { if (raf) cancelAnimationFrame(raf); raf = null; fill.style.width = "0%"; };
@@ -1251,7 +1288,7 @@
 
   const DEBRIEF = {
     report: {
-      cls: "diff", tag: "Petrov did not do this",
+      cls: "diff", tag: "Petrov reported a malfunction",
       body:
         '<p><strong>What you chose.</strong> Passing the warning up the chain was the correct procedure, ' +
         'and by that point you had filed {N} reports without an error. The system rated the detection at ' +
@@ -1269,7 +1306,7 @@
         'existed \u2014 it is there to make the stake legible, not to claim that is what would have happened.</p>'
     },
     deviate: {
-      cls: "match", tag: "This is what Petrov did",
+      cls: "match", tag: "Petrov reported a malfunction",
       body:
         '<p><strong>What you chose.</strong> The same call Petrov made, and for the same two reasons. Five ' +
         'missiles is not how a first strike begins. And the corroboration you had relied on all night \u2014 a ' +
@@ -1301,7 +1338,10 @@
         '</div>';
       const b = document.getElementById("open-archive");
       b.focus();
-      b.addEventListener("click", resolve);
+      b.addEventListener("click", () => {
+        track("watch/archive-opened", "Watch \u00b7 archive opened");
+        resolve();
+      });
     });
   }
 
@@ -1313,8 +1353,10 @@
     watchTime = new Date(Date.UTC(1983, 8, 25, 23, 41, 0));
     watchEl.scrollTop = 0;
 
+    track("watch/started", "Watch \u00b7 started");
     await runBriefing(gen);
     if (!isCurrent(gen)) return;
+    track("watch/briefing-read", "Watch \u00b7 briefing read to the end");
     for (const beat of BEATS) {
       await scrubTo(beat.at[0], beat.at[1], beat.at[2]);
       if (!isCurrent(gen)) return;
@@ -1345,7 +1387,10 @@
     drawIndexChart();
   }
 
-  document.getElementById("watch-skip").addEventListener("click", endWatch);
+  document.getElementById("watch-skip").addEventListener("click", () => {
+    track("watch/skipped", "Watch \u00b7 skipped");
+    endWatch();
+  });
   document.getElementById("replay-top").addEventListener("click", runWatch);
   document.getElementById("replay-bottom").addEventListener("click", runWatch);
 

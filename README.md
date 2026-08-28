@@ -422,6 +422,30 @@ fel es nincs suti, ezert nem kell cookie banner. A beacon csak az eles domainen 
 lokalisan es elonezetben nem. Az SQLite adatbazis az egyetlen allapot a gepen; ejszakai
 `sqlite3 .backup` keszul rola 14 napos megorzessel.
 
+#### Ugyelet-esemenyek
+
+A watch minden dontesi pontja kuld egy nevesitett GoatCounter esemenyt, igy lathato a
+lemorzsolodas es a valasztas aranya fazisonkent. A dashboardon kulon "Events" nezetben
+jelennek meg.
+
+| Esemeny | Mikor |
+| --- | --- |
+| `watch/started` | elindul az ugyelet |
+| `watch/briefing-read` | a briefing hat blokkja vegigolvasva |
+| `watch/beat1-report` / `watch/beat1-deviate` | elso bemelegito |
+| `watch/beat2-report` / `watch/beat2-deviate` | masodik bemelegito |
+| `watch/decision-report` / `watch/decision-malfunction` | a valodi esemeny |
+| `watch/skipped` | Skip the watch |
+| `watch/archive-opened` | a debriefbol tovabb az archivumba |
+
+A beacon aszinkron tolt be, az ugyelet viszont azonnal indul, ezert az esemenyek sorba
+allnak, amig a `window.goatcounter.count` elerheto nem lesz - husz masodperc utan eldobodnak.
+
+Fontos ertelmezesi korlat: a szamok **also becslesek es aranyok, nem nepszamlalas**. Aki
+blokkolja a kovetest, nem szerepel bennuk, es a beacon csak az eles domainen fut. A
+`watch/started` es a `watch/decision-*` hanyadosa viszont onmagaban is beszedes, mert
+ugyanaz a torzitas hat mindkettore.
+
 ## MVP scope
 
 1. Statikus, gyors weboldal `AlmostDoomsday.com` branddel.
