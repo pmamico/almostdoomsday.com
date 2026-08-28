@@ -1215,8 +1215,8 @@
       timers.push(setTimeout(async () => {
         if (done) return;
         stageEl.innerHTML = '<div class="cf-final">' +
-          '<p>The alert had been false.</p>' +
-          '<p class="after">Nobody was left at Serpukhov-15 to find that out.</p></div>';
+          '<p>You made one decision. It was the last one anybody made.</p>' +
+          '<p class="after">It did not happen. The man on duty that night made the other one.</p></div>';
         await waitForKey(stageEl.querySelector(".cf-final"), "Press Enter to continue");
         finish();
       }, 15400));
@@ -1373,6 +1373,9 @@
     tip.style.top = y + "px";
   }
   const hideTip = () => { tip.style.opacity = "0"; };
+  // Safety net: the tooltip must never outlive the mark it describes.
+  addEventListener("scroll", hideTip, { passive: true });
+  addEventListener("pointerdown", hideTip, { passive: true });
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const el = (n, attrs = {}, text) => {
@@ -1448,6 +1451,7 @@
         "<strong>" + e.title + "</strong><span>" + e.date_display + " &middot; index <b class=\"val\">" + e.index.total + "</b></span>"));
       hit.addEventListener("mouseleave", hideTip);
       hit.addEventListener("click", () => {
+        hideTip();
         select(e.id);
         document.getElementById("events").scrollIntoView({ behavior: noMotion ? "auto" : "smooth", block: "start" });
       });
