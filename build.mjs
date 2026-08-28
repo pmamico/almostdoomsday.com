@@ -1,4 +1,5 @@
-// Builds site/index.html by inlining the curated data files into site/template.html.
+// Builds site/index.html by inlining the curated data files into src/template.html.
+// site/ is the published directory, so nothing but build output lives there.
 // No dependencies: `node build.mjs`.
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -6,7 +7,7 @@ const root = new URL("./", import.meta.url);
 const read = (p) => readFile(new URL(p, root), "utf8");
 
 const [template, events, funding] = await Promise.all([
-  read("site/template.html"),
+  read("src/template.html"),
   read("data/close-calls.json"),
   read("data/funding.json")
 ]);
