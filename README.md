@@ -357,6 +357,11 @@ lathatoan kulon szekcio legyen, indexpontszam nelkul. Ez a rung szovege a JSON-b
   pontszamot, mint egy valsagesemeny. Ez a metodologia oldalon nyiltan ki van irva.
 - Az 5 pilot esemenynek van teljes sztorija es perces bontasa, a tobbi `draft` jelolest kap.
 - UI nyelve angol, a domain es a tema miatt.
+- A negy ertelmezesi sav egy helyen van definialva (`BANDS` a template-ben). Ebbol jon a chart
+  savozasa, a chart alatti jelmagyarazat, a ledger pontszamszinei es a metodologia tablazat is -
+  nem lehet ket helyen elcsuszni.
+- A szekciocimek alol kikerult minden onmagyarazo alcim. Ha egy sor csak azt mondja el, amit az
+  olvaso amugy is lat, akkor a szekciot magyarazza a szekcio helyett.
 
 Kovetkezo lepes ehhez: kulon event URL-ek, terkepes nezet, tobb kidolgozott story, OG kepek.
 
