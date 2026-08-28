@@ -20,8 +20,10 @@
 
     --signal: #c0812a;          /* Almost Doomsday Index */
     --signal-bright: #edbe6e;
-    --instrument: #159fc4;      /* Official Doomsday Clock */
-    --critical: #b84e38;        /* extreme threshold only */
+    --instrument: #159fc4;      /* instrumentation, links, sources */
+    --critical: #c2454f;        /* threshold and alarm states */
+    --ok: #2e9d7a;              /* procedure-compliant status */
+    --ok-bright: #4cc39c;
 
     --s0: #8f6a28;
     --s1: #a87527;
@@ -48,8 +50,12 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
+  /* The archive ships in the DOM and is visible without JS; the watch locks it. */
+  body.locked { overflow: hidden; }
+  body.locked > header.masthead,
+  body.locked > main,
+  body.locked > footer { display: none; }
 
-  /* faint instrument grid behind everything */
   body::before {
     content: "";
     position: fixed;
@@ -69,7 +75,6 @@
   a:hover { text-decoration-color: var(--instrument); }
   :focus-visible { outline: 2px solid var(--signal-bright); outline-offset: 2px; }
 
-  .mono { font-family: var(--data); }
   .num { font-variant-numeric: tabular-nums; }
 
   .eyebrow {
@@ -80,69 +85,241 @@
     color: var(--ink-3);
   }
 
-  /* ---- masthead ---------------------------------------------------------- */
+  /* ======================================================================== */
+  /* THE WATCH                                                                 */
+  /* ======================================================================== */
+  .watch {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--ground);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  .watch[hidden] { display: none; }
+
+  .watch-bar {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: .7rem var(--gut);
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--data); font-size: .7rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3);
+    position: sticky; top: 0; background: var(--ground); z-index: 2;
+  }
+  .watch-clock {
+    color: var(--ink); letter-spacing: .1em; font-variant-numeric: tabular-nums; font-size: .82rem;
+  }
+  .watch-bar .grow { flex: 1; }
+  .watch-skip {
+    font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--rule); color: var(--ink-3);
+    padding: .3rem .6rem; cursor: pointer;
+  }
+  .watch-skip:hover { color: var(--ink-2); border-color: var(--ink-3); }
+
+  .watch-stage {
+    flex: 1; width: 100%; max-width: 960px; margin: 0 auto;
+    padding: clamp(1.6rem, 5vh, 3.4rem) var(--gut) 3rem;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    justify-content: safe center;
+  }
+
+  .brief { font-family: var(--data); font-size: clamp(.82rem, 1.7vw, .95rem); line-height: 2; }
+  .brief p { margin: 0 0 .2rem; color: var(--ink-2); }
+  .brief p.hd { color: var(--ink); letter-spacing: .16em; text-transform: uppercase; font-size: .74rem; margin-bottom: 1.2rem; }
+  .brief p.em { color: var(--ink); }
+  .brief .cursor {
+    display: inline-block; width: .55em; height: 1.05em; background: var(--signal);
+    vertical-align: -.16em; margin-left: .1em;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .brief .cursor { animation: blink 1.05s steps(2, start) infinite; }
+    @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+  }
+
+  .alert { border: 1px solid var(--rule); background: var(--panel); }
+  .alert.live { border-color: rgba(194, 69, 79, .55); }
+  .alert-head {
+    display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap;
+    padding: .8rem 1.1rem; border-bottom: 1px solid var(--rule-soft);
+  }
+  .alert-head .tstamp { font-family: var(--data); font-size: .72rem; color: var(--ink-3); letter-spacing: .1em; }
+  .alert-head h2 {
+    margin: 0; font-family: var(--data); font-weight: 500;
+    font-size: clamp(.86rem, 2vw, 1.02rem); letter-spacing: .14em; text-transform: uppercase; color: var(--ink);
+  }
+  .alert.live .alert-head h2 { color: var(--critical); }
+  .rows { display: grid; gap: 1px; background: var(--rule-soft); }
+  .rows > div { background: var(--panel-2); padding: .55rem 1.1rem; display: flex; gap: 1rem; align-items: baseline; }
+  .rows .k {
+    font-family: var(--data); font-size: .64rem; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--ink-3); flex: 1; min-width: 9rem;
+  }
+  .rows .v { font-family: var(--data); font-size: .82rem; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+  .rows .v.ok { color: var(--ok-bright); }
+  .rows .v.bad { color: var(--critical); }
+  .rows .v.flash { animation: flash .5s ease 2; }
+  @keyframes flash { 50% { color: var(--ink); background: rgba(194, 69, 79, .22); } }
+
+  .controls-pair { display: grid; gap: .8rem; margin-top: 1.4rem; }
+  .act {
+    position: relative; overflow: hidden; text-align: left; width: 100%;
+    padding: 1rem 1.15rem; cursor: pointer; font-family: var(--display);
+    background: var(--panel-2); border: 1px solid var(--rule); color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .act .lbl { font-size: 1.06rem; font-weight: 500; display: block; }
+  .act .hint {
+    display: block; font-family: var(--data); font-size: .66rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-3); margin-top: .3rem;
+  }
+  .act:disabled { cursor: default; opacity: .35; }
+
+  /* The protocol-compliant control: approved, inviting, always in the same place. */
+  .act-go { border-color: rgba(46, 157, 122, .5); background: rgba(46, 157, 122, .08); }
+  .act-go .lbl { color: var(--ok-bright); }
+  .act-go .hint { color: var(--ok); }
+  .act-go:hover:not(:disabled) { border-color: var(--ok); background: rgba(46, 157, 122, .16); }
+  @media (prefers-reduced-motion: no-preference) {
+    .act-go:not(:disabled) { animation: breathe 3.6s ease-in-out infinite; }
+    @keyframes breathe {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(46, 157, 122, 0); }
+      50% { box-shadow: 0 0 0 3px rgba(46, 157, 122, .13); }
+    }
+  }
+
+  /* Deviating from procedure: no colour, no encouragement, and it must be held. */
+  .act-deviate { background: transparent; border-color: var(--rule); }
+  .act-deviate .lbl { color: var(--ink-2); font-weight: 400; }
+  .act-deviate:hover:not(:disabled) { border-color: var(--ink-3); }
+  .act-deviate .frictions { margin: .7rem 0 0; padding: 0; display: grid; gap: .3rem; }
+  .act-deviate .frictions li {
+    list-style: none; font-family: var(--prose); font-size: .86rem;
+    color: var(--ink-3); line-height: 1.45;
+  }
+  .act-deviate .frictions li:last-child { color: var(--ink-2); }
+  .act-deviate .hold {
+    display: block; font-family: var(--data); font-size: .64rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink-3); margin-top: .8rem;
+  }
+  .act-deviate .fill { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--critical); }
+
+  .verdict-panel { margin-top: 1.4rem; border-left: 2px solid var(--rule); padding: .2rem 0 .2rem 1.1rem; }
+  .verdict-panel .tagline {
+    font-family: var(--data); font-size: .68rem; letter-spacing: .16em;
+    text-transform: uppercase; margin-bottom: .5rem;
+  }
+  .verdict-panel.ok { border-color: var(--ok); }
+  .verdict-panel.ok .tagline { color: var(--ok-bright); }
+  .verdict-panel.bad { border-color: var(--critical); }
+  .verdict-panel.bad .tagline { color: var(--critical); }
+  .verdict-panel p { font-family: var(--prose); font-size: .95rem; line-height: 1.65; color: var(--ink-2); margin: 0; max-width: 62ch; }
+  .tally {
+    font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); margin-top: 1.2rem;
+  }
+  .btn-next {
+    margin-top: 1.3rem; font-family: var(--data); font-size: .7rem; letter-spacing: .16em;
+    text-transform: uppercase; background: transparent; border: 1px solid var(--rule);
+    color: var(--ink-2); padding: .6rem 1.1rem; cursor: pointer; align-self: flex-start;
+  }
+  .btn-next:hover { color: var(--ink); border-color: var(--ink-3); }
+
+  .cf-banner {
+    font-family: var(--data); font-size: .64rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--critical); border: 1px solid rgba(194, 69, 79, .4);
+    padding: .45rem .8rem; margin-bottom: 1rem; text-align: center;
+  }
+  .cf-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .cf-stage > * { background: var(--panel); min-width: 0; }
+  #cf-canvas { display: block; width: 100%; }
+  .cf-log { padding: 1rem; font-family: var(--data); font-size: .7rem; line-height: 1.9; overflow-y: auto; max-height: 440px; }
+  .cf-log div { color: var(--ink-3); }
+  .cf-log div.hot { color: var(--critical); }
+  .cf-log div.big { color: var(--ink); font-size: .78rem; letter-spacing: .06em; }
+  .cf-count { margin-bottom: .8rem; }
+  .cf-count span { display: block; font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); }
+  .cf-count b {
+    font-weight: 400; font-variant-numeric: tabular-nums;
+    font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--critical);
+  }
+  .cf-final { text-align: center; padding: clamp(2rem, 12vh, 7rem) 0; }
+  .cf-final p { font-family: var(--prose); font-size: clamp(1.05rem, 2.6vw, 1.5rem); color: var(--ink); max-width: 36ch; margin: 0 auto; line-height: 1.5; }
+
+  .quiet { text-align: center; padding: clamp(1.6rem, 6vh, 3.4rem) 0; }
+  .quiet .big-clock {
+    font-family: var(--data); font-variant-numeric: tabular-nums;
+    font-size: clamp(2.2rem, 9vw, 4.4rem); color: var(--ink-2); letter-spacing: .04em;
+  }
+  .quiet .caption { font-family: var(--data); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); margin-top: .8rem; }
+  .quiet .landed { font-family: var(--prose); font-size: clamp(1.05rem, 2.6vw, 1.4rem); color: var(--ink); margin-top: 2.4rem; transition: opacity .8s ease; }
+
+  .debrief-wrap { max-width: 70ch; }
+  .debrief-wrap h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; margin: .8rem 0 1rem; letter-spacing: -.01em; }
+  .debrief-wrap p { font-family: var(--prose); font-size: .98rem; line-height: 1.7; color: var(--ink-2); max-width: 66ch; }
+  .debrief-wrap p strong { color: var(--ink); font-weight: 500; }
+  .debrief-wrap .verdict {
+    font-family: var(--data); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
+    padding: .5rem .85rem; border: 1px solid var(--rule); display: inline-block;
+  }
+  .debrief-wrap .verdict.match { color: var(--signal-bright); border-color: rgba(237, 190, 110, .45); }
+  .debrief-wrap .verdict.diff { color: var(--critical); border-color: rgba(194, 69, 79, .5); }
+  .btn-open {
+    margin-top: 1.8rem; font-family: var(--data); font-size: .74rem; letter-spacing: .18em;
+    text-transform: uppercase; background: var(--signal); border: 1px solid var(--signal);
+    color: var(--ground); padding: .8rem 1.4rem; cursor: pointer;
+  }
+  .btn-open:hover { background: var(--signal-bright); border-color: var(--signal-bright); }
+
+  /* ======================================================================== */
+  /* THE ARCHIVE                                                               */
+  /* ======================================================================== */
   .masthead {
     position: sticky; top: 0; z-index: 40;
     background: rgba(10, 14, 19, .92);
     backdrop-filter: blur(6px);
     border-bottom: 1px solid var(--rule);
   }
-  .masthead .wrap {
-    display: flex; align-items: center; gap: 1.4rem;
-    min-height: 54px; flex-wrap: wrap;
-  }
+  .masthead .wrap { display: flex; align-items: center; gap: 1.4rem; min-height: 54px; flex-wrap: wrap; }
   .brand {
-    font-family: var(--data);
-    font-size: .8rem; font-weight: 500;
-    letter-spacing: .26em; text-transform: uppercase;
-    color: var(--ink); white-space: nowrap;
+    font-family: var(--data); font-size: .8rem; font-weight: 500;
+    letter-spacing: .26em; text-transform: uppercase; color: var(--ink); white-space: nowrap;
   }
   .brand b { color: var(--signal); font-weight: 500; }
-  .masthead nav { margin-left: auto; display: flex; gap: 1.1rem; flex-wrap: wrap; }
-  .masthead nav a {
+  .masthead nav { margin-left: auto; display: flex; gap: 1.1rem; flex-wrap: wrap; align-items: center; }
+  .masthead nav a, .masthead nav button {
     font-family: var(--data); font-size: .72rem; letter-spacing: .12em;
     text-transform: uppercase; color: var(--ink-2); text-decoration: none;
+    background: none; border: 0; padding: 0; cursor: pointer;
   }
-  .masthead nav a:hover { color: var(--ink); }
+  .masthead nav a:hover, .masthead nav button:hover { color: var(--ink); }
+  .masthead nav button { color: var(--signal); }
 
-  /* ---- hero -------------------------------------------------------------- */
   .hero { padding: clamp(2.4rem, 7vw, 5.2rem) 0 clamp(1.6rem, 4vw, 2.6rem); }
   .hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.4rem); align-items: end; }
   h1 {
-    font-size: clamp(2.9rem, 8.4vw, 6.1rem);
-    line-height: .93;
-    font-weight: 600;
-    letter-spacing: -.022em;
-    margin: .5rem 0 0;
-    text-wrap: balance;
+    font-size: clamp(2.9rem, 8.4vw, 6.1rem); line-height: .93; font-weight: 600;
+    letter-spacing: -.022em; margin: .5rem 0 0; text-wrap: balance;
   }
   h1 em { font-family: var(--prose); font-style: italic; font-weight: 400; color: var(--signal-bright); letter-spacing: -.01em; }
   .deck {
-    font-family: var(--prose);
-    font-size: clamp(1rem, 1.5vw, 1.14rem);
-    line-height: 1.62;
-    color: var(--ink-2);
-    max-width: 60ch;
-    margin: 1.5rem 0 0;
+    font-family: var(--prose); font-size: clamp(1rem, 1.5vw, 1.14rem); line-height: 1.62;
+    color: var(--ink-2); max-width: 60ch; margin: 1.5rem 0 0;
   }
-  .readout { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .readout { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 0; }
   .readout div { background: var(--panel); padding: .85rem 1rem; display: flex; align-items: baseline; gap: .75rem; }
-  .readout dt, .readout .k {
+  .readout dt {
     font-family: var(--data); font-size: .68rem; letter-spacing: .14em;
     text-transform: uppercase; color: var(--ink-3); flex: 1;
   }
-  .readout .v { font-family: var(--data); font-size: 1.28rem; color: var(--ink); font-variant-numeric: tabular-nums; }
-  .readout .v.amber { color: var(--signal-bright); }
-  .readout .v.cyan { color: var(--instrument); }
+  .readout dd { margin: 0; font-family: var(--data); font-size: 1.28rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .readout dd.amber { color: var(--signal-bright); }
 
-  /* ---- section scaffolding ----------------------------------------------- */
   section { padding: clamp(2.2rem, 5vw, 3.6rem) 0; scroll-margin-top: 62px; }
   .sec-head { display: flex; align-items: baseline; gap: 1rem; border-bottom: 1px solid var(--rule); padding-bottom: .7rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
   .sec-head h2 { font-size: clamp(1.25rem, 2.4vw, 1.7rem); font-weight: 600; letter-spacing: -.01em; margin: 0; }
   .sec-head p { margin: 0; font-family: var(--prose); font-size: .93rem; color: var(--ink-2); max-width: 56ch; }
   .sec-head .spacer { flex: 1; }
 
-  /* corner-bracketed console panel */
   .panel { position: relative; background: var(--panel); border: 1px solid var(--rule); }
   .panel::before, .panel::after {
     content: ""; position: absolute; width: 9px; height: 9px; pointer-events: none;
@@ -151,17 +328,12 @@
   .panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
   .panel::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
 
-  .panel-head {
-    display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
-    padding: .7rem 1rem; border-bottom: 1px solid var(--rule-soft);
-  }
+  .panel-head { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; padding: .7rem 1rem; border-bottom: 1px solid var(--rule-soft); }
   .panel-head h3 { margin: 0; font-family: var(--data); font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--ink); }
   .panel-head .sub { font-family: var(--data); font-size: .68rem; color: var(--ink-3); letter-spacing: .06em; }
-  .swatch { width: 9px; height: 9px; flex: 0 0 auto; }
-  .swatch.amber { background: var(--signal); }
-  .swatch.cyan { background: var(--instrument); }
+  .panel-head .count { margin-left: auto; font-family: var(--data); font-size: .68rem; color: var(--signal-bright); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .swatch { width: 9px; height: 9px; flex: 0 0 auto; background: var(--signal); }
 
-  /* ---- controls ---------------------------------------------------------- */
   .controls { display: flex; gap: .55rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
   .chip {
     font-family: var(--data); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
@@ -177,25 +349,17 @@
   }
   .search::placeholder { color: var(--ink-3); }
 
-  /* ---- charts ------------------------------------------------------------ */
-  .chart-stack { display: grid; gap: 0; }
-  .chart-stack .panel + .panel { border-top: 0; }
   .chart-body { padding: .4rem .3rem 0; }
   svg { display: block; width: 100%; height: auto; overflow: visible; }
   .grid-line { stroke: var(--rule-soft); stroke-width: 1; }
   .axis-label { font-family: var(--data); font-size: 10px; fill: var(--ink-3); letter-spacing: .08em; }
   .threshold { stroke: var(--critical); stroke-width: 1; stroke-dasharray: 3 4; opacity: .75; }
   .threshold-label { font-family: var(--data); font-size: 9.5px; fill: var(--critical); letter-spacing: .12em; }
-  .dot { cursor: pointer; stroke: var(--panel); stroke-width: 2; transition: opacity .18s; }
-  .dot.dim { opacity: .1; pointer-events: none; }
+  .dot { cursor: pointer; stroke: var(--panel); stroke-width: 2; }
   .dot-hit { cursor: pointer; fill: transparent; }
   .sel-ring { fill: none; stroke: var(--signal-bright); stroke-width: 1.5; }
   .sel-stem { stroke: var(--signal-bright); stroke-width: 1; stroke-dasharray: 2 3; opacity: .5; }
   .dot-label { font-family: var(--data); font-size: 10px; fill: var(--ink-2); letter-spacing: .04em; pointer-events: none; }
-  .clock-line { fill: none; stroke: var(--instrument); stroke-width: 2; stroke-linejoin: miter; }
-  .clock-area { fill: var(--instrument); opacity: .1; }
-  .clock-end { fill: var(--instrument); stroke: var(--panel); stroke-width: 2; }
-  .clock-end-label { font-family: var(--data); font-size: 11px; fill: var(--instrument); letter-spacing: .06em; }
 
   @media (prefers-reduced-motion: no-preference) {
     .dot { animation: fade-in .5s ease both; }
@@ -211,31 +375,24 @@
   .tooltip {
     position: fixed; z-index: 60; pointer-events: none; opacity: 0;
     background: var(--panel-2); border: 1px solid var(--rule);
-    padding: .5rem .65rem; max-width: 240px;
-    transition: opacity .12s;
+    padding: .5rem .65rem; max-width: 240px; transition: opacity .12s;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .55);
   }
   .tooltip strong { display: block; font-size: .88rem; font-weight: 600; }
   .tooltip span { font-family: var(--data); font-size: .68rem; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
   .tooltip .val { color: var(--signal-bright); }
 
-  details.table-view { border-top: 1px solid var(--rule-soft); }
-  details.table-view summary {
-    font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink-3); padding: .55rem 1rem; cursor: pointer; list-style: none;
-  }
-  details.table-view summary::marker { content: ""; }
-  details.table-view summary:hover { color: var(--ink); }
-  .table-scroll { overflow-x: auto; padding: 0 1rem 1rem; }
+  .table-scroll { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; font-family: var(--data); font-size: .74rem; }
-  th, td { text-align: left; padding: .35rem .8rem .35rem 0; border-bottom: 1px solid var(--rule-soft); white-space: nowrap; }
+  th, td { text-align: left; padding: .5rem .9rem .5rem 0; border-bottom: 1px solid var(--rule-soft); }
   th { color: var(--ink-3); font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: .64rem; }
   td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
-  td.reason { white-space: normal; min-width: 22ch; }
 
-  /* ---- explorer ---------------------------------------------------------- */
   .explorer { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); background: var(--panel); border: 1px solid var(--rule); align-items: start; }
-  .ledger { background: var(--panel); max-height: calc(100vh - 90px); overflow-y: auto; border-right: 1px solid var(--rule); position: sticky; top: 55px; }
+  .ledger {
+    background: var(--panel); max-height: calc(100vh - 90px); overflow-y: auto;
+    border-right: 1px solid var(--rule); position: sticky; top: 55px;
+  }
   .ledger-row {
     display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) 2rem;
     gap: .6rem; align-items: center; width: 100%; text-align: left;
@@ -270,7 +427,6 @@
   .story-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.2rem, 3vw, 2.4rem); margin-top: 1.4rem; }
   .story h4 { font-family: var(--data); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin: 0 0 .5rem; }
   .story p { font-family: var(--prose); font-size: .96rem; line-height: 1.68; color: var(--ink); margin: 0 0 .9rem; max-width: 65ch; }
-  .story .stopped p { color: var(--ink); }
 
   .breakdown { margin-top: 1.5rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
   .bar-row { display: grid; grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr) 3.2rem; gap: .8rem; align-items: center; padding: .28rem 0; }
@@ -284,89 +440,75 @@
   .beat .t { font-family: var(--data); font-size: .7rem; color: var(--signal); letter-spacing: .06em; }
   .beat .x { font-family: var(--prose); font-size: .9rem; color: var(--ink-2); line-height: 1.5; }
 
-  .note {
-    margin-top: 1.4rem; padding: .85rem 1rem; background: var(--panel-2);
-    border-left: 2px solid var(--critical);
-  }
+  .note { margin-top: 1.4rem; padding: .85rem 1rem; background: var(--panel-2); border-left: 2px solid var(--critical); }
   .note h4 { color: var(--critical); }
   .note p { font-size: .9rem; color: var(--ink-2); margin: 0; }
 
-  .src-list { margin-top: 1.4rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; display: grid; gap: .5rem; }
-  .src-list li { list-style: none; display: flex; gap: .7rem; align-items: baseline; font-size: .88rem; }
+  .src-list { margin-top: 1.4rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
   .src-list ul { margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .src-list li { list-style: none; display: flex; gap: .7rem; align-items: baseline; font-size: .88rem; }
   .qual {
     font-family: var(--data); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
     color: var(--ink-3); border: 1px solid var(--rule); padding: .1rem .35rem; flex: 0 0 auto;
   }
   .qual.declassified, .qual.official { color: var(--instrument); border-color: rgba(21, 159, 196, .35); }
 
-  /* ---- scenario ---------------------------------------------------------- */
-  .scenario-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
-  .scenario-grid > div { background: var(--panel); padding: clamp(1.1rem, 2.4vw, 1.6rem); }
-  .console-rows { display: grid; gap: 1px; background: var(--rule-soft); margin-top: 1rem; }
-  .console-rows > div { background: var(--panel-2); padding: .6rem .8rem; display: flex; gap: 1rem; align-items: baseline; }
-  .console-rows .k { font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); flex: 1; }
-  .console-rows .v { font-family: var(--data); font-size: .82rem; color: var(--ink); }
-  .console-rows .v.warn { color: var(--critical); }
-  .choices { display: grid; gap: .7rem; margin-top: 1.2rem; }
-  .choice {
-    text-align: left; background: var(--panel-2); border: 1px solid var(--rule); color: var(--ink);
-    padding: .85rem 1rem; cursor: pointer; font-family: var(--display); font-size: 1rem;
-    transition: border-color .15s, background .15s;
-  }
-  .choice:hover { border-color: var(--signal); background: #1b2430; }
-  .choice span { display: block; font-family: var(--data); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-top: .25rem; }
-  .choice[disabled] { cursor: default; opacity: .45; }
-  .choice.picked { border-color: var(--signal-bright); opacity: 1; }
-  .debrief { display: none; }
-  .debrief.on { display: block; }
-  .debrief p { font-family: var(--prose); font-size: .95rem; line-height: 1.65; color: var(--ink-2); }
-  .debrief p strong { color: var(--ink); font-weight: 500; }
-  .verdict { font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; padding: .5rem .8rem; border: 1px solid var(--rule); display: inline-block; margin-bottom: 1rem; }
-  .verdict.match { color: var(--signal-bright); border-color: rgba(237, 190, 110, .45); }
-  .verdict.diff { color: var(--critical); border-color: rgba(184, 78, 56, .5); }
-
-  /* ---- method / sources -------------------------------------------------- */
   .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.4rem, 3.5vw, 3rem); }
   .prose { font-family: var(--prose); font-size: .96rem; line-height: 1.68; color: var(--ink-2); max-width: 66ch; }
   .prose strong { color: var(--ink); font-weight: 500; }
-  .method-table th, .method-table td { white-space: normal; padding: .5rem .9rem .5rem 0; }
   .method-table td.w { color: var(--signal-bright); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .bands { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 1.2rem; }
   .bands > div { background: var(--panel); padding: .6rem .9rem; display: flex; gap: .9rem; align-items: baseline; }
   .bands .r { font-family: var(--data); font-size: .74rem; font-variant-numeric: tabular-nums; flex: 0 0 4.8rem; }
   .bands .d { font-family: var(--prose); font-size: .9rem; color: var(--ink-2); }
 
+  .replay-block { border: 1px solid var(--rule); background: var(--panel); padding: clamp(1.2rem, 3vw, 2rem); }
+
   .source-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.6rem; }
   .source-groups ul { margin: .7rem 0 0; padding: 0; display: grid; gap: .55rem; }
   .source-groups li { list-style: none; font-size: .88rem; line-height: 1.45; }
 
   footer { border-top: 1px solid var(--rule); padding: 2rem 0 3rem; margin-top: 1rem; }
-  footer .wrap { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: baseline; }
   footer p { font-family: var(--data); font-size: .7rem; color: var(--ink-3); letter-spacing: .06em; margin: 0; max-width: 70ch; line-height: 1.7; }
 
-  /* ---- responsive -------------------------------------------------------- */
   @media (max-width: 940px) {
-    .hero-grid, .story-cols, .two-col, .scenario-grid { grid-template-columns: minmax(0, 1fr); }
+    .hero-grid, .story-cols, .two-col, .cf-stage { grid-template-columns: minmax(0, 1fr); }
     .explorer { grid-template-columns: minmax(0, 1fr); }
-    .ledger { max-height: 320px; }
+    .ledger { max-height: 320px; position: static; border-right: 0; border-bottom: 1px solid var(--rule); }
     .readout { margin-top: 1.5rem; }
+    .cf-log { max-height: 220px; }
   }
   @media (max-width: 560px) {
-    .masthead nav { display: none; }
+    .watch-bar { gap: .45rem .9rem; }
+    .watch-bar .grow { display: none; }
+    .masthead nav a { display: none; }
     .score-block { margin-left: 0; text-align: left; }
+    .rows > div { flex-direction: column; align-items: flex-start; gap: .15rem; }
+    .rows .v { text-align: left; }
   }
 </style>
 
+<!-- ======================= THE WATCH ======================= -->
+<div class="watch" id="watch" hidden>
+  <div class="watch-bar">
+    <span>Serpukhov-15 &middot; Oko early warning</span>
+    <span class="watch-clock" id="watch-clock">25.09.1983 &middot; 23:41:00</span>
+    <span class="grow"></span>
+    <button class="watch-skip" id="watch-skip">Skip the watch</button>
+  </div>
+  <div class="watch-stage" id="watch-stage"></div>
+</div>
+
+<!-- ======================= THE ARCHIVE ======================= -->
 <header class="masthead">
   <div class="wrap">
     <div class="brand">Almost<b>Doomsday</b></div>
     <nav>
       <a href="#timeline">Timeline</a>
       <a href="#events">Events</a>
-      <a href="#scenario">Scenario</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
+      <button id="replay-top">Replay the watch</button>
     </nav>
   </div>
 </header>
@@ -379,15 +521,15 @@
         <h1>How close<br>did we <em>come</em>?</h1>
         <p class="deck">
           Twenty-six moments when nuclear weapons, the systems built to control them, or the
-          people reading the screens came close to producing a catastrophe. Each one is scored
-          on a transparent 0&ndash;100 index and set against the official Doomsday Clock,
-          so you can see what actually stopped it.
+          people reading the screens came close to producing a catastrophe. Each one is scored on a
+          transparent 0&ndash;100 index built from five published components, so you can see what
+          almost happened, what stopped it, and how much of that was luck.
         </p>
       </div>
       <dl class="readout">
-        <div><dt class="k">Events documented</dt><dd class="v num" id="stat-count">&mdash;</dd></div>
-        <div><dt class="k">Highest index</dt><dd class="v amber num" id="stat-max">&mdash;</dd></div>
-        <div><dt class="k">Official clock, 2026</dt><dd class="v cyan num" id="stat-clock">&mdash;</dd></div>
+        <div><dt>Events documented</dt><dd class="num" id="stat-count">&mdash;</dd></div>
+        <div><dt>Highest index</dt><dd class="amber num" id="stat-max">&mdash;</dd></div>
+        <div><dt>Extreme (86+)</dt><dd class="num" id="stat-extreme">&mdash;</dd></div>
       </dl>
     </div>
   </section>
@@ -395,9 +537,8 @@
   <section id="timeline">
     <div class="wrap">
       <div class="sec-head">
-        <h2>Two records, one century</h2>
-        <p>The index scores individual incidents. The Clock is an annual expert judgement. They are
-          drawn separately because they measure different things.</p>
+        <h2>Eighty years of near misses</h2>
+        <p>Each point is one incident, placed by date and scored 0&ndash;100. Click a point to open its story.</p>
       </div>
 
       <div class="controls">
@@ -410,32 +551,14 @@
         <button class="chip" data-cat="public_warning" aria-pressed="false">Public warning</button>
       </div>
 
-      <div class="chart-stack">
-        <div class="panel">
-          <div class="panel-head">
-            <span class="swatch amber"></span>
-            <h3>Almost Doomsday Index</h3>
-            <span class="sub">editorial score, 0&ndash;100 &middot; click a point</span>
-          </div>
-          <div class="chart-body" id="chart-index"></div>
+      <div class="panel">
+        <div class="panel-head">
+          <span class="swatch"></span>
+          <h3>Almost Doomsday Index</h3>
+          <span class="sub">editorial score, 0&ndash;100</span>
+          <span class="count" id="chart-count"></span>
         </div>
-        <div class="panel">
-          <div class="panel-head">
-            <span class="swatch cyan"></span>
-            <h3>Official Doomsday Clock</h3>
-            <span class="sub">Bulletin of the Atomic Scientists &middot; higher is closer to midnight</span>
-          </div>
-          <div class="chart-body" id="chart-clock"></div>
-          <details class="table-view">
-            <summary>Clock settings as a table</summary>
-            <div class="table-scroll">
-              <table>
-                <thead><tr><th>Year</th><th>Setting</th><th>Seconds</th><th class="reason">Stated reason</th></tr></thead>
-                <tbody id="clock-table"></tbody>
-              </table>
-            </div>
-          </details>
-        </div>
+        <div class="chart-body" id="chart-index"></div>
       </div>
     </div>
   </section>
@@ -455,35 +578,6 @@
     </div>
   </section>
 
-  <section id="scenario">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>Decision point</h2>
-        <p>One reconstructed moment, with only the information the person on duty actually had.
-          There is no score and nothing to win.</p>
-      </div>
-      <div class="scenario-grid">
-        <div>
-          <p class="eyebrow">Serpukhov-15, 26 September 1983, 00:15 Moscow time</p>
-          <h3 style="margin:.4rem 0 0;font-size:1.4rem;font-weight:600;">You are the duty officer for the Oko early-warning system.</h3>
-          <div class="console-rows">
-            <div><span class="k">Incoming</span><span class="v warn">5 ICBM launches, United States</span></div>
-            <div><span class="k">System reliability</span><span class="v warn">Highest</span></div>
-            <div><span class="k">Ground radar confirmation</span><span class="v">None &mdash; targets below horizon</span></div>
-            <div><span class="k">Political context</span><span class="v">KAL 007 shot down 3 weeks ago</span></div>
-            <div><span class="k">Standing procedure</span><span class="v">Report attack up the chain</span></div>
-            <div><span class="k">Time available</span><span class="v">Minutes</span></div>
-          </div>
-          <div class="choices">
-            <button class="choice" data-choice="report">Report a missile attack<span>Follow the procedure you were trained on</span></button>
-            <button class="choice" data-choice="false">Report a system malfunction<span>Trust your own reading of the data</span></button>
-          </div>
-        </div>
-        <div class="debrief on" id="debrief"><p class="eyebrow">Awaiting your call</p><p>Pick one. Whatever you choose, you will see what the officer on duty actually did that night, what the record supports, and where the dramatisation stops.</p></div>
-      </div>
-    </div>
-  </section>
-
   <section id="method">
     <div class="wrap">
       <div class="sec-head">
@@ -492,7 +586,7 @@
       </div>
       <div class="two-col">
         <div>
-          <div class="table-scroll" style="padding:0">
+          <div class="table-scroll">
             <table class="method-table">
               <thead><tr><th>Component</th><th>Weight</th><th>Question</th></tr></thead>
               <tbody>
@@ -513,16 +607,14 @@
         </div>
         <div class="prose">
           <p><strong>This is not a probability.</strong> The Almost Doomsday Index is a curated
-            editorial score, not a scientific estimate and not a competitor to the Doomsday Clock.
-            The Clock is an annual judgement by the Bulletin of the Atomic Scientists about the state
-            of the world; the index rates single incidents. Never read them off the same axis, which is
-            why this site does not draw them on one.</p>
+            editorial score, not a scientific estimate. It rates single incidents against each other on
+            five published components, and nothing more. Where you disagree with a number, the
+            component breakdown on each event page shows exactly which judgement to argue with.</p>
           <p><strong>The weighting has a known bias.</strong> Because escalation context and information
             failure together carry 40 points, a peacetime weapons accident cannot score as high as a
             crisis incident &mdash; even one, like Goldsboro, that came down to a single switch. That is a
-            deliberate choice: the index measures how close the <em>system</em> came to nuclear war,
-            not only how close one weapon came to detonating. Read the component breakdown, not just
-            the total.</p>
+            deliberate choice: the index measures how close the <em>system</em> came to nuclear war, not
+            only how close one weapon came to detonating. Read the components, not just the total.</p>
           <p><strong>Confidence varies.</strong> Some entries rest on declassified documents; others on
             memoirs recorded decades later. Every event carries a source-quality label and, where
             historians disagree, a &ldquo;known uncertainty&rdquo; note. Where an account is contested,
@@ -530,6 +622,39 @@
           <p><strong>Status: first version.</strong> The scores are hand-curated from a single research
             pass. Five events have fully written stories; the rest are working drafts marked as such.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="watch-notes">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>About the watch</h2>
+        <p>What the opening sequence is, and where it stops being history.</p>
+      </div>
+      <div class="replay-block">
+        <div class="prose">
+          <p><strong>Two of the three alerts are reconstructions.</strong> The Vandenberg test and the
+            Pacific thermal event are not documented incidents. They are typical duty traffic, written
+            to show what an ordinary night at Serpukhov-15 looked like: the satellite sees something,
+            the ground radar agrees, you pass it on. Only the third alert is a real event.</p>
+          <p><strong>The third one happened.</strong> Just after midnight on 26 September 1983 the Oko
+            system reported an American launch, then four more, at its highest confidence rating and
+            with no radar corroboration. Stanislav Petrov, the officer on duty, reported it as a system
+            malfunction. The cause was sunlight reflecting off high-altitude cloud into the satellite
+            sensors.</p>
+          <p><strong>The escalation sequence is speculative and marked as such.</strong> If you report
+            the attack, the site shows you a counterfactual. A single report from Serpukhov-15 would
+            not have launched anything: corroboration and a political decision stood between that
+            console and any release order, and Soviet doctrine did not launch on satellite data alone.
+            The sequence compresses steps that really existed. It is there to make the stake legible,
+            not to claim that is what would have happened.</p>
+          <p><strong>Petrov said it himself.</strong> He did not think he had saved the world, and he
+            resisted being described that way. What the record shows is narrower and more useful: a
+            warning system that was confidently wrong, and a procedure that expected a person to pass
+            that confidence upward.</p>
+        </div>
+        <button class="btn-next" id="replay-bottom">Replay the watch</button>
       </div>
     </div>
   </section>
@@ -549,9 +674,8 @@
   <div class="wrap">
     <p>
       AlmostDoomsday.com &middot; first version, built from a single research pass.<br>
-      Doomsday Clock settings are the property of the Bulletin of the Atomic Scientists and are
-      reproduced here as reported. The Almost Doomsday Index is an independent editorial score and
-      carries no official standing. Corrections welcome.
+      The Almost Doomsday Index is an independent editorial score and carries no official standing.
+      Corrections welcome.
     </p>
   </div>
 </footer>
@@ -560,7 +684,6 @@
 
 <script>
   const EVENTS = __EVENTS__;
-  const CLOCK = __CLOCK__;
 
   const CAT_LABELS = {
     false_alarm: "False alarm",
@@ -578,6 +701,9 @@
   ];
   const RAMP = ["--s0", "--s1", "--s2", "--s3", "--s4"];
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wait = (ms) => new Promise(r => setTimeout(r, reduced() ? Math.min(ms, 220) : ms));
+  const pad = (n) => String(n).padStart(2, "0");
 
   const X0 = 1945, X1 = 2027.5;
   const state = { cat: "all", q: "", sort: "date", selected: "1962-b59-arkhipov" };
@@ -595,28 +721,531 @@
     (!state.q || (e.title + " " + e.story.summary + " " + e.location).toLowerCase().includes(state.q))
   );
 
-  /* ---- stats ------------------------------------------------------------- */
+  /* ======================================================================== */
+  /* THE WATCH                                                                 */
+  /* ======================================================================== */
+  const WATCH_KEY = "almostdoomsday.watch.v1";
+  const watchEl = document.getElementById("watch");
+  const stageEl = document.getElementById("watch-stage");
+  const clockEl = document.getElementById("watch-clock");
+
+  // The watch clock. Starts the evening of 25 September 1983, Moscow time.
+  let watchTime = new Date(Date.UTC(1983, 8, 25, 23, 41, 0));
+  let ticker = null;
+  function paintClock() {
+    const d = watchTime;
+    clockEl.textContent = pad(d.getUTCDate()) + "." + pad(d.getUTCMonth() + 1) + "." + d.getUTCFullYear()
+      + " \u00b7 " + pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()) + ":" + pad(d.getUTCSeconds());
+  }
+  function startClock() {
+    stopClock();
+    ticker = setInterval(() => { watchTime = new Date(watchTime.getTime() + 1000); paintClock(); }, 1000);
+  }
+  function stopClock() { if (ticker) { clearInterval(ticker); ticker = null; } }
+
+  // Run the clock forward to the next alert, visibly accelerating.
+  function scrubTo(h, m, s) {
+    const target = Date.UTC(1983, 8, h < 12 ? 26 : 25, h, m, s);
+    stopClock();
+    if (reduced()) { watchTime = new Date(target); paintClock(); return Promise.resolve(); }
+    return new Promise(resolve => {
+      const id = setInterval(() => {
+        const remaining = target - watchTime.getTime();
+        if (remaining <= 0) { clearInterval(id); watchTime = new Date(target); paintClock(); resolve(); return; }
+        watchTime = new Date(watchTime.getTime() + Math.max(1000, Math.min(remaining, 45000)));
+        paintClock();
+      }, 22);
+    });
+  }
+
+  const BRIEFING = [
+    { cls: "hd", text: "Duty watch \u2014 Serpukhov-15, Moscow oblast" },
+    { text: "You are the officer on duty at the command centre for Oko," },
+    { text: "the Soviet satellite early-warning system." },
+    { text: "" },
+    { text: "Oko watches the American missile fields from orbit." },
+    { text: "It reports launches. It does not decide what they mean." },
+    { text: "" },
+    { cls: "em", text: "Your orders: every launch detection goes up the chain, at once." },
+    { cls: "em", text: "You do not assess. You report." },
+    { text: "" },
+    { text: "Ground radar is your second opinion." },
+    { text: "When the radar agrees with the satellite, you have a track." },
+    { text: "" },
+    { text: "Three weeks ago a Soviet fighter shot down a Korean airliner." },
+    { text: "Nobody upstairs is in a mood to be told the machines are wrong." }
+  ];
+
+  // Two rehearsals. In both, the green control is correct - and it is correct
+  // because a second, independent system agrees. That is the rule the night teaches.
+  const BEATS = [
+    {
+      at: [23, 47, 12],
+      stamp: "23:47:12",
+      title: "Launch detection \u00b7 Vandenberg AFB",
+      rows: [
+        ["Source", "Oko satellite 4", ""],
+        ["Reliability", "Medium", ""],
+        ["Ground radar", "Track confirmed", "ok"],
+        ["Advance notice", "Filed 6 days ago \u2014 scheduled test", ""],
+        ["Objects", "1", ""]
+      ],
+      report: { cls: "ok", tag: "Correctly reported",
+        text: "Routine. The satellite saw it, the radar saw it, and it was on the schedule. Two independent systems agreed, so you had a track and not a guess. You passed it on, which is what the job is." },
+      deviate: { cls: "bad", tag: "Logged in error",
+        text: "Ground radar had the track. There was nothing wrong with the system and you filed a fault that did not exist. Your log has been flagged for review." }
+    },
+    {
+      at: [0, 4, 38],
+      stamp: "00:04:38",
+      title: "Thermal event \u00b7 northern Pacific",
+      rows: [
+        ["Source", "Oko satellite 6", ""],
+        ["Reliability", "Low", ""],
+        ["Ground radar", "Track acquired", "ok"],
+        ["Advance notice", "None", ""],
+        ["Objects", "1", ""]
+      ],
+      report: { cls: "ok", tag: "Correctly reported",
+        text: "Low confidence from orbit \u2014 but the radar acquired it too. Corroboration is what turns a sensor reading into a track, and you had it. Reported and acknowledged." },
+      deviate: { cls: "bad", tag: "Logged in error",
+        text: "The satellite was uncertain; the radar was not. You had corroboration and dismissed it anyway. Flagged for review." }
+    }
+  ];
+
+  const GO_LABEL = "Report \u2014 pass it up the chain";
+  const GO_HINT = "Standing procedure";
+
+  let filed = 0, errors = 0;
+
+  const rowsHtml = (rows) => '<div class="rows">' + rows.map(([k, v, cls]) =>
+    '<div><span class="k">' + k + '</span><span class="v ' + (cls || "") + '">' + v + '</span></div>').join("") + '</div>';
+
+  async function runBriefing() {
+    stageEl.innerHTML = '<div class="brief" id="brief"></div>';
+    const host = document.getElementById("brief");
+    paintClock();
+    startClock();
+    for (const line of BRIEFING) {
+      const p = document.createElement("p");
+      if (line.cls) p.className = line.cls;
+      p.innerHTML = line.text ? line.text : "&nbsp;";
+      host.appendChild(p);
+      await wait(line.text ? 460 : 200);
+    }
+    const cur = document.createElement("p");
+    cur.innerHTML = '<span class="cursor"></span>';
+    host.appendChild(cur);
+    await wait(900);
+  }
+
+  function runBeat(beat) {
+    return new Promise(resolve => {
+      stageEl.innerHTML =
+        '<div class="alert">' +
+          '<div class="alert-head"><span class="tstamp">' + beat.stamp + '</span><h2>' + beat.title + '</h2></div>' +
+          rowsHtml(beat.rows) +
+        '</div>' +
+        '<div class="controls-pair">' +
+          '<button class="act act-go" id="act-go"><span class="lbl">' + GO_LABEL + '</span><span class="hint">' + GO_HINT + '</span></button>' +
+          '<button class="act act-deviate" id="act-dev"><span class="lbl">Log as system malfunction</span><span class="hint">Your own judgement</span></button>' +
+        '</div>' +
+        '<div id="beat-out"></div>';
+
+      const finish = (which) => {
+        const v = beat[which];
+        if (which === "report") filed++; else errors++;
+        document.getElementById("act-go").disabled = true;
+        document.getElementById("act-dev").disabled = true;
+        document.getElementById("beat-out").innerHTML =
+          '<div class="verdict-panel ' + v.cls + '"><div class="tagline">' + v.tag + '</div><p>' + v.text + '</p></div>' +
+          '<div class="tally">Reports filed: ' + filed + ' \u00b7 Errors: ' + errors + '</div>' +
+          '<button class="btn-next" id="beat-next">Continue the watch</button>';
+        const next = document.getElementById("beat-next");
+        next.focus();
+        next.addEventListener("click", resolve);
+      };
+
+      document.getElementById("act-go").addEventListener("click", () => finish("report"));
+      document.getElementById("act-dev").addEventListener("click", () => finish("deviate"));
+      document.getElementById("act-go").focus();
+    });
+  }
+
+  function runMainEvent() {
+    return new Promise(resolve => {
+      stageEl.innerHTML =
+        '<div class="alert live">' +
+          '<div class="alert-head"><span class="tstamp">00:15:00</span><h2>Missile attack \u00b7 United States</h2></div>' +
+          '<div class="rows">' +
+            '<div><span class="k">Source</span><span class="v">Oko satellite 5</span></div>' +
+            '<div><span class="k">Reliability</span><span class="v bad">Highest</span></div>' +
+            '<div><span class="k">Ground radar</span><span class="v bad">No confirmation</span></div>' +
+            '<div><span class="k">Advance notice</span><span class="v">None</span></div>' +
+            '<div><span class="k">Objects</span><span class="v bad" id="obj-count">1</span></div>' +
+            '<div><span class="k">Time to impact</span><span class="v bad" id="impact">23:00</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="controls-pair">' +
+          '<button class="act act-go" id="act-go"><span class="lbl">' + GO_LABEL + '</span><span class="hint">' + GO_HINT + '</span></button>' +
+          '<button class="act act-deviate" id="act-dev">' +
+            '<span class="lbl">Log as system malfunction</span>' +
+            '<ul class="frictions">' +
+              '<li>No fault is indicated. The system reports its highest confidence.</li>' +
+              '<li>Nothing in your orders covers this.</li>' +
+              '<li>If this is real, no one else will warn them.</li>' +
+            '</ul>' +
+            '<span class="hold">Press and hold to log</span>' +
+            '<span class="fill" id="dev-fill"></span>' +
+          '</button>' +
+        '</div>';
+
+      // The count climbs while you read, and the impact clock runs down. There is
+      // no timeout: reading the panel is the point, so it waits for you.
+      const objEl = document.getElementById("obj-count");
+      const impactEl = document.getElementById("impact");
+      let impactLeft = 23 * 60;
+      const impactTimer = setInterval(() => {
+        impactLeft = Math.max(0, impactLeft - 1);
+        impactEl.textContent = pad(Math.floor(impactLeft / 60)) + ":" + pad(impactLeft % 60);
+      }, 1000);
+      const bumps = [
+        setTimeout(() => { objEl.textContent = "2"; objEl.classList.add("flash"); }, 5000),
+        setTimeout(() => { objEl.classList.remove("flash"); }, 6300),
+        setTimeout(() => { objEl.textContent = "5"; objEl.classList.add("flash"); }, 9000)
+      ];
+      const cleanup = () => { clearInterval(impactTimer); bumps.forEach(clearTimeout); };
+
+      const go = document.getElementById("act-go");
+      const dev = document.getElementById("act-dev");
+      const fill = document.getElementById("dev-fill");
+
+      go.addEventListener("click", () => { cleanup(); resolve("report"); });
+      go.focus();
+
+      // Deviating takes a deliberate, sustained press. Letting go resets it.
+      const HOLD = 2500;
+      let raf = null, start = 0;
+      const step = (now) => {
+        const p = Math.min(1, (now - start) / HOLD);
+        fill.style.width = (p * 100) + "%";
+        if (p >= 1) { cancel(); cleanup(); resolve("deviate"); return; }
+        raf = requestAnimationFrame(step);
+      };
+      const cancel = () => { if (raf) cancelAnimationFrame(raf); raf = null; fill.style.width = "0%"; };
+      const begin = (ev) => { ev.preventDefault(); if (raf) return; start = performance.now(); raf = requestAnimationFrame(step); };
+      dev.addEventListener("pointerdown", begin);
+      dev.addEventListener("pointerup", cancel);
+      dev.addEventListener("pointerleave", cancel);
+      dev.addEventListener("pointercancel", cancel);
+      dev.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") begin(ev); });
+      dev.addEventListener("keyup", cancel);
+      dev.addEventListener("blur", cancel);
+    });
+  }
+
+  /* ---- the counterfactual ------------------------------------------------ */
+  const CF_LOG = [
+    [200,   "Report transmitted \u2014 General Staff", ""],
+    [1200,  "Corroboration requested", ""],
+    [2300,  "Ground radar \u2014 no confirmation available", "hot"],
+    [3400,  "Warning passed to the Politburo duty line", ""],
+    [4400,  "Time to impact 18:00 \u2014 decision window closing", "hot"],
+    [5600,  "Strategic Rocket Forces \u2014 readiness full", "hot"],
+    [6600,  "Retaliatory release authorised", "big"],
+    [9400,  "Detonations confirmed \u2014 count rising", "hot"],
+    [12600, "Signal lost \u2014 Moscow", "big"],
+    [13700, "Signal lost \u2014 Serpukhov-15", "big"]
+  ];
+
+  function runCounterfactual() {
+    return new Promise(resolve => {
+      stopClock();
+      stageEl.innerHTML =
+        '<div class="cf-banner">Counterfactual \u00b7 this did not happen \u00b7 speculative reconstruction</div>' +
+        '<div class="cf-stage">' +
+          '<canvas id="cf-canvas"></canvas>' +
+          '<div class="cf-log" id="cf-log">' +
+            '<div class="cf-count"><span>Warheads detonated</span><b id="cf-count">0</b></div>' +
+          '</div>' +
+        '</div>' +
+        '<button class="btn-next" id="cf-skip">Skip</button>';
+
+      const logEl = document.getElementById("cf-log");
+      const countEl = document.getElementById("cf-count");
+      const canvas = document.getElementById("cf-canvas");
+
+      let done = false;
+      const timers = [];
+      const finish = () => {
+        if (done) return;
+        done = true;
+        timers.forEach(clearTimeout);
+        resolve();
+      };
+      document.getElementById("cf-skip").addEventListener("click", finish);
+
+      // A north-polar plot: these trajectories really do go over the pole.
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const W = Math.max(280, canvas.clientWidth || 560);
+      const H = Math.round(W * 0.74);
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.height = H + "px";
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.44;
+      const pol = (a, r) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+      const rnd = (a, b) => a + Math.random() * (b - a);
+
+      const tracks = [];
+      const addTrack = (inbound, t0, dur) => {
+        const a0 = inbound ? rnd(2.5, 3.9) : rnd(-0.5, 0.9);
+        const a1 = inbound ? rnd(-0.5, 0.9) : rnd(2.5, 3.9);
+        tracks.push({ a0, a1, r0: R * rnd(0.72, 0.96), r1: R * rnd(0.72, 0.96), bulge: rnd(0.34, 0.72), t0, dur, inbound });
+      };
+      for (let i = 0; i < 5; i++) addTrack(true, 400 + i * 240, 5600);       // the five reported
+      for (let i = 0; i < 44; i++) addTrack(false, 6800 + i * 95, 5000);     // the answer
+      for (let i = 0; i < 38; i++) addTrack(true, 7600 + i * 115, 5000);     // and the rest
+
+      const pointAt = (tr, p) => {
+        let d = tr.a1 - tr.a0;
+        while (d > Math.PI) d -= 2 * Math.PI;
+        while (d < -Math.PI) d += 2 * Math.PI;
+        const a = tr.a0 + d * p;
+        const r = (tr.r0 + (tr.r1 - tr.r0) * p) * (1 - tr.bulge * Math.sin(Math.PI * p));
+        return pol(a, r);
+      };
+
+      const panel = css("--panel"), ruleCol = css("--rule"), crit = css("--critical"), ink2 = css("--ink-2");
+      const t0 = performance.now();
+
+      function render(t) {
+        ctx.fillStyle = panel;
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = ruleCol;
+        ctx.lineWidth = 1;
+        for (let i = 1; i <= 4; i++) { ctx.beginPath(); ctx.arc(cx, cy, R * i / 4, 0, Math.PI * 2); ctx.stroke(); }
+        for (let i = 0; i < 12; i++) {
+          const [x, y] = pol(i * Math.PI / 6, R);
+          ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+        }
+
+        const sweepA = (t / 1400) % (Math.PI * 2);
+        const [sx2, sy2] = pol(sweepA, R);
+        const g = ctx.createLinearGradient(cx, cy, sx2, sy2);
+        g.addColorStop(0, "rgba(21,159,196,0)");
+        g.addColorStop(1, "rgba(21,159,196,.45)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(sx2, sy2); ctx.stroke();
+
+        let landed = 0;
+        for (const tr of tracks) {
+          const p = (t - tr.t0) / tr.dur;
+          if (p <= 0) continue;
+          const q = Math.min(1, p);
+          ctx.strokeStyle = tr.inbound ? "rgba(194,69,79,.55)" : "rgba(147,161,174,.38)";
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          for (let s = 0; s <= 24; s++) {
+            const [x, y] = pointAt(tr, q * s / 24);
+            s ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+          if (q < 1) {
+            const [hx, hy] = pointAt(tr, q);
+            ctx.fillStyle = tr.inbound ? crit : ink2;
+            ctx.beginPath(); ctx.arc(hx, hy, 2, 0, Math.PI * 2); ctx.fill();
+          } else {
+            landed++;
+            const [ex, ey] = pointAt(tr, 1);
+            const age = (t - tr.t0 - tr.dur) / 900;
+            if (age < 1) {
+              ctx.strokeStyle = "rgba(255,236,222," + (1 - age).toFixed(3) + ")";
+              ctx.lineWidth = 2;
+              ctx.beginPath(); ctx.arc(ex, ey, 2 + age * 22, 0, Math.PI * 2); ctx.stroke();
+            }
+            ctx.fillStyle = "rgba(194,69,79,.75)";
+            ctx.beginPath(); ctx.arc(ex, ey, 2.4, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+        countEl.textContent = (landed * 17).toLocaleString("en-US");
+      }
+
+      if (reduced()) {
+        CF_LOG.forEach(([, text, cls]) => {
+          const d = document.createElement("div");
+          d.className = cls; d.textContent = text; logEl.appendChild(d);
+        });
+        render(14000);
+        setTimeout(finish, 600);
+        return;
+      }
+
+      const loop = (now) => {
+        if (done) return;
+        const t = now - t0;
+        render(t);
+        if (t < 15000) requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+
+      CF_LOG.forEach(([at, text, cls]) => timers.push(setTimeout(() => {
+        if (done) return;
+        const d = document.createElement("div");
+        d.className = cls; d.textContent = text;
+        logEl.appendChild(d);
+        logEl.scrollTop = logEl.scrollHeight;
+      }, at)));
+
+      timers.push(setTimeout(() => {
+        if (done) return;
+        stageEl.innerHTML = '<div class="cf-final"><p>Nobody at Serpukhov-15 ever found out whether the alert had been real.</p></div>';
+        timers.push(setTimeout(finish, 2800));
+      }, 15400));
+    });
+  }
+
+  /* ---- the quiet path ---------------------------------------------------- */
+  async function runQuiet() {
+    stopClock();
+    stageEl.innerHTML =
+      '<div class="quiet">' +
+        '<div class="big-clock" id="q-clock">23:00</div>' +
+        '<div class="caption">Time to impact</div>' +
+        '<div class="landed" id="q-landed" style="opacity:0">Nothing arrived.</div>' +
+      '</div>';
+    const qc = document.getElementById("q-clock");
+    if (reduced()) {
+      qc.textContent = "00:00";
+    } else {
+      let left = 23 * 60;
+      await new Promise(done => {
+        const id = setInterval(() => {
+          left -= 60;
+          if (left <= 0) { clearInterval(id); qc.textContent = "00:00"; done(); return; }
+          qc.textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
+        }, 95);
+      });
+    }
+    watchTime = new Date(Date.UTC(1983, 8, 26, 0, 38, 0));
+    paintClock();
+    await wait(900);
+    document.getElementById("q-landed").style.opacity = "1";
+    await wait(2400);
+  }
+
+  const DEBRIEF = {
+    report: {
+      cls: "diff", tag: "Petrov did not do this",
+      body:
+        '<p><strong>What you chose.</strong> Passing the warning up the chain was the correct procedure, ' +
+        'and by that point you had filed {N} reports without an error. The system rated the detection at ' +
+        'its highest confidence. Your written job was to report, not to adjudicate.</p>' +
+        '<p><strong>What was missing.</strong> The thing that made the first two calls easy \u2014 a second ' +
+        'system agreeing \u2014 was not there. Ground radar had nothing. And five missiles is not how a first ' +
+        'strike begins; an opening strike is hundreds. The rule you had followed all night quietly depended ' +
+        'on corroboration, and the corroboration was gone.</p>' +
+        '<p><strong>What actually happened.</strong> Stanislav Petrov reported a system malfunction, then ' +
+        'waited twenty-three minutes to find out whether he had been right. Sunlight reflecting off ' +
+        'high-altitude cloud had been read by the Oko satellites as launch plumes.</p>' +
+        '<p><strong>Where the drama stops.</strong> A report from this console would not have launched ' +
+        'anything. Corroboration and a political decision stood in the way, and Soviet doctrine did not ' +
+        'launch on satellite data alone. The sequence you just watched compresses steps that really ' +
+        'existed \u2014 it is there to make the stake legible, not to claim that is what would have happened.</p>'
+    },
+    deviate: {
+      cls: "match", tag: "This is what Petrov did",
+      body:
+        '<p><strong>What you chose.</strong> The same call Petrov made, and for the same two reasons. Five ' +
+        'missiles is not how a first strike begins. And the corroboration you had relied on all night \u2014 a ' +
+        'second system agreeing \u2014 was absent. It was still a judgement rather than a proof: at that range ' +
+        'the ground radar would not have seen anything yet either.</p>' +
+        '<p><strong>What it cost.</strong> You had filed {N} clean reports before this one. Deviating meant ' +
+        'accepting that if you were wrong, the first warning of an attack would have been yours to give, and ' +
+        'you withheld it. That is why the control was hard to press.</p>' +
+        '<p><strong>What happened.</strong> Sunlight reflecting off high-altitude cloud had been read by the ' +
+        'Oko satellites as launch plumes. Petrov received no award; the incident was classified and the ' +
+        'satellite system\u2019s flaw was quietly corrected.</p>' +
+        '<p><strong>Where the drama stops.</strong> Petrov did not personally hold the fate of the world in ' +
+        'his hands, and he said so himself. Corroboration and a political decision would still have been ' +
+        'required. What the record does show is a warning system that was confidently wrong, and a procedure ' +
+        'that expected a person to pass that confidence upward.</p>'
+    }
+  };
+
+  function runDebrief(choice) {
+    return new Promise(resolve => {
+      stopClock();
+      const d = DEBRIEF[choice];
+      stageEl.innerHTML =
+        '<div class="debrief-wrap">' +
+          '<span class="verdict ' + d.cls + '">' + d.tag + '</span>' +
+          '<h2>26 September 1983</h2>' +
+          d.body.split("{N}").join(String(filed)) +
+          '<button class="btn-open" id="open-archive">Open the archive \u2014 25 more like this</button>' +
+        '</div>';
+      const b = document.getElementById("open-archive");
+      b.focus();
+      b.addEventListener("click", resolve);
+    });
+  }
+
+  async function runWatch() {
+    document.body.classList.add("locked");
+    watchEl.hidden = false;
+    filed = 0; errors = 0;
+    watchTime = new Date(Date.UTC(1983, 8, 25, 23, 41, 0));
+    watchEl.scrollTop = 0;
+
+    await runBriefing();
+    for (const beat of BEATS) {
+      await scrubTo(beat.at[0], beat.at[1], beat.at[2]);
+      startClock();
+      await runBeat(beat);
+    }
+    await scrubTo(0, 15, 0);
+    startClock();
+    const choice = await runMainEvent();
+    if (choice === "report") await runCounterfactual(); else await runQuiet();
+    await runDebrief(choice);
+    endWatch();
+  }
+
+  function endWatch() {
+    stopClock();
+    watchEl.hidden = true;
+    stageEl.innerHTML = "";
+    document.body.classList.remove("locked");
+    try { localStorage.setItem(WATCH_KEY, "1"); } catch (e) { /* private mode */ }
+    window.scrollTo(0, 0);
+    drawIndexChart();
+  }
+
+  document.getElementById("watch-skip").addEventListener("click", endWatch);
+  document.getElementById("replay-top").addEventListener("click", runWatch);
+  document.getElementById("replay-bottom").addEventListener("click", runWatch);
+
+  /* ======================================================================== */
+  /* THE ARCHIVE                                                               */
+  /* ======================================================================== */
   document.getElementById("stat-count").textContent = EVENTS.length;
   document.getElementById("stat-max").textContent = Math.max(...EVENTS.map(e => e.index.total));
-  const latest = CLOCK.settings[CLOCK.settings.length - 1];
-  document.getElementById("stat-clock").textContent = latest.seconds_to_midnight + "s";
+  document.getElementById("stat-extreme").textContent = EVENTS.filter(e => e.index.total >= 86).length + " events";
 
-  /* ---- tooltip ----------------------------------------------------------- */
   const tip = document.getElementById("tooltip");
   function showTip(evt, html) {
     tip.innerHTML = html;
     tip.style.opacity = "1";
-    const pad = 14;
-    const r = tip.getBoundingClientRect();
-    let x = evt.clientX + pad, y = evt.clientY + pad;
-    if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - pad;
-    if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - pad;
+    const p = 14, r = tip.getBoundingClientRect();
+    let x = evt.clientX + p, y = evt.clientY + p;
+    if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - p;
+    if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - p;
     tip.style.left = x + "px";
     tip.style.top = y + "px";
   }
   const hideTip = () => { tip.style.opacity = "0"; };
 
-  /* ---- index chart ------------------------------------------------------- */
   const SVG_NS = "http://www.w3.org/2000/svg";
   const el = (n, attrs = {}, text) => {
     const node = document.createElementNS(SVG_NS, n);
@@ -628,58 +1257,57 @@
   function drawIndexChart() {
     const host = document.getElementById("chart-index");
     const w = host.clientWidth || 900;
-    const h = Math.max(240, Math.min(340, w * 0.34));
-    const pad = { t: 18, r: 22, b: 26, l: 46 };
-    const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
-    const sx = (x) => pad.l + (x - X0) / (X1 - X0) * iw;
-    const sy = (v) => pad.t + (1 - v / 100) * ih;
+    const h = Math.max(300, Math.min(420, w * 0.42));
+    const p = { t: 20, r: 24, b: 28, l: 46 };
+    const iw = w - p.l - p.r, ih = h - p.t - p.b;
+    const sx = (x) => p.l + (x - X0) / (X1 - X0) * iw;
+    const sy = (v) => p.t + (1 - v / 100) * ih;
 
-    const svg = el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, role: "img",
-      "aria-label": "Scatter plot of close-call events from 1945 to 2026 scored 0 to 100. The full data is in the event ledger below." });
+    const shown = visible();
+    document.getElementById("chart-count").textContent =
+      shown.length === EVENTS.length ? EVENTS.length + " events" : shown.length + " / " + EVENTS.length + " events";
+
+    const svg = el("svg", { viewBox: "0 0 " + w + " " + h, width: w, height: h, role: "img",
+      "aria-label": "Scatter plot of nuclear close calls from 1950 to 2018, scored 0 to 100. The same data is listed in the event ledger below." });
 
     [0, 25, 50, 75, 100].forEach(v => {
-      svg.appendChild(el("line", { class: "grid-line", x1: pad.l, x2: w - pad.r, y1: sy(v), y2: sy(v) }));
-      svg.appendChild(el("text", { class: "axis-label", x: pad.l - 10, y: sy(v) + 3.5, "text-anchor": "end" }, v));
+      svg.appendChild(el("line", { class: "grid-line", x1: p.l, x2: w - p.r, y1: sy(v), y2: sy(v) }));
+      svg.appendChild(el("text", { class: "axis-label", x: p.l - 10, y: sy(v) + 3.5, "text-anchor": "end" }, v));
     });
-    svg.appendChild(el("line", { class: "threshold", x1: pad.l, x2: w - pad.r, y1: sy(86), y2: sy(86) }));
-    svg.appendChild(el("text", { class: "threshold-label", x: w - pad.r, y: sy(86) - 6, "text-anchor": "end" }, "EXTREME 86+"));
+    svg.appendChild(el("line", { class: "threshold", x1: p.l, x2: w - p.r, y1: sy(86), y2: sy(86) }));
+    svg.appendChild(el("text", { class: "threshold-label", x: w - p.r, y: sy(86) - 6, "text-anchor": "end" }, "EXTREME 86+"));
 
     for (let y = 1950; y <= 2020; y += 10) {
-      svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: pad.t, y2: pad.t + ih }));
+      svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: p.t, y2: p.t + ih }));
       svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" }, y));
     }
-    svg.appendChild(el("text", { class: "axis-label", x: pad.l - 10, y: pad.t - 6, "text-anchor": "end" }, "INDEX"));
+    svg.appendChild(el("text", { class: "axis-label", x: p.l - 10, y: p.t - 6, "text-anchor": "end" }, "INDEX"));
 
-    const vis = new Set(visible().map(e => e.id));
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    EVENTS.slice().sort((a, b) => a.index.total - b.index.total).forEach((e, i) => {
-      const on = vis.has(e.id);
+    const noMotion = reduced();
+    shown.slice().sort((a, b) => a.index.total - b.index.total).forEach((e, i) => {
       const cx = sx(e.x), cy = sy(e.index.total);
       const r = 4 + e.index.total / 100 * 4.5;
 
-      if (e.index.total >= 86 && on && !reduced) {
+      if (e.index.total >= 86 && !noMotion) {
         svg.appendChild(el("circle", { class: "pulse", cx, cy, r: 7, fill: "none",
           stroke: scoreColor(e.index.total), "stroke-width": 1 }));
       }
-      const dot = el("circle", {
-        class: "dot" + (on ? "" : " dim"), cx, cy, r,
-        fill: scoreColor(e.index.total), "data-id": e.id
-      });
-      if (!reduced) dot.style.animationDelay = (i * 22) + "ms";
+      const dot = el("circle", { class: "dot", cx, cy, r, fill: scoreColor(e.index.total) });
+      if (!noMotion) dot.style.animationDelay = (i * 22) + "ms";
       svg.appendChild(dot);
 
-      if (on) {
-        const hit = el("circle", { class: "dot-hit", cx, cy, r: Math.max(r + 8, 13), "data-id": e.id });
-        hit.addEventListener("mousemove", (ev) => showTip(ev,
-          `<strong>${e.title}</strong><span>${e.date_display} &middot; index <b class="val">${e.index.total}</b></span>`));
-        hit.addEventListener("mouseleave", hideTip);
-        hit.addEventListener("click", () => { select(e.id); document.getElementById("events").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); });
-        svg.appendChild(hit);
-      }
+      const hit = el("circle", { class: "dot-hit", cx, cy, r: Math.max(r + 8, 13) });
+      hit.addEventListener("mousemove", (ev) => showTip(ev,
+        "<strong>" + e.title + "</strong><span>" + e.date_display + " &middot; index <b class=\"val\">" + e.index.total + "</b></span>"));
+      hit.addEventListener("mouseleave", hideTip);
+      hit.addEventListener("click", () => {
+        select(e.id);
+        document.getElementById("events").scrollIntoView({ behavior: noMotion ? "auto" : "smooth", block: "start" });
+      });
+      svg.appendChild(hit);
 
       if (e.id === state.selected) {
-        svg.appendChild(el("line", { class: "sel-stem", x1: cx, x2: cx, y1: cy, y2: pad.t + ih }));
+        svg.appendChild(el("line", { class: "sel-stem", x1: cx, x2: cx, y1: cy, y2: p.t + ih }));
         svg.appendChild(el("circle", { class: "sel-ring", cx, cy, r: r + 5 }));
         const anchor = cx > w * 0.72 ? "end" : "start";
         svg.appendChild(el("text", { class: "dot-label", x: cx + (anchor === "end" ? -(r + 9) : r + 9), y: cy + 3.5, "text-anchor": anchor }, e.title));
@@ -689,62 +1317,6 @@
     host.replaceChildren(svg);
   }
 
-  /* ---- clock chart ------------------------------------------------------- */
-  function drawClockChart() {
-    const host = document.getElementById("chart-clock");
-    const w = host.clientWidth || 900;
-    const h = Math.max(150, Math.min(200, w * 0.2));
-    const pad = { t: 18, r: 22, b: 26, l: 46 };
-    const iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
-    const sx = (x) => pad.l + (x - X0) / (X1 - X0) * iw;
-    const lo = Math.log(80), hi = Math.log(1100);
-    const sy = (s) => pad.t + (Math.log(s) - lo) / (hi - lo) * ih;
-
-    const svg = el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, role: "img",
-      "aria-label": "Step chart of official Doomsday Clock settings from 1947 to 2026. The full data is in the table below the chart." });
-
-    [[1020, "17m"], [420, "7m"], [180, "3m"], [100, "100s"]].forEach(([s, lab]) => {
-      svg.appendChild(el("line", { class: "grid-line", x1: pad.l, x2: w - pad.r, y1: sy(s), y2: sy(s) }));
-      svg.appendChild(el("text", { class: "axis-label", x: pad.l - 10, y: sy(s) + 3.5, "text-anchor": "end" }, lab));
-    });
-    for (let y = 1950; y <= 2020; y += 10) {
-      svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: pad.t, y2: pad.t + ih }));
-      svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" }, y));
-    }
-
-    const S = CLOCK.settings;
-    let d = "";
-    S.forEach((st, i) => {
-      const x = sx(st.year), y = sy(st.seconds_to_midnight);
-      const xEnd = sx(i < S.length - 1 ? S[i + 1].year : X1);
-      d += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`) + ` L ${xEnd} ${y}`;
-    });
-    const bottom = pad.t + ih;
-    svg.appendChild(el("path", { class: "clock-area", d: d + ` L ${sx(X1)} ${bottom} L ${sx(S[0].year)} ${bottom} Z` }));
-    svg.appendChild(el("path", { class: "clock-line", d }));
-
-    const last = S[S.length - 1];
-    svg.appendChild(el("circle", { class: "clock-end", cx: sx(last.year), cy: sy(last.seconds_to_midnight), r: 5 }));
-    svg.appendChild(el("text", { class: "clock-end-label", x: sx(last.year) - 10, y: sy(last.seconds_to_midnight) - 9, "text-anchor": "end" },
-      last.display + " \u2014 closest ever"));
-
-    S.forEach((st, i) => {
-      const x = sx(st.year), xEnd = sx(i < S.length - 1 ? S[i + 1].year : X1);
-      const hit = el("rect", { x, y: pad.t, width: Math.max(xEnd - x, 4), height: ih, fill: "transparent", style: "cursor:crosshair" });
-      hit.addEventListener("mousemove", (ev) => showTip(ev,
-        `<strong>${st.year} &middot; ${st.display} to midnight</strong><span>${st.reason}</span>`));
-      hit.addEventListener("mouseleave", hideTip);
-      svg.appendChild(hit);
-    });
-
-    host.replaceChildren(svg);
-  }
-
-  document.getElementById("clock-table").innerHTML = CLOCK.settings.map(s =>
-    `<tr><td>${s.year}</td><td>${s.display}</td><td>${s.seconds_to_midnight}</td><td class="reason">${s.reason}</td></tr>`
-  ).join("");
-
-  /* ---- ledger ------------------------------------------------------------ */
   function drawLedger() {
     const host = document.getElementById("ledger");
     const list = visible().sort((a, b) =>
@@ -761,74 +1333,60 @@
       b.setAttribute("aria-current", String(e.id === state.selected));
       b.setAttribute("aria-selected", String(e.id === state.selected));
       b.innerHTML =
-        `<span class="yr num">${e.year}</span>` +
-        `<span class="ttl">${e.title}</span>` +
-        `<span class="sc" style="color:${scoreColor(e.index.total)}">${e.index.total}</span>`;
+        '<span class="yr num">' + e.year + '</span>' +
+        '<span class="ttl">' + e.title + '</span>' +
+        '<span class="sc" style="color:' + scoreColor(e.index.total) + '">' + e.index.total + '</span>';
       b.addEventListener("click", () => select(e.id));
       return b;
     }));
   }
 
-  /* ---- story ------------------------------------------------------------- */
   function drawStory() {
     const e = EVENTS.find(x => x.id === state.selected);
     const host = document.getElementById("story");
     const bars = COMPONENTS.map(([key, label, max]) => {
       const v = e.index[key];
-      return `<div class="bar-row">
-        <span class="lbl">${label}</span>
-        <span class="bar-track"><span class="bar-fill" style="width:${v / max * 100}%"></span></span>
-        <span class="val">${v}<span style="color:var(--ink-3)">/${max}</span></span>
-      </div>`;
+      return '<div class="bar-row">' +
+        '<span class="lbl">' + label + '</span>' +
+        '<span class="bar-track"><span class="bar-fill" style="width:' + (v / max * 100) + '%"></span></span>' +
+        '<span class="val">' + v + '<span style="color:var(--ink-3)">/' + max + '</span></span>' +
+        '</div>';
     }).join("");
 
-    const beats = e.beats ? `<div class="beats">
-        <h4>How it unfolded</h4>
-        ${e.beats.map(b => `<div class="beat"><span class="t">${b.time}</span><span class="x">${b.text}</span></div>`).join("")}
-      </div>` : "";
+    const beats = e.beats ? '<div class="beats"><h4>How it unfolded</h4>' +
+      e.beats.map(b => '<div class="beat"><span class="t">' + b.time + '</span><span class="x">' + b.text + '</span></div>').join("") +
+      '</div>' : "";
 
-    const uncertainty = e.story.uncertainty ? `<div class="note">
-        <h4>Known uncertainty</h4><p>${e.story.uncertainty}</p></div>` : "";
+    const uncertainty = e.story.uncertainty ?
+      '<div class="note"><h4>Known uncertainty</h4><p>' + e.story.uncertainty + '</p></div>' : "";
 
-    host.innerHTML = `
-      <div class="story-top">
-        <div>
-          <p class="eyebrow">${e.date_display}</p>
-          <h3>${e.title}</h3>
-          <p class="story-meta">${e.location} &middot; ${e.actors.join(" / ")}</p>
-          <div class="tags">
-            ${e.categories.map(c => `<span class="tag">${CAT_LABELS[c] || c}</span>`).join("")}
-            <span class="tag ${e.depth}">${e.depth === "curated" ? "Curated story" : "Draft entry"}</span>
-            <span class="tag">Source base: ${e.confidence}</span>
-          </div>
-        </div>
-        <div class="score-block">
-          <div class="big">${e.index.total}<span>/100</span></div>
-          <div class="band">${bandName(e.index.total)}</div>
-        </div>
-      </div>
-      <div class="story-cols">
-        <div>
-          <h4>What almost happened</h4>
-          <p>${e.story.almost_happened}</p>
-        </div>
-        <div class="stopped">
-          <h4>What stopped it</h4>
-          <p>${e.story.stopped_by}</p>
-        </div>
-      </div>
-      <div class="breakdown">
-        <h4>Why this score</h4>
-        ${bars}
-      </div>
-      ${beats}
-      ${uncertainty}
-      <div class="src-list">
-        <h4>Sources</h4>
-        <ul>${e.sources.map(s =>
-          `<li><span class="qual ${s.quality}">${s.quality}</span><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title}</a></li>`
-        ).join("")}</ul>
-      </div>`;
+    host.innerHTML =
+      '<div class="story-top">' +
+        '<div>' +
+          '<p class="eyebrow">' + e.date_display + '</p>' +
+          '<h3>' + e.title + '</h3>' +
+          '<p class="story-meta">' + e.location + ' &middot; ' + e.actors.join(" / ") + '</p>' +
+          '<div class="tags">' +
+            e.categories.map(c => '<span class="tag">' + (CAT_LABELS[c] || c) + '</span>').join("") +
+            '<span class="tag ' + e.depth + '">' + (e.depth === "curated" ? "Curated story" : "Draft entry") + '</span>' +
+            '<span class="tag">Source base: ' + e.confidence + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="score-block">' +
+          '<div class="big">' + e.index.total + '<span>/100</span></div>' +
+          '<div class="band">' + bandName(e.index.total) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="story-cols">' +
+        '<div><h4>What almost happened</h4><p>' + e.story.almost_happened + '</p></div>' +
+        '<div><h4>What stopped it</h4><p>' + e.story.stopped_by + '</p></div>' +
+      '</div>' +
+      '<div class="breakdown"><h4>Why this score</h4>' + bars + '</div>' +
+      beats + uncertainty +
+      '<div class="src-list"><h4>Sources</h4><ul>' +
+        e.sources.map(s => '<li><span class="qual ' + s.quality + '">' + s.quality + '</span>' +
+          '<a href="' + s.url + '" target="_blank" rel="noopener noreferrer">' + s.title + '</a></li>').join("") +
+      '</ul></div>';
   }
 
   function select(id) {
@@ -846,19 +1404,17 @@
     drawStory();
   }
 
-  /* ---- controls ---------------------------------------------------------- */
   document.querySelectorAll(".chip[data-cat]").forEach(btn => {
     btn.addEventListener("click", () => {
       state.cat = btn.dataset.cat;
-      document.querySelectorAll(".chip[data-cat]").forEach(b =>
-        b.setAttribute("aria-pressed", String(b === btn)));
+      document.querySelectorAll(".chip[data-cat]").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
       refresh();
     });
   });
-  let t;
-  document.getElementById("search").addEventListener("input", (e) => {
-    clearTimeout(t);
-    t = setTimeout(() => { state.q = e.target.value.trim().toLowerCase(); refresh(); }, 120);
+  let searchTimer;
+  document.getElementById("search").addEventListener("input", (ev) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { state.q = ev.target.value.trim().toLowerCase(); refresh(); }, 120);
   });
   const sortBtn = document.getElementById("sort-toggle");
   sortBtn.addEventListener("click", () => {
@@ -868,83 +1424,31 @@
     drawLedger();
   });
 
-  /* ---- scenario ---------------------------------------------------------- */
-  const DEBRIEF = {
-    report: {
-      verdict: ["diff", "Petrov did not do this"],
-      body: `<p><strong>What you chose.</strong> Passing the warning up the chain was the correct
-        procedure. The system had rated the launch detection at its highest reliability, and the duty
-        officer's written job was to report, not to adjudicate.</p>
-        <p><strong>What happened instead.</strong> Stanislav Petrov reported a system malfunction. He
-        reasoned that a genuine American first strike would involve hundreds of missiles rather than
-        five, and that ground radar had not confirmed anything. Twenty-three minutes later, nothing
-        had arrived.</p>
-        <p><strong>Where the drama stops.</strong> A report would not have launched missiles by itself.
-        Soviet doctrine required corroboration and a political decision, and there were more checks
-        after Petrov's console. What is documented is that a false warning reached a human being who
-        was expected to forward it, and that he did not.</p>`
-    },
-    "false": {
-      verdict: ["match", "This is what Petrov did"],
-      body: `<p><strong>What you chose.</strong> The same call Petrov made: report the alert as a
-        malfunction, on the strength of two observations. Five missiles is not how a first strike
-        begins. And the ground radars had shown nothing &mdash; though at that range they would not
-        have yet, which is why the reasoning was a judgement rather than a proof.</p>
-        <p><strong>What happened.</strong> Sunlight reflecting off high-altitude clouds had been read by
-        the Oko satellites as launch plumes. Petrov spent the next twenty-three minutes waiting to find
-        out whether he had been right. He received no award; the incident was classified, and the
-        satellite system's flaw was quietly corrected.</p>
-        <p><strong>Where the drama stops.</strong> Petrov did not personally hold the fate of the world
-        in his hands, and he said so himself. Corroboration and a political decision would still have
-        been required. What the record does show is a warning system that was confidently wrong, and a
-        procedure that expected a person to pass that confidence upward.</p>`
-    }
-  };
-  document.querySelectorAll(".choice").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const d = DEBRIEF[btn.dataset.choice];
-      document.querySelectorAll(".choice").forEach(b => { b.disabled = true; b.classList.toggle("picked", b === btn); });
-      const host = document.getElementById("debrief");
-      host.className = "debrief on";
-      host.innerHTML =
-        `<span class="verdict ${d.verdict[0]}">${d.verdict[1]}</span>${d.body}
-         <p style="font-size:.85rem"><a href="https://www.pbs.org/wgbh/nova/missileers/falsealarms.html" target="_blank" rel="noopener noreferrer">PBS/NOVA &mdash; False Alarms on the Nuclear Front</a>
-         &middot; <a href="https://www.chathamhouse.org/2014/04/too-close-comfort-cases-near-nuclear-use-and-options-policy" target="_blank" rel="noopener noreferrer">Chatham House &mdash; Too Close for Comfort</a></p>
-         <p style="font-size:.85rem"><button class="chip" id="scenario-reset">Reset</button></p>`;
-      document.getElementById("scenario-reset").addEventListener("click", () => {
-        document.querySelectorAll(".choice").forEach(b => { b.disabled = false; b.classList.remove("picked"); });
-        host.className = "debrief";
-        host.innerHTML = "";
-      });
-    });
-  });
-
-  /* ---- sources ----------------------------------------------------------- */
   const GROUPS = {
     declassified: "Declassified documents",
     official: "Official reports",
     academic: "Academic and institutional",
     journalistic: "Journalism and compilations"
   };
-  const seen = new Map();
-  EVENTS.forEach(e => e.sources.forEach(s => { if (!seen.has(s.url)) seen.set(s.url, s); }));
+  const seenSources = new Map();
+  EVENTS.forEach(e => e.sources.forEach(s => { if (!seenSources.has(s.url)) seenSources.set(s.url, s); }));
   document.getElementById("source-groups").innerHTML = Object.entries(GROUPS).map(([q, label]) => {
-    const items = [...seen.values()].filter(s => s.quality === q);
+    const items = [...seenSources.values()].filter(s => s.quality === q);
     if (!items.length) return "";
-    return `<div><h3 class="eyebrow">${label}</h3><ul>${items.map(s =>
-      `<li><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title}</a></li>`).join("")}</ul></div>`;
-  }).join("") + `<div><h3 class="eyebrow">The Clock itself</h3><ul>
-      <li><a href="${CLOCK.source.url}" target="_blank" rel="noopener noreferrer">${CLOCK.source.title}</a></li>
-      <li><a href="https://thebulletin.org/2026/01/press-release-it-is-85-seconds-to-midnight/" target="_blank" rel="noopener noreferrer">Bulletin of the Atomic Scientists &mdash; 85 seconds to midnight (2026)</a></li>
-    </ul></div>`;
+    return '<div><h3 class="eyebrow">' + label + '</h3><ul>' + items.map(s =>
+      '<li><a href="' + s.url + '" target="_blank" rel="noopener noreferrer">' + s.title + '</a></li>').join("") + '</ul></div>';
+  }).join("");
 
-  /* ---- boot -------------------------------------------------------------- */
   refresh();
-  drawClockChart();
 
-  let rt;
+  let resizeTimer;
   addEventListener("resize", () => {
-    clearTimeout(rt);
-    rt = setTimeout(() => { drawIndexChart(); drawClockChart(); }, 140);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(drawIndexChart, 140);
   });
+
+  /* ---- boot: the watch runs once per browser ------------------------------ */
+  let watchDone = false;
+  try { watchDone = localStorage.getItem(WATCH_KEY) === "1"; } catch (e) { /* private mode */ }
+  if (!watchDone) runWatch();
 </script>

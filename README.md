@@ -12,7 +12,6 @@ Fo kerdesek:
 
 - Mikor tortentek a legveszelyesebb close callok?
 - Melyik evben mennyire voltunk kozel a "doomsday" allapothoz?
-- Hogyan viszonyulnak az egyedi incidensek a hivatalos Doomsday Clock allasaihoz?
 - Pontosan min mult egy-egy esemeny: emberi itelet, technikai redundancia, szerencse, kommunikacio vagy politikai onmerseklet?
 - Hogyan lehet ezt latvanyosan, de forrasoltan es felelosen megmutatni?
 
@@ -31,12 +30,18 @@ Fo kerdesek:
 
 ## Termekelv
 
-Az oldal ket kulon gorbet mutasson:
+Az oldal egyetlen, sajat meroszamot mutat: az **Almost Doomsday Index**et. Ez transzparens,
+szerkesztoi pontszam 0-100 kozott az egyedi close callokra, ot kozzetett komponensbol.
+Azt mutatja, hogy az adott pillanatban mennyire volt kozel a rendszer a nuklearis
+fegyverhasznalathoz, nuklearis detonaciohoz vagy kontrollveszteshez.
 
-- **Official Doomsday Clock**: a Bulletin of the Atomic Scientists hivatalos allasai. Ez nem esemenyenkenti kockazati meroszam, hanem eves/torteneti szakertoi jelzes. A 2026-01-27-i hivatalos allas 85 masodperc ejfeltol, a Clock tortenetenek eddigi legkozelebbi pontja.
-- **Almost Doomsday Index**: sajat, transzparens, szerkesztoi pontszam 0-100 kozott az egyedi close callokra. Ez azt mutatja, hogy az adott pillanatban mennyire volt kozel a rendszer a nuklearis fegyverhasznalathoz, nuklearis detonaciohoz vagy kontrollveszteshez.
+A hivatalos Doomsday Clock **szandekosan kimaradt** az oldalrol. Az egy eves, tobb kockazatot
+(nuklearis, klima, bio, technologia) osszegzo szakertoi itelet, nem esemenyenkenti meroszam.
+Egy lapon mutatva meg kulon charton is azt sugallja, hogy a ketto osszemerheto, es ez rontja
+az adat tisztasagat. A Bulletin anyagai forraskent tovabbra is relevansak, de nem az oldal adatai.
 
-Fontos: a sajat index soha ne tunjon hivatalos tudomanyos valoszinusegnek. Minden pontszam mellett legyen lathato, mi alapjan kapta az erteket.
+Fontos: a sajat index soha ne tunjon hivatalos tudomanyos valoszinusegnek. Minden pontszam
+mellett legyen lathato, mi alapjan kapta az erteket.
 
 ## Almost Doomsday Index javaslat
 
@@ -70,11 +75,9 @@ Tartalom:
 - cim: `AlmostDoomsday.com`
 - rovid alcim: "How close did we come?"
 - interaktiv timeline-grafikon 1945-tol napjainkig
-- ket kapcsolhato adatsor:
-  - Almost Doomsday Index
-  - Official Doomsday Clock
+- kategoria- es szoveges szures
 - kiemelt esemenykartyak a legmagasabb pontszamokkal
-- forrasolt figyelmeztetes: az index szerkesztoi modell, a Clock hivatalos Bulletin adat
+- forrasolt figyelmeztetes: az index szerkesztoi modell, nem hivatalos valoszinuseg
 
 Kezdokepernyo wireframe:
 
@@ -85,7 +88,7 @@ Kezdokepernyo wireframe:
 | HOW CLOSE DID WE COME?                                                         |
 | A visual record of nuclear close calls, false alarms, and decisions that held. |
 |                                                                                |
-| [ Almost Doomsday Index ] [ Official Doomsday Clock ] [ Both ]                 |
+| Search: [__________]  [All] [False alarm] [Broken arrow] [Crisis] [C2]         |
 |                                                                                |
 | 100% |                                      * B-59                              |
 |  90% |                         * Goldsboro        * Petrov  * Able Archer      |
@@ -109,7 +112,6 @@ Funkciok:
 - kategoriak kapcsolasa: false alarm, broken arrow, crisis escalation, command control, public warning
 - pontokra kattintva gyors osszefoglalo panel
 - "why this score?" resz komponensenkenti bontassal
-- overlay: hivatalos Doomsday Clock allasok
 - event density heatmap, amely megmutatja, mely idoszakokban surusodtek az esetek
 
 Wireframe:
@@ -137,40 +139,7 @@ Wireframe:
 +--------------------------------------------------------------------------------+
 ```
 
-### 3. Official Doomsday Clock
-
-Cel: kulon, tisztan hivatalos adatforrasbol mutatni a Doomsday Clock tortenetet.
-
-Tartalom:
-
-- Bulletin timeline 1947-tol
-- perc/masodperc ejfeltol forma
-- atvaltott normalizalt skala, csak vizualis osszehasonlitashoz
-- event overlay: mely close callok estek egy adott Clock-beallitas kornyeken
-- kulon jelzes, hogy a Clock 2007 ota mar klimakockazatot is figyelembe vesz, nem csak nuklearis veszelyt
-
-Wireframe:
-
-```text
-+--------------------------------------------------------------------------------+
-| Official Doomsday Clock                                                        |
-| Source: Bulletin of the Atomic Scientists                                      |
-|                                                                                |
-| Current official setting: 85 seconds to midnight (2026-01-27)                  |
-|                                                                                |
-| Minutes/seconds to midnight                                                    |
-| 17m |        highest safety margin                                             |
-| 10m |                    ______                                                |
-|  5m |   ____          __/      \__                                             |
-|  2m |__/    \________/           \____ 90s 89s 85s                             |
-|  0m +------------------------------------------------------------------------ |
-|      1947 1953 1963 1984 1991 2007 2018 2020 2023 2025 2026                  |
-|                                                                                |
-| [Show as minutes] [Show as risk-normalized] [Show statements]                  |
-+--------------------------------------------------------------------------------+
-```
-
-### 4. Event Story Page
+### 3. Event Story Page
 
 Cel: minden esemeny egyetlen, atlathato oldalon elferjen, de legyen eleg mely ahhoz, hogy latszodjon: pontosan min mult.
 
@@ -207,7 +176,7 @@ Wireframe:
 +--------------------------------------------------------------------------------+
 ```
 
-### 5. Scenario Player
+### 4. The Watch (nyitany)
 
 Cel: dramatizalt, de felelos modon megmutatni, milyen dontesi helyzetekben kellett cselekedni.
 
@@ -247,8 +216,6 @@ Wireframe:
   Home overview
 /timeline
   Interactive close-call and Clock explorer
-/clock
-  Official Doomsday Clock history
 /events
   Searchable event index
 /events/:eventId
@@ -298,21 +265,6 @@ Kesobbi fajl: `data/close-calls.yaml` vagy `data/close-calls.json`.
       quality: declassified
 ```
 
-Kesobbi fajl: `data/doomsday-clock.yaml`.
-
-```yaml
-- year: 2026
-  date: 2026-01-27
-  seconds_to_midnight: 85
-  display: "85 seconds to midnight"
-  source: https://thebulletin.org/2026/01/press-release-it-is-85-seconds-to-midnight/
-  factors:
-    - nuclear risk
-    - climate change
-    - artificial intelligence
-    - biosecurity
-```
-
 ## Vizualis irany
 
 - Hangulat: hideg, archivalis, feszult, de nem horror.
@@ -326,23 +278,47 @@ Kesobbi fajl: `data/doomsday-clock.yaml`.
 Statikus, fuggoseg nelkuli egyoldalas site. Adat -> template -> kesz HTML.
 
 ```
-data/close-calls.json      26 kuralt close call, komponensenkenti pontszammal es forrasokkal
-data/doomsday-clock.json   28 hivatalos Doomsday Clock allas 1947-2026
-site/template.html         markup, stilus, chartok, interakcio (__EVENTS__ / __CLOCK__ placeholderek)
-build.mjs                  beinjektalja az adatot, es ellenorzi hogy a komponensek osszege = total
-site/index.html            a build kimenete, ez a publikalt fajl
+data/close-calls.json   26 kuralt close call, komponensenkenti pontszammal es forrasokkal
+site/template.html      markup, stilus, chart, a nyitany allapotgepe (__EVENTS__ placeholder)
+build.mjs               beinjektalja az adatot, es ellenorzi hogy a komponensek osszege = total
+site/index.html         a build kimenete, ez a publikalt fajl
 ```
 
 Build: `node build.mjs`. Nincs npm install, nincs dependency.
 
-Ami benne van: interaktiv Almost Doomsday Index scatter es kulon Official Doomsday Clock
-step chart kozos idotengelyen, kategoria- es szoveges szures, event ledger, event story panel
-komponensenkenti pontszambontassal es "known uncertainty" blokkal, Petrov scenario prototipus,
-metodologia es forrasoldal.
+### A nyitany: The Watch
 
-Szandekos dontesek:
+Az oldal egy leszolgalt ugyelettel indul, nem egy fooldallal. Fuggo ora, Serpukhov-15,
+1983. szeptember 25-26.
 
-- A ket adatsor kulon chartra kerult. Egy tengelyen abrazolva azt sugallnak, hogy osszemerhetok.
+| Ido | Esemeny | Helyes gomb |
+| --- | --- | --- |
+| 23:41 | Briefing gepel be soronkent: ki vagy, mi a dolgod, mi a protokoll | - |
+| 23:47 | Vandenberg teszt, elore bejelentve. Muhold jelzi, **radar megerositi** | REPORT |
+| 00:04 | Termikus esemeny a Csendes-ocean felett. Muhold jelzi, **radar felveszi** | REPORT |
+| 00:15 | Legmagasabb megbizhatosag. **Radar: semmi.** Darabszam 1 -> 5 | - |
+
+A ket bemelegitonel azert helyes a zold gomb, mert ket fuggetlen rendszer egyetert. Ez tanitja
+meg a szabalyt. A valodi esemenynel pontosan az hianyzik, amin a szabaly allt: a megerosites.
+
+- A protokoll szerinti gomb vegig ugyanaz, zolden kiemelve, billentyufokusszal, halk pulzalassal.
+- A masik gombnak nincs szine, harom surlodasi mondat all alatta, es **nyomva kell tartani 2,5
+  masodpercig**, mikozben a becsapodasig hatralevo ido fut. Elengedesre visszaall.
+- Nincs idotullepes: az olvasas a lenyeg, ezert megvar.
+- REPORT eseten counterfactual eszkalacios szekvencia indul (eszaki polaris radarplot, canvas),
+  vegig `COUNTERFACTUAL / THIS DID NOT HAPPEN` savval. Skippelheto.
+- Hold eseten a masik ag: lefut a 23 perc, es nem tortenik semmi.
+- Mindket ag debriefre fut ki, majd felenged az archivum.
+
+Van `Skip the watch` link, es bongeszonkent egyszer fut le (localStorage). A fejlecben es a lap
+aljan van `Replay the watch`. Az archivum vegig a DOM-ban van, JS nelkul is olvashato.
+
+A ket bemelegito esemeny rekonstrukcio, nem dokumentalt incidens - ez az "About the watch"
+szekcioban ki van irva, ahogy az is, hogy az eszkalacios szekvencia spekulativ.
+
+### Szandekos dontesek
+
+- A hivatalos Doomsday Clock nincs az oldalon. Lasd a Termekelv szakaszt.
 - Az index sulyozasa miatt egy bekebeli fegyverbaleset (Goldsboro) nem erhet el olyan magas
   pontszamot, mint egy valsagesemeny. Ez a metodologia oldalon nyiltan ki van irva.
 - Az 5 pilot esemenynek van teljes sztorija es perces bontasa, a tobbi `draft` jelolest kap.
@@ -355,7 +331,6 @@ Kovetkezo lepes ehhez: kulon event URL-ek, terkepes nezet, tobb kidolgozott stor
 1. Statikus, gyors weboldal `AlmostDoomsday.com` branddel.
 2. Kuralt close-call adatfajl 20-30 esemenybol.
 3. Home oldal interaktiv timeline charttal.
-4. Official Doomsday Clock chart Bulletin adatokkal.
 5. 5 kidolgozott event story oldal:
    - B-59 Arkhipov, 1962
    - Goldsboro, 1961
@@ -377,13 +352,12 @@ Kovetkezo lepes ehhez: kulon event URL-ek, terkepes nezet, tobb kidolgozott stor
 ## Nyitott kerdesek
 
 - Magyar, angol vagy ketnyelvu legyen az elso publikus verzio? A domain es nemzetkozi tema miatt az angol UI tunik termeszetesnek.
-- A sajat index skala legyen-e 0-100 vagy "seconds from midnight" analogia? A 0-100 atlathatobb es kevesbe keverheto ossze a hivatalos Clockkal.
+- A sajat index skala legyen-e 0-100 vagy "seconds from midnight" analogia? Eldontve: 0-100, mert atlathatobb es nem keverheto ossze semmilyen hivatalos meroszammal.
 - Mennyi dramatizalas fer bele a scenario playerbe? Javaslat: csak ott, ahol a tortenelmi forrasokbol ismert az informacios helyzet.
 - Legyen-e politikai/aktualis kockazati tartalom, vagy maradjon torteneti-oktato oldal? MVP-ben erdemes torteneti-oktato fokuszt tartani.
 
 ## Kovetkezo lepesek
 
 - A kutatasi listabol strukturalt `data/close-calls.yaml` keszitese.
-- Doomsday Clock torteneti adatainak kulon, forrasolt adatfajlba vitele.
 - Pontozasi metodologia finomitasa 5 pilot esemenyen.
 - Frontend stack kivalasztasa es elso prototipus: timeline + event detail.
