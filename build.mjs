@@ -5,9 +5,10 @@ import { readFile, writeFile } from "node:fs/promises";
 const root = new URL("./", import.meta.url);
 const read = (p) => readFile(new URL(p, root), "utf8");
 
-const [template, events] = await Promise.all([
+const [template, events, funding] = await Promise.all([
   read("site/template.html"),
-  read("data/close-calls.json")
+  read("data/close-calls.json"),
+  read("data/funding.json")
 ]);
 
 const parsedEvents = JSON.parse(events);
@@ -18,7 +19,13 @@ for (const e of parsedEvents) {
   if (sum !== i.total) throw new Error(`${e.id}: components sum to ${sum}, total says ${i.total}`);
 }
 
-const html = template.replace("__EVENTS__", () => JSON.stringify(parsedEvents));
+// The page is served without a charset declaration, so keep the inlined data ASCII.
+const inline = (value) => JSON.stringify(value)
+  .replace(/[\u0080-\uffff]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+
+const html = template
+  .replace("__EVENTS__", () => inline(parsedEvents))
+  .replace("__FUNDING__", () => inline(JSON.parse(funding)));
 
 await writeFile(new URL("site/index.html", root), html);
 console.log(`built site/index.html — ${parsedEvents.length} events, ${(html.length / 1024).toFixed(0)} KB`);

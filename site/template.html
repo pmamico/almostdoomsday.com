@@ -155,7 +155,6 @@
     margin: 0; font-family: var(--data); font-weight: 500;
     font-size: clamp(.86rem, 2vw, 1.02rem); letter-spacing: .14em; text-transform: uppercase; color: var(--ink);
   }
-  .alert.live .alert-head h2 { color: var(--critical); }
   .rows { display: grid; gap: 1px; background: var(--rule-soft); }
   .rows > div { background: var(--panel-2); padding: .55rem 1.1rem; display: flex; gap: 1rem; align-items: baseline; }
   .rows .k {
@@ -253,6 +252,10 @@
   .cf-final { text-align: center; padding: clamp(2rem, 12vh, 7rem) 0; }
   .cf-final .prompt, .quiet .prompt { margin-top: 2.4rem; }
   .cf-final p { font-family: var(--prose); font-size: clamp(1.05rem, 2.6vw, 1.5rem); color: var(--ink); max-width: 36ch; margin: 0 auto; line-height: 1.5; }
+  .cf-final p.after, .quiet .after {
+    font-size: clamp(.92rem, 2vw, 1.08rem); color: var(--ink-3);
+    margin: .9rem auto 0; max-width: 42ch;
+  }
 
   .quiet { text-align: center; padding: clamp(1.6rem, 6vh, 3.4rem) 0; }
   .quiet .big-clock {
@@ -473,6 +476,35 @@
 
   .replay-block { border: 1px solid var(--rule); background: var(--panel); padding: clamp(1.2rem, 3vw, 2rem); }
 
+  .support-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(1.6rem, 4vw, 3rem); }
+  .give { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1.5rem 0 1.2rem; }
+  .give a {
+    font-family: var(--data); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+    border: 1px solid var(--rule); color: var(--ink-2); padding: .55rem .9rem;
+    text-decoration: none; transition: color .15s, border-color .15s;
+  }
+  .give a:hover { border-color: var(--signal); color: var(--signal-bright); text-decoration: none; }
+  .give a.lead { border-color: rgba(192, 129, 42, .5); color: var(--signal-bright); }
+  .fine {
+    font-family: var(--data); font-size: .66rem; line-height: 1.9;
+    color: var(--ink-3); letter-spacing: .04em; max-width: 48ch;
+  }
+  .ladder { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .rung {
+    background: var(--panel); padding: .95rem 1.1rem;
+    display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
+  }
+  .rung .amt { font-family: var(--data); font-size: .98rem; color: var(--signal-bright); font-variant-numeric: tabular-nums; }
+  .rung h3 { margin: 0 0 .35rem; font-size: 1.02rem; font-weight: 500; letter-spacing: -.005em; }
+  .rung p { margin: 0; font-family: var(--prose); font-size: .89rem; line-height: 1.58; color: var(--ink-2); }
+  .status {
+    font-family: var(--data); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
+    border: 1px solid var(--rule); padding: .16rem .42rem; white-space: nowrap; color: var(--ink-3);
+  }
+  .status.shipped { color: var(--ok-bright); border-color: rgba(46, 157, 122, .4); }
+  .status.in_progress { color: var(--signal-bright); border-color: rgba(192, 129, 42, .45); }
+  .beyond { margin-top: 1.1rem; font-family: var(--prose); font-size: .89rem; color: var(--ink-3); line-height: 1.6; max-width: 60ch; }
+
   .source-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.6rem; }
   .source-groups ul { margin: .7rem 0 0; padding: 0; display: grid; gap: .55rem; }
   .source-groups li { list-style: none; font-size: .88rem; line-height: 1.45; }
@@ -481,7 +513,7 @@
   footer p { font-family: var(--data); font-size: .7rem; color: var(--ink-3); letter-spacing: .06em; margin: 0; max-width: 70ch; line-height: 1.7; }
 
   @media (max-width: 940px) {
-    .hero-grid, .story-cols, .two-col, .cf-stage { grid-template-columns: minmax(0, 1fr); }
+    .hero-grid, .story-cols, .two-col, .cf-stage, .support-grid { grid-template-columns: minmax(0, 1fr); }
     .explorer { grid-template-columns: minmax(0, 1fr); }
     .ledger { max-height: 320px; position: static; border-right: 0; border-bottom: 1px solid var(--rule); }
     .readout { margin-top: 1.5rem; }
@@ -494,6 +526,8 @@
     .score-block { margin-left: 0; text-align: left; }
     .rows > div { flex-direction: column; align-items: flex-start; gap: .15rem; }
     .rows .v { text-align: left; }
+    .rung { grid-template-columns: minmax(0, 1fr) auto; }
+    .rung .rung-body { grid-column: 1 / -1; }
   }
 </style>
 
@@ -517,6 +551,7 @@
       <a href="#events">Events</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
+      <a href="#support">Support</a>
       <button id="replay-top">Replay the watch</button>
     </nav>
   </div>
@@ -677,6 +712,36 @@
       <div class="source-groups" id="source-groups"></div>
     </div>
   </section>
+
+  <section id="support">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Support</h2>
+        <p>What keeps this running, and what gets built next.</p>
+      </div>
+      <div class="support-grid">
+        <div>
+          <div class="prose">
+            <p>AlmostDoomsday.com is an independent project with no institution behind it. The domain
+              and the server cost money every month, and that comes out of my own pocket.</p>
+            <p>Most of the work here is not code. It is reading declassified documents, tracking down
+              which account a claim actually rests on, and deciding what a source does and does not
+              support. That is the part that takes time, and time is what support buys.</p>
+          </div>
+          <div class="give" id="give"></div>
+          <p class="fine">
+            Support for an independent project. Not a purchase, no goods or services are provided in
+            return, and it is not tax-deductible. The list on the right is the order I intend to build
+            in as support makes the time available &mdash; not a delivery promise.
+          </p>
+        </div>
+        <div>
+          <div class="ladder" id="ladder"></div>
+          <p class="beyond" id="beyond"></p>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -693,6 +758,7 @@
 
 <script>
   const EVENTS = __EVENTS__;
+  const FUNDING = __FUNDING__;
 
   const CAT_LABELS = {
     false_alarm: "False alarm",
@@ -956,7 +1022,7 @@
           '<div class="rows">' +
             '<div><span class="k">Source</span><span class="v">Oko satellite 5</span></div>' +
             '<div><span class="k">Reliability</span><span class="v bad">Highest</span></div>' +
-            '<div><span class="k">Ground radar</span><span class="v bad">No confirmation</span></div>' +
+            '<div><span class="k">Ground radar</span><span class="v"></span></div>' +
             '<div><span class="k">Advance notice</span><span class="v">None</span></div>' +
             '<div><span class="k">Objects</span><span class="v bad" id="obj-count">1</span></div>' +
             '<div><span class="k">Time to impact</span><span class="v bad" id="impact">23:00</span></div>' +
@@ -1176,7 +1242,9 @@
 
       timers.push(setTimeout(async () => {
         if (done) return;
-        stageEl.innerHTML = '<div class="cf-final"><p>Nobody at Serpukhov-15 ever found out whether the alert had been real.</p></div>';
+        stageEl.innerHTML = '<div class="cf-final">' +
+          '<p>The alert had been false.</p>' +
+          '<p class="after">Nobody was left at Serpukhov-15 to find that out.</p></div>';
         await waitForKey(stageEl.querySelector(".cf-final"), "Press Enter to continue");
         finish();
       }, 15400));
@@ -1190,7 +1258,8 @@
       '<div class="quiet">' +
         '<div class="big-clock" id="q-clock">23:00</div>' +
         '<div class="caption">Time to impact</div>' +
-        '<div class="landed" id="q-landed" style="opacity:0">Nothing arrived.</div>' +
+        '<div class="landed" id="q-landed" style="opacity:0">Nothing arrived.' +
+          '<div class="after">It had been a false alert.</div></div>' +
       '</div>';
     const qc = document.getElementById("q-clock");
     if (reduced()) {
@@ -1525,6 +1594,23 @@
     return '<div><h3 class="eyebrow">' + label + '</h3><ul>' + items.map(s =>
       '<li><a href="' + s.url + '" target="_blank" rel="noopener noreferrer">' + s.title + '</a></li>').join("") + '</ul></div>';
   }).join("");
+
+  /* ---- support ----------------------------------------------------------- */
+  const STATUS_LABEL = { shipped: "Shipped", in_progress: "In progress", not_funded: "Not funded" };
+  const give = FUNDING.presets.map(a =>
+    '<a class="lead" href="' + FUNDING.paypal + '/' + a + FUNDING.currency + '" target="_blank" rel="noopener noreferrer">'
+    + FUNDING.symbol + a + '</a>').join("")
+    + '<a href="' + FUNDING.paypal + '" target="_blank" rel="noopener noreferrer">Choose an amount</a>';
+  document.getElementById("give").innerHTML = give;
+
+  document.getElementById("ladder").innerHTML = FUNDING.tiers.map(t =>
+    '<div class="rung">' +
+      '<span class="amt">' + FUNDING.symbol + t.amount + '</span>' +
+      '<div class="rung-body"><h3>' + t.title + '</h3><p>' + t.detail + '</p></div>' +
+      '<span class="status ' + t.status + '">' + (STATUS_LABEL[t.status] || t.status) + '</span>' +
+    '</div>').join("");
+
+  document.getElementById("beyond").textContent = FUNDING.beyond;
 
   refresh();
 
