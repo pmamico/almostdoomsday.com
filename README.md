@@ -322,6 +322,17 @@ szekcioban ki van irva, ahogy az is, hogy az eszkalacios szekvencia spekulativ.
 
 ### Tamogatas es roadmap
 
+**Jelenleg kikapcsolva.** A `data/funding.json` elso mezoje egy kapcsolo:
+
+```json
+{ "enabled": false, ... }
+```
+
+`false` eseten a build kihagyja a `#support` szekciot es a navigacios linket is - nem
+elrejti CSS-sel, hanem ki sem kerul a HTML-be, tehat semmi nem jut el a bongeszobe belole.
+Visszakapcsolni: allitsd `true`-ra, `node build.mjs`, `git push origin main`. A template-ben
+`<!-- support:start -->` / `<!-- support:end -->` jeloli a ket erintett blokkot.
+
 `data/funding.json` tartja a PayPal linket, az elore beirt osszegeket es a roadmapot; a `#support`
 szekcio ebbol rajzolodik.
 

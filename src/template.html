@@ -552,7 +552,9 @@
       <a href="#events">Events</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
+      <!-- support:start -->
       <a href="#support">Support</a>
+      <!-- support:end -->
       <button id="replay-top">Replay the watch</button>
     </nav>
   </div>
@@ -706,6 +708,7 @@
     </div>
   </section>
 
+  <!-- support:start -->
   <section id="support">
     <div class="wrap">
       <div class="sec-head">
@@ -735,6 +738,7 @@
       </div>
     </div>
   </section>
+  <!-- support:end -->
 </main>
 
 <footer>
@@ -1631,6 +1635,8 @@
     '<span class="d"><b style="color:var(--ink);font-weight:500">' + b.name + '.</b> ' + b.text + '</span></div>').join("");
 
   /* ---- support ----------------------------------------------------------- */
+  // The section is stripped at build time when funding.enabled is false.
+  if (document.getElementById("give")) {
   const STATUS_LABEL = { shipped: "Shipped", next: "Next" };
   const give = FUNDING.presets.map(a =>
     '<a class="lead" href="' + FUNDING.paypal + '/' + a + FUNDING.currency + '" target="_blank" rel="noopener noreferrer">'
@@ -1648,6 +1654,7 @@
     '</div>').join("");
 
   document.getElementById("beyond").textContent = FUNDING.beyond;
+  }
 
   refresh();
 
