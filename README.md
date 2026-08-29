@@ -22,7 +22,7 @@ push so the deployed HTML matches the data.
 ## Support
 
 This is an independent, one-person project. Building it cost about €38;
-running it costs about €6/month. Support goes straight to that — keeping the
+running it costs about €6/month. Support goes to keeping the
 site online, and buying the time to extend it and build further sourced,
 single-topic sites like it. [Support on PayPal](https://paypal.me/pmamico).
 
