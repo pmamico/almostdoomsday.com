@@ -1,5 +1,7 @@
 # AlmostDoomsday.com
 
+![cookie-free](https://img.shields.io/badge/cookies-none-brightgreen)
+
 **How close did we come?**
 
 A visual, interactive site cataloguing the moments humanity came dangerously
