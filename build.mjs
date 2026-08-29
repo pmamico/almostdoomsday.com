@@ -6,10 +6,9 @@ import { readFile, writeFile } from "node:fs/promises";
 const root = new URL("./", import.meta.url);
 const read = (p) => readFile(new URL(p, root), "utf8");
 
-const [template, events, funding] = await Promise.all([
+const [template, events] = await Promise.all([
   read("src/template.html"),
-  read("data/close-calls.json"),
-  read("data/funding.json")
+  read("data/close-calls.json")
 ]);
 
 const parsedEvents = JSON.parse(events);
@@ -24,19 +23,8 @@ for (const e of parsedEvents) {
 const inline = (value) => JSON.stringify(value)
   .replace(/[\u0080-\uffff]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
 
-const parsedFunding = JSON.parse(funding);
-
-// The support section is switched on and off from data/funding.json. When it is
-// off the markup is dropped here rather than hidden in CSS, so nothing about the
-// ask reaches the browser.
-const stripSupport = (src) =>
-  src.replace(/[ \t]*<!-- support:start -->[\s\S]*?<!-- support:end -->\n?/g, "");
-
-const html = (parsedFunding.enabled === false ? stripSupport(template) : template)
-  .replace("__EVENTS__", () => inline(parsedEvents))
-  .replace("__FUNDING__", () => inline(parsedFunding));
+const html = template.replace("__EVENTS__", () => inline(parsedEvents));
 
 await writeFile(new URL("site/index.html", root), html);
 console.log(`built site/index.html \u2014 ${parsedEvents.length} events, `
-  + `support ${parsedFunding.enabled === false ? "off" : "on"}, `
   + `${(html.length / 1024).toFixed(0)} KB`);

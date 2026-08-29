@@ -473,34 +473,9 @@
 
   .replay-block { border: 1px solid var(--rule); background: var(--panel); padding: clamp(1.2rem, 3vw, 2rem); }
 
-  .support-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(1.6rem, 4vw, 3rem); }
-  .give { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1.5rem 0 1.2rem; }
-  .give a {
-    font-family: var(--data); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
-    border: 1px solid var(--rule); color: var(--ink-2); padding: .55rem .9rem;
-    text-decoration: none; transition: color .15s, border-color .15s;
-  }
-  .give a:hover { border-color: var(--signal); color: var(--signal-bright); text-decoration: none; }
-  .give a.lead { border-color: rgba(192, 129, 42, .5); color: var(--signal-bright); }
-  .fine {
-    font-family: var(--data); font-size: .66rem; line-height: 1.9;
-    color: var(--ink-3); letter-spacing: .04em; max-width: 48ch;
-  }
-  .ladder { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
-  .rung {
-    background: var(--panel); padding: .95rem 1.1rem;
-    display: grid; grid-template-columns: 2.2rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
-  }
-  .rung .amt { font-family: var(--data); font-size: .98rem; color: var(--signal-bright); font-variant-numeric: tabular-nums; }
-  .rung h3 { margin: 0 0 .35rem; font-size: 1.02rem; font-weight: 500; letter-spacing: -.005em; }
-  .rung p { margin: 0; font-family: var(--prose); font-size: .89rem; line-height: 1.58; color: var(--ink-2); }
-  .status {
-    font-family: var(--data); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
-    border: 1px solid var(--rule); padding: .16rem .42rem; white-space: nowrap; color: var(--ink-3);
-  }
-  .status.shipped { color: var(--ok-bright); border-color: rgba(46, 157, 122, .4); }
-  .status.in_progress { color: var(--signal-bright); border-color: rgba(192, 129, 42, .45); }
-  .beyond { margin-top: 1.1rem; font-family: var(--prose); font-size: .89rem; color: var(--ink-3); line-height: 1.6; max-width: 60ch; }
+  .about-links { margin-top: 1.3rem; }
+  .about-links a { color: var(--ink-2); text-decoration-color: var(--rule); }
+  .about-links a:hover { color: var(--ink); text-decoration-color: var(--ink-3); }
 
   .source-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.6rem; }
   .source-groups ul { margin: .7rem 0 0; padding: 0; display: grid; gap: .55rem; }
@@ -508,11 +483,9 @@
 
   footer { border-top: 1px solid var(--rule); padding: 2rem 0 3rem; margin-top: 1rem; }
   footer p { font-family: var(--data); font-size: .7rem; color: var(--ink-3); letter-spacing: .06em; margin: 0; max-width: none; line-height: 1.7; }
-  footer a { color: var(--ink-2); text-decoration-color: var(--rule); }
-  footer a:hover { color: var(--ink); text-decoration-color: var(--ink-3); }
 
   @media (max-width: 940px) {
-    .hero-grid, .story-cols, .two-col, .cf-stage, .support-grid { grid-template-columns: minmax(0, 1fr); }
+    .hero-grid, .story-cols, .two-col, .cf-stage { grid-template-columns: minmax(0, 1fr); }
     .bandkey { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .explorer { grid-template-columns: minmax(0, 1fr); }
     .ledger { max-height: 320px; position: static; border-right: 0; border-bottom: 1px solid var(--rule); }
@@ -552,6 +525,7 @@
       <a href="#events">Events</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
+      <a href="#about">About</a>
       <button id="replay-top">Replay the watch</button>
     </nav>
   </div>
@@ -702,47 +676,31 @@
     </div>
   </section>
 
-  <!-- support:start -->
-  <section id="support">
+  <section id="about">
     <div class="wrap">
       <div class="sec-head">
-        <h2>Support</h2>
+        <h2>About</h2>
       </div>
-      <div class="support-grid">
-        <div>
-          <div class="prose">
-            <p>AlmostDoomsday.com is an independent project with no institution behind it. The domain
-              and the server cost money every month, and that comes out of my own pocket.</p>
-            <p>Most of the work here is not code. It is reading declassified documents, tracking down
-              which account a claim actually rests on, and deciding what a source does and does not
-              support. That is the part that takes time, and time is what support buys.</p>
-          </div>
-          <div class="give" id="give"></div>
-          <p class="fine">
-            Support for an independent project. Not a purchase, no goods or services are provided in
-            return, and it is not tax-deductible. The list on the right is the order I intend to build
-            in as support makes the time available &mdash; not a delivery promise.
-          </p>
-        </div>
-        <div>
-          <p class="eyebrow" style="margin:0 0 .7rem">Roadmap</p>
-          <div class="ladder" id="ladder"></div>
-          <p class="beyond" id="beyond"></p>
-        </div>
+      <div class="prose">
+        <p>AlmostDoomsday.com is an independent project, built and run by one person. Building it cost
+          about &euro;38; keeping it online costs about &euro;6 a month.</p>
+        <p>Support goes straight to that: keeping the site running, and buying the time to extend it and
+          build further sourced, editorial sites like it.</p>
+        <p class="about-links">
+          <a href="https://github.com/pmamico/almostdoomsday.com">Code on GitHub</a> &middot;
+          <a href="https://github.com/pmamico/almostdoomsday.com/issues">Report an issue</a> &middot;
+          <a href="https://paypal.me/pmamico">Support this project</a>
+        </p>
       </div>
     </div>
   </section>
-  <!-- support:end -->
 </main>
 
 <footer>
   <div class="wrap">
     <p>
       The Almost Doomsday Index is an independent editorial score and carries no official standing. Corrections welcome.<br>
-      No cookies, no third-party trackers. Anonymous page counts on a server I run myself.<br>
-      <a href="https://github.com/pmamico/almostdoomsday.com">Code on GitHub</a> &middot;
-      <a href="https://github.com/pmamico/almostdoomsday.com/issues">Report an issue</a> &middot;
-      <a href="https://paypal.me/pmamico">Support this project</a>
+      No cookies, no third-party trackers. Anonymous page counts on a server I run myself.
     </p>
   </div>
 </footer>
@@ -751,7 +709,6 @@
 
 <script>
   const EVENTS = __EVENTS__;
-  const FUNDING = __FUNDING__;
 
   const CAT_LABELS = {
     false_alarm: "False alarm",
@@ -1675,28 +1632,6 @@
   document.getElementById("method-bands").innerHTML = BANDS.map(b =>
     '<div><span class="r" style="color:' + css(b.ramp) + '">' + b.lo + '\u2013' + b.hi + '</span>' +
     '<span class="d"><b style="color:var(--ink);font-weight:500">' + b.name + '.</b> ' + b.text + '</span></div>').join("");
-
-  /* ---- support ----------------------------------------------------------- */
-  // The section is stripped at build time when funding.enabled is false.
-  if (document.getElementById("give")) {
-  const STATUS_LABEL = { shipped: "Shipped", next: "Next" };
-  const give = FUNDING.presets.map(a =>
-    '<a class="lead" href="' + FUNDING.paypal + '/' + a + FUNDING.currency + '" target="_blank" rel="noopener noreferrer">'
-    + FUNDING.symbol + a + '</a>').join("")
-    + '<a href="' + FUNDING.paypal + '" target="_blank" rel="noopener noreferrer">Choose an amount</a>';
-  document.getElementById("give").innerHTML = give;
-
-  document.getElementById("ladder").innerHTML = FUNDING.roadmap.map((r, i) =>
-    '<div class="rung">' +
-      '<span class="amt">' + String(i + 1).padStart(2, "0") + '</span>' +
-      '<div class="rung-body"><h3>' + r.title + '</h3><p>' + r.detail + '</p></div>' +
-      (STATUS_LABEL[r.status]
-        ? '<span class="status ' + r.status + '">' + STATUS_LABEL[r.status] + '</span>'
-        : '<span></span>') +
-    '</div>').join("");
-
-  document.getElementById("beyond").textContent = FUNDING.beyond;
-  }
 
   refresh();
 
