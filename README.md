@@ -30,8 +30,8 @@ push so the deployed HTML matches the data.
 | --- | ---: |
 | The author | €50 |
 
-This is an independent, one-person project. Building it cost about €38;
-running it costs about €6/month. Support goes to keeping the
+This is an independent, one-person project. So far it has cost about €38 to
+build and about €6 a month to keep running. Support goes to keeping the
 site online, and buying the time to extend it and build further sourced,
 single-topic sites like it. [Support on PayPal](https://paypal.me/pmamico).
 
