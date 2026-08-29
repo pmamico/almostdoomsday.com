@@ -40,5 +40,4 @@ single-topic sites like it. [Support on PayPal](https://paypal.me/pmamico).
 Found an error or have a source correction?
 [Open an issue](https://github.com/pmamico/almostdoomsday.com/issues).
 Issues are also the place to suggest a topic for another site in the same
-vein — one page, one subject, treated the same way this one treats nuclear
-close calls.
+vein.
