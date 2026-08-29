@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Almost Doomsday</title>
 <!-- Favicon: the index bar stopped short of the threshold line - the margin the site is about.
      Inlined as a data URI so site/ stays a single build artefact. -->
@@ -503,13 +504,169 @@
   @media (max-width: 560px) {
     .watch-bar { gap: .45rem .9rem; }
     .watch-bar .grow { display: none; }
-    .masthead nav a { display: none; }
     .score-block { margin-left: 0; text-align: left; }
     .rows > div { flex-direction: column; align-items: flex-start; gap: .15rem; }
     .rows .v { text-align: left; }
     .bandkey { grid-template-columns: minmax(0, 1fr); }
     .rung { grid-template-columns: minmax(0, 1fr) auto; }
     .rung .rung-body { grid-column: 1 / -1; }
+  }
+
+  /* ======================================================================== */
+  /* HANDHELD                                                                  */
+  /* ======================================================================== */
+  /* Everything below this line is scoped to narrow viewports and to coarse
+     pointers. The desktop console is deliberately untouched: a phone is read at
+     arm's length in daylight, so it gets more contrast, larger touch targets and
+     a chart that is plotted rather than merely shrunk. */
+  @media (max-width: 940px) {
+    /* The palette is one step brighter. The instrument-panel hierarchy is kept
+       - ink > ink-2 > ink-3 - but every rung clears 4.5:1 on its own ground,
+       which the desktop values do not do once the labels are read outdoors. */
+    :root {
+      --ink-2: #a8b4bf;
+      --ink-3: #8a97a3;
+      --signal: #cf9033;
+      --critical: #e0656e;
+      --s1: #bd8a33;
+    }
+
+    /* The masthead grid is decorative and costs contrast on a small screen. */
+    body::before { background-size: 64px 64px; opacity: .5; }
+  }
+
+  @media (max-width: 700px) {
+    /* Anchors and scroll-into-view targets clear the taller sticky masthead. */
+    section { scroll-margin-top: 96px; }
+    .story { scroll-margin-top: 96px; }
+
+    /* The nav is not dropped on a phone - it becomes a single scrolling rail,
+       so Timeline/Events/Method/Sources stay reachable without a burger menu. */
+    .masthead .wrap { gap: .5rem; align-items: stretch; padding-top: .45rem; padding-bottom: .45rem; }
+    .brand { align-self: center; font-size: .82rem; letter-spacing: .2em; }
+    .masthead nav {
+      margin-left: 0; width: 100%; flex-wrap: nowrap; gap: 0;
+      overflow-x: auto; overscroll-behavior-x: contain;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      border-top: 1px solid var(--rule-soft);
+    }
+    .masthead nav::-webkit-scrollbar { display: none; }
+    .masthead nav a, .masthead nav button {
+      flex: 0 0 auto; font-size: .74rem;
+      padding: .7rem .75rem; min-height: 44px; display: flex; align-items: center;
+    }
+    .masthead nav a:first-child { padding-left: 0; }
+
+    /* Touch targets. 44px is the floor for anything you are meant to hit. */
+    .chip { font-size: .74rem; padding: .7rem .85rem; min-height: 44px; }
+    .search {
+      /* 16px exactly: anything smaller makes iOS Safari zoom on focus and the
+         reader is then stranded at 2x with no way back. */
+      font-size: 16px; padding: .6rem .75rem; min-height: 44px;
+      flex: 1 1 100%; max-width: none;
+    }
+    .controls { gap: .5rem; }
+
+    /* The ledger is a nested scroller inside a scrolling page, which is a poor
+       trade on touch. It gets taller, and its rows get thumb-sized. */
+    .ledger { max-height: 46vh; overscroll-behavior-y: contain; }
+    .ledger-row {
+      grid-template-columns: 3.2rem minmax(0, 1fr) 2.4rem;
+      padding: .75rem .85rem; min-height: 48px; font-size: .95rem;
+    }
+    .ledger-row .yr { font-size: .78rem; }
+    .ledger-row .sc { font-size: .9rem; }
+
+    /* The beat timeline stacks: a 6.5rem label column left the prose in a
+       four-word gutter. */
+    .beat { grid-template-columns: minmax(0, 1fr); gap: .1rem; padding: .5rem 0 .5rem 1rem; }
+    .beat .t { letter-spacing: .1em; }
+    .beat .x { font-size: .95rem; }
+
+    /* Component bars: the label column was eating the bar it labels. */
+    .bar-row { grid-template-columns: minmax(0, 1fr) 2.8rem; gap: .2rem .6rem; padding: .45rem 0; }
+    .bar-row .lbl { font-size: .72rem; }
+    .bar-track { grid-column: 1 / -1; height: 10px; }
+    .bar-row .val { font-size: .76rem; }
+
+    /* Prose sizes up slightly; a phone is held closer but read in worse light. */
+    .story p, .prose, .debrief-wrap p { font-size: 1rem; line-height: 1.72; }
+    .bandkey p { font-size: .88rem; }
+    .source-groups li, .src-list li { font-size: .92rem; line-height: 1.55; }
+    footer p { font-size: .74rem; }
+
+    /* Inline links in running text need a real target and a visible underline.
+       padding-block grows the hit box without disturbing the line box, so a
+       wrapped source title still reads as one paragraph. */
+    .prose a, .src-list a, .source-groups a, .about-links a {
+      text-decoration-thickness: 1px; text-underline-offset: 3px;
+      padding-block: .8rem;
+    }
+    /* The list gap exceeds twice the padding, so neighbouring hit boxes in a
+       source list never overlap. */
+    .src-list ul, .source-groups ul { gap: 1.15rem; }
+    .about-links { display: flex; flex-wrap: wrap; gap: .1rem 1.1rem; }
+    .about-links a { padding-block: .7rem; }
+
+    .sec-head { gap: .5rem; }
+    .table-scroll { -webkit-overflow-scrolling: touch; }
+
+    /* ---- the watch, on a phone ---- */
+    .watch-bar { padding: .55rem var(--gut); gap: .35rem .8rem; }
+    .watch-clock { font-size: .8rem; }
+    .watch-skip { font-size: .7rem; padding: .55rem .8rem; min-height: 40px; margin-left: auto; }
+    .watch-stage { padding-top: clamp(1.2rem, 3vh, 2rem); padding-bottom: 4rem; }
+
+    /* The briefing is typed line by line; at 2.0 line-height the wrapped
+       continuation of a line was indistinguishable from the next line. */
+    .brief { font-size: .9rem; line-height: 1.75; }
+    .brief p { margin-bottom: .5rem; }
+    .brief p.hd { font-size: .78rem; }
+    .prompt { font-size: .78rem; padding: .7rem 0; min-height: 44px; }
+
+    .alert-head { padding: .75rem .9rem; }
+    .rows > div { padding: .6rem .9rem; }
+    .rows .k { font-size: .68rem; min-width: 0; }
+    .rows .v { font-size: .92rem; }
+    /* Ground radar reads empty on the night that matters. Side by side that is
+       a visibly blank field; stacked it would be a dangling empty line, so the
+       row collapses to the label and the silence stays legible. */
+    .rows .v:empty { display: none; }
+
+    .act { padding: .95rem 1rem; }
+    .act .lbl { font-size: 1.02rem; }
+    .act-deviate .frictions li { font-size: .9rem; }
+    /* A 2.5-second press on touch otherwise raises the text-selection callout
+       and the magnifier, both of which cancel the gesture. */
+    .act-deviate {
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none; user-select: none;
+    }
+    .act-deviate .fill { height: 3px; }
+
+    .btn-next, .btn-open { min-height: 44px; padding: .75rem 1.2rem; }
+    .verdict-panel p { font-size: 1rem; }
+
+    /* The counterfactual log sits under the map rather than beside it, and it
+       auto-scrolls. In a 190px box the warhead counter - the one number this
+       screen exists to show - would leave the viewport within two lines, so it
+       is pinned to the top of the log instead of scrolling with it. */
+    .cf-log { max-height: 190px; font-size: .76rem; line-height: 1.75; padding-top: 0; }
+    .cf-count {
+      position: sticky; top: 0; z-index: 1;
+      background: var(--panel); margin: 0 0 .6rem;
+      padding: .7rem 0 .5rem; border-bottom: 1px solid var(--rule-soft);
+    }
+    .cf-banner { letter-spacing: .12em; font-size: .66rem; padding: .55rem .7rem; }
+    .debrief-wrap .verdict { font-size: .72rem; padding: .55rem .8rem; }
+  }
+
+  /* Hover affordances are noise on touch, and :hover sticks after a tap. */
+  @media (hover: none) {
+    .chip:hover, .ledger-row:hover, .btn-next:hover, .watch-skip:hover { background: none; }
+    .ledger-row:hover { background: transparent; color: var(--ink-2); }
+    .ledger-row[aria-current="true"] { background: var(--panel-2); color: var(--ink); }
   }
 </style>
 
@@ -751,6 +908,10 @@
   ];
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // A phone has no Enter key and no hover. Both facts change wording, not logic:
+  // the controls are buttons either way, so only the label is swapped.
+  const touch = () => matchMedia("(hover: none)").matches;
+  const handheld = () => matchMedia("(max-width: 700px)").matches;
   const wait = (ms) => new Promise(r => setTimeout(r, reduced() ? Math.min(ms, 220) : ms));
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const pad = (n) => String(n).padStart(2, "0");
@@ -940,7 +1101,7 @@
       stopClock();
       const b = document.createElement("button");
       b.className = "prompt";
-      b.append(caret(), document.createTextNode(label));
+      b.append(caret(), document.createTextNode(touch() ? label.replace(/^Press Enter to/, "Tap to") : label));
       host.appendChild(b);
       b.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
       b.focus();
@@ -1434,10 +1595,17 @@
   function drawIndexChart() {
     const host = document.getElementById("chart-index");
     const w = host.clientWidth || 900;
-    const h = Math.max(300, Math.min(420, w * 0.42));
+    // On a phone the plot is squarer rather than shrunk: at the desktop 0.42
+    // aspect the eighty-year x-axis compresses the 1960s cluster into one blob.
+    const narrow = w < 560;
+    const h = narrow
+      ? Math.max(300, Math.min(400, w * 1.05))
+      : Math.max(300, Math.min(420, w * 0.42));
     // A gutter on the right so band names never sit on top of a data point.
     const gutter = w > 720 ? 104 : 0;
-    const p = { t: 20, r: 24 + gutter, b: 28, l: 46 };
+    const p = narrow
+      ? { t: 20, r: 14, b: 30, l: 34 }
+      : { t: 20, r: 24 + gutter, b: 28, l: 46 };
     const iw = w - p.l - p.r, ih = h - p.t - p.b;
     const sx = (x) => p.l + (x - X0) / (X1 - X0) * iw;
     const sy = (v) => p.t + (1 - v / 100) * ih;
@@ -1473,9 +1641,13 @@
     });
     svg.appendChild(el("text", { class: "axis-label", x: p.l - 10, y: sy(100) + 3.5, "text-anchor": "end" }, "100"));
 
+    // Every decade is still ruled, but on a phone only every other one is
+    // labelled - eight four-digit years across 320px run into one another.
     for (let y = 1950; y <= 2020; y += 10) {
       svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: p.t, y2: p.t + ih }));
-      svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" }, y));
+      if (narrow && y % 20 !== 0) continue;
+      svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" },
+        narrow ? "'" + String(y).slice(2) : y));
     }
     svg.appendChild(el("text", { class: "axis-label", x: p.l - 10, y: p.t - 6, "text-anchor": "end" }, "INDEX"));
 
@@ -1492,7 +1664,9 @@
       if (!noMotion) dot.style.animationDelay = (i * 22) + "ms";
       svg.appendChild(dot);
 
-      const hit = el("circle", { class: "dot-hit", cx, cy, r: Math.max(r + 8, 13) });
+      // A fingertip is about 9mm. The hit circle grows to match, but not so far
+      // that neighbouring marks in the 1962 cluster swallow each other.
+      const hit = el("circle", { class: "dot-hit", cx, cy, r: narrow ? Math.max(r + 6, 11) : Math.max(r + 8, 13) });
       hit.addEventListener("mousemove", (ev) => showTip(ev,
         "<strong>" + e.title + "</strong><span>" + e.date_display + " &middot; index <b class=\"val\">" + e.index.total + "</b></span>"));
       hit.addEventListener("mouseleave", hideTip);
@@ -1506,8 +1680,18 @@
       if (e.id === state.selected) {
         svg.appendChild(el("line", { class: "sel-stem", x1: cx, x2: cx, y1: cy, y2: p.t + ih }));
         svg.appendChild(el("circle", { class: "sel-ring", cx, cy, r: r + 5 }));
-        const anchor = cx > w * 0.72 ? "end" : "start";
-        svg.appendChild(el("text", { class: "dot-label", x: cx + (anchor === "end" ? -(r + 9) : r + 9), y: cy + 3.5, "text-anchor": anchor }, e.title));
+        if (narrow) {
+          // Beside the dot there is no room, so the title sits above it, centred
+          // and pulled back inside the plot rather than off the panel edge.
+          const half = e.title.length * 2.9;
+          const lx = Math.min(Math.max(cx, p.l + half), w - p.r - half);
+          const above = cy - r - 9 > p.t + 8;
+          svg.appendChild(el("text", { class: "dot-label", x: lx,
+            y: above ? cy - r - 9 : cy + r + 17, "text-anchor": "middle" }, e.title));
+        } else {
+          const anchor = cx > w * 0.72 ? "end" : "start";
+          svg.appendChild(el("text", { class: "dot-label", x: cx + (anchor === "end" ? -(r + 9) : r + 9), y: cy + 3.5, "text-anchor": anchor }, e.title));
+        }
       }
     });
 
@@ -1533,7 +1717,13 @@
         '<span class="yr num">' + e.year + '</span>' +
         '<span class="ttl">' + e.title + '</span>' +
         '<span class="sc" style="color:' + scoreColor(e.index.total) + '">' + e.index.total + '</span>';
-      b.addEventListener("click", () => select(e.id));
+      // On a phone the story sits below the ledger rather than beside it, so a
+      // tap that only rewrote off-screen content would read as a dead control.
+      b.addEventListener("click", () => {
+        select(e.id);
+        if (handheld()) document.getElementById("story")
+          .scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" });
+      });
       return b;
     }));
   }
@@ -1648,8 +1838,13 @@
 
   refresh();
 
-  let resizeTimer;
+  let resizeTimer, lastChartWidth = innerWidth;
   addEventListener("resize", () => {
+    // A mobile browser fires resize every time the address bar hides or shows.
+    // The chart only depends on width, so ignore height-only changes - otherwise
+    // the dots replay their entry animation on every scroll.
+    if (innerWidth === lastChartWidth) return;
+    lastChartWidth = innerWidth;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(drawIndexChart, 140);
   });
