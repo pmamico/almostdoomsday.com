@@ -1,6 +1,7 @@
 # AlmostDoomsday.com
 
 ![cookie-free](https://img.shields.io/badge/cookies-none-brightgreen)
+![catastrophes](https://img.shields.io/badge/catastrophes-none-brightgreen)
 
 **How close did we come?**
 
