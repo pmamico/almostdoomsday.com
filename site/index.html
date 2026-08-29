@@ -118,6 +118,9 @@
     padding: .3rem .6rem; cursor: pointer;
   }
   .watch-skip:hover { color: var(--ink-2); border-color: var(--ink-3); }
+  .watch-brief { color: var(--signal-bright); border-color: rgba(237, 190, 110, .38); }
+  .watch-brief:hover { color: var(--signal-bright); border-color: var(--signal-bright); }
+  .watch-skip .short { display: none; }
 
   .watch-stage {
     flex: 1; width: 100%; max-width: 960px; margin: 0 auto;
@@ -204,6 +207,13 @@
     color: var(--ink-3); line-height: 1.45;
   }
   .act-deviate .frictions li:last-child { color: var(--ink-2); }
+  /* Both controls say what the officer expects to follow - never what does
+     follow. Without this only one side of the scale was ever visible: the
+     report leads somewhere frightening, and staying silent read as free. */
+  .act .outcome {
+    display: block; font-family: var(--prose); font-size: .88rem; line-height: 1.55;
+    color: var(--ink-3); margin-top: .6rem; max-width: 62ch;
+  }
   .act-deviate .hold {
     display: block; font-family: var(--data); font-size: .64rem; letter-spacing: .16em;
     text-transform: uppercase; color: var(--ink-3); margin-top: .8rem;
@@ -264,6 +274,12 @@
   }
   .quiet .caption { font-family: var(--data); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); margin-top: .8rem; }
   .quiet .landed { font-family: var(--prose); font-size: clamp(1.05rem, 2.6vw, 1.4rem); color: var(--ink); margin-top: 2.4rem; transition: opacity .8s ease; }
+  /* The waiting is the point of this screen, and it was silent. */
+  .quiet .waiting {
+    font-family: var(--prose); font-size: clamp(.95rem, 2vw, 1.1rem); line-height: 1.6;
+    color: var(--ink-2); margin: 2rem auto 0; max-width: 44ch; min-height: 3.4em;
+    transition: opacity .5s ease;
+  }
 
   .debrief-wrap { max-width: 70ch; }
   .debrief-wrap h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; margin: .8rem 0 1rem; letter-spacing: -.01em; }
@@ -281,6 +297,110 @@
     color: var(--ground); padding: .8rem 1.4rem; cursor: pointer;
   }
   .btn-open:hover { background: var(--signal-bright); border-color: var(--signal-bright); }
+
+  /* ---- the title card ----------------------------------------------------- */
+  /* The watch used to open straight into a typing terminal, which told a cold
+     arrival nothing about where they had landed or how long this would take.
+     Skipping is a fair choice; skipping out of confusion is not. */
+  .watch.at-cover .watch-bar { display: none; }
+  .cover { max-width: 46rem; }
+  .cover-brand {
+    font-family: var(--data); font-size: .82rem; font-weight: 500;
+    letter-spacing: .26em; text-transform: uppercase; color: var(--ink);
+  }
+  .cover-brand b { color: var(--signal); font-weight: 500; }
+  .cover-line {
+    font-size: clamp(1.6rem, 4.4vw, 2.6rem); line-height: 1.15; font-weight: 600;
+    letter-spacing: -.015em; color: var(--ink); margin: .9rem 0 0; text-wrap: balance;
+  }
+  .cover-body {
+    font-family: var(--prose); font-size: clamp(1rem, 1.6vw, 1.1rem); line-height: 1.65;
+    color: var(--ink-2); max-width: 54ch; margin: 1.2rem 0 0;
+  }
+  .cover-meta {
+    font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); margin: 1.4rem 0 0;
+  }
+  .cover-go { margin-top: 1.6rem; font-size: .8rem; padding: .95rem 1.7rem; }
+  .cover-skip {
+    display: block; margin-top: 1.1rem; padding: .4rem 0;
+    font-family: var(--data); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+    background: none; border: 0; color: var(--ink-3); cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .cover-skip:hover { color: var(--ink-2); }
+
+  /* ---- what the officer already knows ------------------------------------ */
+  /* A compact restatement of the two rules the night runs on, printed on every
+     screen where a decision is asked for. Nobody in that chair is working from
+     memory; forgetting the rules is what makes the panel unreadable. */
+  .standing {
+    margin-top: 1.2rem; border: 1px solid var(--rule-soft); border-left: 2px solid var(--rule);
+    background: var(--panel); padding: .8rem 1.05rem; display: grid; gap: .55rem;
+  }
+  .standing > div { display: flex; gap: 1rem; align-items: baseline; }
+  .standing .k {
+    font-family: var(--data); font-size: .6rem; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--ink-3); flex: 0 0 8.5rem;
+  }
+  .standing .t { font-family: var(--prose); font-size: .88rem; line-height: 1.55; color: var(--ink-2); }
+  .brief-link {
+    justify-self: start; background: none; border: 0; padding: .2rem 0; cursor: pointer;
+    font-family: var(--data); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--instrument); text-decoration: underline; text-underline-offset: 3px;
+  }
+  .brief-link:hover { color: var(--ink); }
+
+  /* The standing file itself: the whole briefing, the panel glossary and the
+     night's own log, reachable from the bar at every step. The clock holds
+     while it is open - re-reading is never punished. */
+  .dossier {
+    position: fixed; inset: 0; z-index: 110;
+    background: var(--ground); display: flex; flex-direction: column; overflow-y: auto;
+  }
+  .dossier[hidden] { display: none; }
+  .dossier-bar {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: .7rem var(--gut); border-bottom: 1px solid var(--rule);
+    font-family: var(--data); font-size: .7rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-3);
+    position: sticky; top: 0; background: var(--ground); z-index: 2;
+  }
+  .dossier-bar .grow { flex: 1; }
+  .dossier-inner {
+    width: 100%; max-width: 780px; margin: 0 auto;
+    padding: clamp(1.6rem, 4vh, 2.6rem) var(--gut) 4rem;
+  }
+  .dossier-inner > section { padding: 0; margin-bottom: 2.1rem; }
+  .dossier-inner h3 {
+    margin: 0 0 .8rem; font-family: var(--data); font-weight: 500; font-size: .72rem;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--signal-bright);
+    border-bottom: 1px solid var(--rule); padding-bottom: .5rem;
+  }
+  .dossier-inner p {
+    font-family: var(--prose); font-size: .96rem; line-height: 1.7;
+    color: var(--ink-2); margin: 0 0 .8rem; max-width: 64ch;
+  }
+  .dossier-inner p:last-child { margin-bottom: 0; }
+  .dossier-inner p strong { color: var(--ink); font-weight: 500; }
+  .d-fields { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule); }
+  .d-fields > div { background: var(--panel); padding: .6rem 1rem; display: flex; gap: 1rem; align-items: baseline; }
+  .d-fields .k {
+    font-family: var(--data); font-size: .64rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-3); flex: 0 0 9.5rem;
+  }
+  .d-fields .t { font-family: var(--prose); font-size: .9rem; line-height: 1.55; color: var(--ink-2); }
+  .d-log { font-family: var(--data); font-size: .74rem; display: grid; gap: .5rem; }
+  .d-log > div { display: flex; gap: .9rem; color: var(--ink-2); line-height: 1.6; }
+  .d-log .t { color: var(--ink-3); flex: 0 0 3.2rem; font-variant-numeric: tabular-nums; }
+  .d-log > div.bad { color: var(--critical); }
+  .d-log > div.bad .t { color: var(--critical); }
+  .d-log > div.hot { color: var(--ink); }
+  .d-empty { font-family: var(--prose); font-size: .92rem; color: var(--ink-3); }
+  .d-tally {
+    font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--rule-soft);
+  }
 
   /* ======================================================================== */
   /* THE ARCHIVE                                                               */
@@ -612,10 +732,30 @@
     .table-scroll { -webkit-overflow-scrolling: touch; }
 
     /* ---- the watch, on a phone ---- */
-    .watch-bar { padding: .55rem var(--gut); gap: .35rem .8rem; }
-    .watch-clock { font-size: .8rem; }
-    .watch-skip { font-size: .7rem; padding: .55rem .8rem; min-height: 40px; margin-left: auto; }
+    .watch-bar { padding: .55rem var(--gut); gap: .3rem .6rem; }
+    .watch-clock { font-size: .74rem; letter-spacing: .03em; }
+    .watch-skip { font-size: .68rem; letter-spacing: .1em; padding: .5rem .6rem; min-height: 40px; }
     .watch-stage { padding-top: clamp(1.2rem, 3vh, 2rem); padding-bottom: 4rem; }
+    /* Three controls and a clock do not fit beside the post name, and the bar
+       sits over the alert panel: the post gets its own line, the clock and the
+       two controls share the next one, and the skip label goes short. */
+    .watch-bar > .watch-post { flex: 1 0 100%; }
+    .watch-brief { margin-left: auto; }
+    .watch-skip .long { display: none; }
+    .watch-skip .short { display: inline; }
+
+    /* Label and text stack rather than sharing a line: at phone widths the
+       fixed label column left about twenty characters for the text. */
+    .standing { padding: .75rem .9rem; }
+    .standing > div { flex-direction: column; gap: .15rem; }
+    .standing .k, .d-fields .k { flex: none; }
+    .standing .t { font-size: .92rem; }
+    .dossier-bar { padding: .55rem var(--gut); }
+    .dossier-bar .d-close { margin-left: auto; }
+    .dossier-inner { padding-bottom: 3rem; }
+    .d-fields > div { flex-direction: column; gap: .25rem; padding: .65rem .9rem; }
+    .d-fields .t, .dossier-inner p { font-size: .95rem; }
+    .d-log { font-size: .78rem; }
 
     /* The briefing is typed line by line; at 2.0 line-height the wrapped
        continuation of a line was indistinguishable from the next line. */
@@ -635,7 +775,9 @@
 
     .act { padding: .95rem 1rem; }
     .act .lbl { font-size: 1.02rem; }
-    .act-deviate .frictions li { font-size: .9rem; }
+    .act-deviate .frictions li, .act .outcome { font-size: .92rem; }
+    .cover-go, .cover-skip { min-height: 44px; }
+    .cover-skip { padding: .8rem 0; }
     /* A 2.5-second press on touch otherwise raises the text-selection callout
        and the magnifier, both of which cancel the gesture. */
     .act-deviate {
@@ -673,12 +815,86 @@
 <!-- ======================= THE WATCH ======================= -->
 <div class="watch" id="watch" hidden>
   <div class="watch-bar">
-    <span>Serpukhov-15 &middot; Oko early warning</span>
+    <span class="watch-post">Serpukhov-15 &middot; Oko early warning</span>
     <span class="watch-clock" id="watch-clock">25.09.1983 &middot; 23:41:00</span>
     <span class="grow"></span>
-    <button class="watch-skip" id="watch-skip">Skip the watch</button>
+    <button class="watch-skip watch-brief" id="watch-brief">Briefing</button>
+    <button class="watch-skip" id="watch-skip"><span class="long">Skip the watch</span><span class="short">Skip</span></button>
   </div>
   <div class="watch-stage" id="watch-stage"></div>
+
+  <!-- The standing file. Everything this post would already know, plus the
+       reader's own record of the night, openable at any point from the bar. -->
+  <div class="dossier" id="dossier" hidden role="dialog" aria-modal="true" aria-label="Briefing">
+    <div class="dossier-bar">
+      <span>Briefing &middot; standing file</span>
+      <span class="grow"></span>
+      <button class="watch-skip d-close">Back to the watch</button>
+    </div>
+    <div class="dossier-inner">
+      <section>
+        <h3>Your post</h3>
+        <p>Serpukhov-15: a closed military town about a hundred kilometres south of Moscow, and
+        the command centre of <strong>Oko</strong>, the Soviet satellite early-warning system. It is
+        the night of 25&ndash;26 September 1983 and you are the officer of the watch. The floor of
+        consoles below you reports to you; you report upward.</p>
+        <p>Oko sits in a high orbit and watches the American missile fields against the black of
+        space, looking for the infrared plume of a launch. The system is new. It tells you that
+        something was launched. It does not tell you what it means.</p>
+      </section>
+
+      <section>
+        <h3>Your orders</h3>
+        <p><strong>Every launch detection goes up the chain, at once.</strong> You are not asked
+        whether the detection is correct. You are asked to pass it on, and the assessment is made
+        above you, at the General Staff, in the minutes that follow.</p>
+        <p>A report from this console launches nothing by itself: corroboration and a political
+        decision stand between it and any retaliation. But the chain begins here, and at these
+        speeds nobody further up has time to go back and check the beginning.</p>
+      </section>
+
+      <section>
+        <h3>The second opinion</h3>
+        <p>Ground radar is the other half of the system. The satellite sees the plume from orbit;
+        the radar sees the missile itself, once it climbs above the horizon. <strong>A satellite
+        reading becomes a track when the radar agrees with it.</strong> That agreement &mdash;
+        corroboration &mdash; is the difference between a reading and a fact.</p>
+        <p>It cuts both ways. Early in a flight, at long range, the radar would not have seen
+        anything yet even if the launch were real. Silence from the radar is not proof that
+        nothing was fired.</p>
+      </section>
+
+      <section>
+        <h3>Reading the panel</h3>
+        <div class="d-fields">
+          <div><span class="k">Source</span><span class="t">Which satellite filed the detection.</span></div>
+          <div><span class="k">Reliability</span><span class="t">The system&rsquo;s own confidence in what it saw. It rates the reading, never the interpretation.</span></div>
+          <div><span class="k">Ground radar</span><span class="t">The second opinion. An empty field means nothing has come in.</span></div>
+          <div><span class="k">Advance notice</span><span class="t">Whether the launch was filed in advance. Scheduled American tests are announced days ahead.</span></div>
+          <div><span class="k">Objects</span><span class="t">How many launches are being reported. An opening strike would be hundreds, not a handful.</span></div>
+          <div><span class="k">Time to impact</span><span class="t">Launch to detonation on Soviet soil: roughly half an hour, most of it already spent by the time a decision is made.</span></div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Where things stand</h3>
+        <p>On 1 September, three weeks ago, a Soviet fighter shot down Korean Air Lines flight 007
+        after it strayed into Soviet airspace. Two hundred and sixty-nine people died. Washington
+        calls it a massacre; Moscow calls it a provocation. Relations are the worst in twenty
+        years.</p>
+        <p>The leadership in Moscow is working on the assumption that a NATO first strike is a
+        live possibility, and intelligence officers abroad have standing orders to watch for its
+        warning signs. On this console, tonight, an American launch would not read as impossible.</p>
+      </section>
+
+      <section>
+        <h3>Tonight so far</h3>
+        <div class="d-log" id="dossier-log"></div>
+      </section>
+
+      <button class="watch-skip d-close">Back to the watch</button>
+    </div>
+  </div>
 </div>
 
 <!-- ======================= THE ARCHIVE ======================= -->
@@ -973,6 +1189,66 @@
   let watchGen = 0;
   const isCurrent = (g) => g === watchGen;
 
+  /* ---- the standing file ------------------------------------------------- */
+  // The briefing scrolls away as it is typed, and every screen after it asks for
+  // a decision. So the whole of it stays openable from the bar, together with a
+  // log of the night as the reader has actually played it. Every clock holds
+  // while it is open: re-reading what you know is never punished.
+  const dossierEl = document.getElementById("dossier");
+  let dossierOpen = false;
+  let lastFocus = null;
+
+  const watchLog = [];
+  const clockHM = () => pad(watchTime.getUTCHours()) + ":" + pad(watchTime.getUTCMinutes());
+  function logNight(text, cls) {
+    watchLog.push({ at: clockHM(), text, cls: cls || "" });
+    paintLog();
+  }
+  function paintLog() {
+    const host = document.getElementById("dossier-log");
+    host.innerHTML = watchLog.length
+      ? watchLog.map(r => '<div class="' + r.cls + '"><span class="t">' + r.at + '</span><span>' + r.text + '</span></div>').join("")
+        + '<div class="d-tally">Reports filed: ' + filed + ' \u00b7 Errors: ' + errors + '</div>'
+      : '<p class="d-empty">Nothing logged yet. The watch has only just begun.</p>';
+  }
+
+  function openDossier() {
+    if (dossierOpen) return;
+    dossierOpen = true;
+    lastFocus = document.activeElement;
+    paintLog();
+    dossierEl.hidden = false;
+    dossierEl.scrollTop = 0;
+    dossierEl.querySelector(".d-close").focus();
+    track("watch/briefing-reopened", "Watch \u00b7 briefing reopened");
+  }
+  function closeDossier() {
+    if (!dossierOpen) return;
+    dossierOpen = false;
+    dossierEl.hidden = true;
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  // Clicks inside the file never reach the briefing's tap-to-skip handler.
+  dossierEl.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    if (ev.target.closest(".d-close")) closeDossier();
+  });
+  document.getElementById("watch-brief").addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    openDossier();
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (dossierOpen && ev.key === "Escape") { ev.preventDefault(); closeDossier(); }
+  });
+
+  // The two rules, restated wherever a decision is asked for.
+  const standingHtml = () =>
+    '<div class="standing">' +
+      '<div><span class="k">Standing orders</span><span class="t">Every launch detection goes up the chain, at once. You report; you do not assess.</span></div>' +
+      '<div><span class="k">Corroboration</span><span class="t">A satellite reading becomes a track when ground radar agrees with it.</span></div>' +
+      '<button class="brief-link" data-brief>Open the full briefing</button>' +
+    '</div>';
+
   // The watch clock. Starts the evening of 25 September 1983, Moscow time.
   let watchTime = new Date(Date.UTC(1983, 8, 25, 23, 41, 0));
   let ticker = null;
@@ -983,7 +1259,11 @@
   }
   function startClock() {
     stopClock();
-    ticker = setInterval(() => { watchTime = new Date(watchTime.getTime() + 1000); paintClock(); }, 1000);
+    ticker = setInterval(() => {
+      if (dossierOpen) return;
+      watchTime = new Date(watchTime.getTime() + 1000);
+      paintClock();
+    }, 1000);
   }
   function stopClock() { if (ticker) { clearInterval(ticker); ticker = null; } }
 
@@ -1014,7 +1294,11 @@
     { lines: ["Ground radar is your second opinion.",
               "When the radar agrees with the satellite, you have a track."] },
     { lines: ["Three weeks ago a Soviet fighter shot down a Korean airliner.",
-              "Two hundred and sixty-nine people died. Relations are the worst in twenty years."] }
+              "Two hundred and sixty-nine people died. Relations are the worst in twenty years."] },
+    // The last block exists to make the standing file discoverable: none of what
+    // follows is a memory test, and nobody in that chair worked from memory.
+    { lines: ["None of this has to be held in your head.",
+              "BRIEFING, in the bar above, reopens all of it at any point tonight."] }
   ];
 
   // Two rehearsals. In both, the green control is correct - and it is correct
@@ -1031,6 +1315,10 @@
         ["Advance notice", "Filed 6 days ago \u2014 scheduled test", ""],
         ["Objects", "1", ""]
       ],
+      outcome: {
+        report: "It joins the night\u2019s log at the General Staff, where nobody reads it twice.",
+        deviate: "A fault report on a system that is not faulting. Somebody comes to look at your console tomorrow."
+      },
       report: { cls: "ok", tag: "Correctly reported",
         text: "Routine. The satellite saw it, the radar saw it, and it was on the schedule. Two independent systems agreed, so you had a track and not a guess. You passed it on, which is what the job is." },
       deviate: { cls: "bad", tag: "Logged in error",
@@ -1047,6 +1335,10 @@
         ["Advance notice", "None", ""],
         ["Objects", "1", ""]
       ],
+      outcome: {
+        report: "Passed up with the radar track attached. It is acknowledged, and that is the end of it.",
+        deviate: "You would be overruling a radar track on a hunch. It goes in your file."
+      },
       report: { cls: "ok", tag: "Correctly reported",
         text: "Low confidence from orbit \u2014 but the radar acquired it too. Corroboration is what turns a sensor reading into a track, and you had it. Reported and acknowledged." },
       deviate: { cls: "bad", tag: "Logged in error",
@@ -1109,6 +1401,30 @@
     });
   }
 
+  // The first screen anybody sees on this site. It says where they have landed,
+  // what is being asked of them and how long it takes, and it makes leaving for
+  // the archive an informed choice rather than the only legible control.
+  function runCover() {
+    return new Promise(resolve => {
+      stageEl.innerHTML =
+        '<div class="cover">' +
+          '<div class="cover-brand">Almost<b>Doomsday</b></div>' +
+          '<p class="cover-line">Close calls in the nuclear age.</p>' +
+          '<p class="cover-body">Before the archive, one of them from the inside: the night of ' +
+          '26 September 1983 at Serpukhov-15, the command centre of the Soviet early-warning ' +
+          'system. You take the duty officer\u2019s chair, with what he knew and nothing more.</p>' +
+          '<p class="cover-meta">About five minutes &middot; three decisions &middot; you can leave at any point</p>' +
+          '<button class="btn-open cover-go" id="cover-go">Take the watch</button>' +
+          '<button class="cover-skip" id="cover-skip">Go straight to the archive</button>' +
+        '</div>';
+      watchEl.classList.add("at-cover");
+      const leave = (which) => { watchEl.classList.remove("at-cover"); resolve(which); };
+      document.getElementById("cover-go").focus();
+      document.getElementById("cover-go").addEventListener("click", () => leave("go"));
+      document.getElementById("cover-skip").addEventListener("click", () => leave("skip"));
+    });
+  }
+
   async function runBriefing(gen) {
     stageEl.innerHTML = '<div class="brief" id="brief"></div>';
     const host = document.getElementById("brief");
@@ -1122,7 +1438,7 @@
       // listener, so ignore anything arriving in the first moments of a block.
       const started = performance.now();
       const onSkip = (ev) => {
-        if (performance.now() - started < 260) return;
+        if (dossierOpen || performance.now() - started < 260) return;
         if (ev.type === "click" || ev.key === "Enter" || ev.key === " ") {
           if (ev.type !== "click") ev.preventDefault();
           t.skip();
@@ -1150,9 +1466,14 @@
           '<div class="alert-head"><h2>' + beat.title + '</h2></div>' +
           rowsHtml(beat.rows) +
         '</div>' +
+        standingHtml() +
         '<div class="controls-pair">' +
-          '<button class="act act-go" id="act-go"><span class="lbl">' + GO_LABEL + '</span><span class="hint">' + GO_HINT + '</span></button>' +
-          '<button class="act act-deviate" id="act-dev"><span class="lbl">Log as system malfunction</span><span class="hint">Your own judgement</span></button>' +
+          '<button class="act act-go" id="act-go"><span class="lbl">' + GO_LABEL + '</span>' +
+            '<span class="hint">' + GO_HINT + '</span>' +
+            '<span class="outcome">' + beat.outcome.report + '</span></button>' +
+          '<button class="act act-deviate" id="act-dev"><span class="lbl">Log as system malfunction</span>' +
+            '<span class="hint">Your own judgement</span>' +
+            '<span class="outcome">' + beat.outcome.deviate + '</span></button>' +
         '</div>' +
         '<div id="beat-out"></div>';
 
@@ -1161,6 +1482,9 @@
         stopClock();
         track("watch/" + beat.slug + "-" + which, "Watch \u00b7 " + beat.title + " \u00b7 " + which);
         if (which === "report") filed++; else errors++;
+        logNight(beat.title + " \u2014 "
+          + (which === "report" ? "reported up the chain" : "logged as a system malfunction")
+          + ". " + v.tag + ".", v.cls);
         document.getElementById("act-go").disabled = true;
         document.getElementById("act-dev").disabled = true;
         document.getElementById("beat-out").innerHTML =
@@ -1192,13 +1516,21 @@
             '<div><span class="k">Time to impact</span><span class="v" id="impact">23:00</span></div>' +
           '</div>' +
         '</div>' +
+        standingHtml() +
         '<div class="controls-pair">' +
-          '<button class="act act-go" id="act-go"><span class="lbl">' + GO_LABEL + '</span><span class="hint">' + GO_HINT + '</span></button>' +
+          '<button class="act act-go" id="act-go"><span class="lbl">' + GO_LABEL + '</span>' +
+            '<span class="hint">' + GO_HINT + '</span>' +
+            '<span class="outcome">It is with the General Staff within the minute. They will ask for radar ' +
+            'confirmation and there is none to give. If they believe it anyway, the decision leaves your ' +
+            'hands, and what is left of the clock is not yours.</span></button>' +
           '<button class="act act-deviate" id="act-dev">' +
             '<span class="lbl">Log as system malfunction</span>' +
             '<ul class="frictions">' +
               '<li>No fault is indicated. The system reports its highest confidence.</li>' +
             '</ul>' +
+            '<span class="outcome">If you are right, the night never happened. If you are wrong, the first ' +
+            'warning of an attack was yours to give and you did not give it, and the country meets it with ' +
+            'nothing. You find out in twenty-three minutes.</span>' +
             '<span class="hold">Press and hold to log</span>' +
             '<span class="fill" id="dev-fill"></span>' +
           '</button>' +
@@ -1210,6 +1542,7 @@
       const impactEl = document.getElementById("impact");
       let impactLeft = 23 * 60;
       const impactTimer = setInterval(() => {
+        if (dossierOpen) return;
         impactLeft = Math.max(0, impactLeft - 1);
         impactEl.textContent = pad(Math.floor(impactLeft / 60)) + ":" + pad(impactLeft % 60);
       }, 1000);
@@ -1227,6 +1560,7 @@
       go.addEventListener("click", () => {
         cleanup();
         track("watch/decision-report", "Watch \u00b7 the decision \u00b7 report");
+        logNight("Missile attack, five objects \u2014 reported up the chain.", "hot");
         resolve("report");
       });
       go.focus();
@@ -1240,6 +1574,7 @@
         if (p >= 1) {
           cancel(); cleanup();
           track("watch/decision-malfunction", "Watch \u00b7 the decision \u00b7 malfunction");
+          logNight("Missile attack, five objects \u2014 logged as a system malfunction.", "hot");
           resolve("deviate");
           return;
         }
@@ -1429,12 +1764,30 @@
       '<div class="quiet">' +
         '<div class="big-clock" id="q-clock">23:00</div>' +
         '<div class="caption">Time to impact</div>' +
+        '<div class="waiting" id="q-say">Reported as a system malfunction. Now you wait.</div>' +
         '<div class="landed" id="q-landed" style="opacity:0">Nothing arrived.' +
           '<div class="after">It had been a false alert.</div></div>' +
       '</div>';
     const qc = document.getElementById("q-clock");
+    const say = document.getElementById("q-say");
+    // The other half of the scale. Reporting had a whole counterfactual to carry
+    // its consequences; staying silent had twenty-three quiet minutes and no
+    // account at all of what the officer is afraid of while they pass.
+    const WAITING = [
+      [18, "If you were wrong, nobody above you has been told, and nobody is doing anything about it."],
+      [12, "Ground radar would have them by now, if they were there. Nothing."],
+      [6,  "Which proves nothing yet. The radar was always going to be late."],
+      [2,  "Whatever is coming has already been fired, either way."]
+    ];
+    const speak = (minsLeft) => {
+      const line = WAITING.find(([m]) => m === minsLeft);
+      if (!line) return;
+      say.style.opacity = "0";
+      setTimeout(() => { say.textContent = line[1]; say.style.opacity = "1"; }, reduced() ? 0 : 400);
+    };
     if (reduced()) {
       qc.textContent = "00:00";
+      say.textContent = WAITING[WAITING.length - 1][1];
     } else {
       let left = 23 * 60;
       await new Promise(done => {
@@ -1442,7 +1795,8 @@
           left -= 60;
           if (left <= 0) { clearInterval(id); qc.textContent = "00:00"; done(); return; }
           qc.textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
-        }, 95);
+          speak(left / 60);
+        }, 420);
       });
     }
     watchTime = new Date(Date.UTC(1983, 8, 26, 0, 38, 0));
@@ -1517,13 +1871,24 @@
     document.body.classList.add("locked");
     watchEl.hidden = false;
     filed = 0; errors = 0;
+    watchLog.length = 0;
+    paintLog();
+    closeDossier();
     watchTime = new Date(Date.UTC(1983, 8, 25, 23, 41, 0));
     watchEl.scrollTop = 0;
 
     track("watch/started", "Watch \u00b7 started");
+    if (await runCover() === "skip") {
+      track("watch/cover-skipped", "Watch \u00b7 left at the title card");
+      endWatch();
+      return;
+    }
+    if (!isCurrent(gen)) return;
+    track("watch/taken", "Watch \u00b7 taken");
     await runBriefing(gen);
     if (!isCurrent(gen)) return;
     track("watch/briefing-read", "Watch \u00b7 briefing read to the end");
+    logNight("Watch assumed. Oko nominal, ground radar nominal.");
     for (const beat of BEATS) {
       await scrubTo(beat.at[0], beat.at[1], beat.at[2]);
       if (!isCurrent(gen)) return;
@@ -1546,6 +1911,8 @@
   function endWatch() {
     watchGen++;
     stopClock();
+    closeDossier();
+    watchEl.classList.remove("at-cover");
     watchEl.hidden = true;
     stageEl.innerHTML = "";
     document.body.classList.remove("locked");
@@ -1553,6 +1920,11 @@
     window.scrollTo(0, 0);
     drawIndexChart();
   }
+
+  // Any "open the full briefing" link on the stage, whichever screen drew it.
+  stageEl.addEventListener("click", (ev) => {
+    if (ev.target.closest("[data-brief]")) { ev.stopPropagation(); openDossier(); }
+  });
 
   document.getElementById("watch-skip").addEventListener("click", () => {
     track("watch/skipped", "Watch \u00b7 skipped");
