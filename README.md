@@ -41,3 +41,5 @@ Found an error or have a source correction?
 [Open an issue](https://github.com/pmamico/almostdoomsday.com/issues).
 Issues are also the place to suggest a topic for another site in the same
 vein.
+
+Prefer to say it privately? [papp.mico@gmail.com](mailto:papp.mico@gmail.com).
