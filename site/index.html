@@ -597,21 +597,14 @@
 
   .replay-block { border: 1px solid var(--rule); background: var(--panel); padding: clamp(1.2rem, 3vw, 2rem); }
 
-  .supporters { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 0 0 1.4rem; max-width: 32ch; padding: 0; }
-  .supporters li { list-style: none; background: var(--panel); padding: .55rem .9rem; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-  .supporters .who { font-family: var(--prose); font-size: .89rem; color: var(--ink-2); }
-  .supporters .amt { font-family: var(--data); font-size: .85rem; color: var(--signal-bright); font-variant-numeric: tabular-nums; }
-
-  .about-links { margin-top: 1.3rem; }
-  .about-links a { color: var(--ink-2); text-decoration-color: var(--rule); }
-  .about-links a:hover { color: var(--ink); text-decoration-color: var(--ink-3); }
-
   .source-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.6rem; }
   .source-groups ul { margin: .7rem 0 0; padding: 0; display: grid; gap: .55rem; }
   .source-groups li { list-style: none; font-size: .88rem; line-height: 1.45; }
 
   footer { border-top: 1px solid var(--rule); padding: 2rem 0 3rem; margin-top: 1rem; }
   footer p { font-family: var(--data); font-size: .7rem; color: var(--ink-3); letter-spacing: .06em; margin: 0; max-width: none; line-height: 1.7; }
+  footer a { color: var(--ink-2); text-decoration-color: var(--rule); }
+  footer a:hover { color: var(--ink); text-decoration-color: var(--ink-3); }
 
   @media (max-width: 940px) {
     .hero-grid, .story-cols, .two-col, .cf-stage { grid-template-columns: minmax(0, 1fr); }
@@ -718,16 +711,13 @@
     /* Inline links in running text need a real target and a visible underline.
        padding-block grows the hit box without disturbing the line box, so a
        wrapped source title still reads as one paragraph. */
-    .prose a, .src-list a, .source-groups a, .about-links a {
+    .prose a, .src-list a, .source-groups a, footer a {
       text-decoration-thickness: 1px; text-underline-offset: 3px;
       padding-block: .8rem;
     }
     /* The list gap exceeds twice the padding, so neighbouring hit boxes in a
        source list never overlap. */
     .src-list ul, .source-groups ul { gap: 1.15rem; }
-    .about-links { display: flex; flex-wrap: wrap; gap: .1rem 1.1rem; }
-    .about-links a { padding-block: .7rem; }
-
     .sec-head { gap: .5rem; }
     .table-scroll { -webkit-overflow-scrolling: touch; }
 
@@ -906,7 +896,6 @@
       <a href="#events">Events</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
-      <a href="#about">About</a>
       <button id="replay-top">Replay the watch</button>
     </nav>
   </div>
@@ -1019,7 +1008,7 @@
   <section id="watch-notes">
     <div class="wrap">
       <div class="sec-head">
-        <h2>About the watch</h2>
+        <h2>Watch notes</h2>
       </div>
       <div class="replay-block">
         <div class="prose">
@@ -1057,36 +1046,15 @@
     </div>
   </section>
 
-  <section id="about">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>About</h2>
-      </div>
-      <div class="prose">
-        <p class="eyebrow" style="margin:0 0 .7rem">Supporters</p>
-        <ul class="supporters">
-          <li><span class="who">The author</span><span class="amt">&euro;50</span></li>
-        </ul>
-        <p>AlmostDoomsday.com is an independent project, built and run by one person. So far it has cost
-          about &euro;38 to build and about &euro;6 a month to keep running.</p>
-        <p>Support goes straight to that: keeping the site running, and buying the time to extend it and
-          build further sourced, editorial sites like it.</p>
-        <p class="about-links">
-          <a href="https://github.com/pmamico/almostdoomsday.com">Code on GitHub</a> &middot;
-          <a href="https://github.com/pmamico/almostdoomsday.com/issues">Report an issue</a> &middot;
-          <a href="mailto:papp.mico@gmail.com">Send a message</a> &middot;
-          <a href="https://paypal.me/pmamico">Support this project</a>
-        </p>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer>
   <div class="wrap">
     <p>
       The Almost Doomsday Index is an independent editorial score and carries no official standing. Corrections welcome.<br>
-      No cookies, no third-party trackers. Anonymous page counts on a server I run myself.
+      No cookies, no third-party trackers. Anonymous page counts on a server I run myself.<br>
+      <a href="https://github.com/pmamico/almostdoomsday.com">GitHub</a> &middot;
+      <a href="https://github.com/pmamico/almostdoomsday.com/issues">Issues</a>
     </p>
   </div>
 </footer>
@@ -1413,7 +1381,7 @@
           '<p class="cover-body">Before the archive, one of them from the inside: the night of ' +
           '26 September 1983 at Serpukhov-15, the command centre of the Soviet early-warning ' +
           'system. You take the duty officer\u2019s chair, with what he knew and nothing more.</p>' +
-          '<p class="cover-meta">About five minutes &middot; three decisions &middot; you can leave at any point</p>' +
+          '<p class="cover-meta">Around five minutes &middot; three decisions &middot; you can leave at any point</p>' +
           '<button class="btn-open cover-go" id="cover-go">Take the watch</button>' +
           '<button class="cover-skip" id="cover-skip">Go straight to the archive</button>' +
         '</div>';
