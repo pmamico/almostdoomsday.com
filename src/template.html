@@ -1052,7 +1052,7 @@
   <div class="wrap">
     <p>
       The Almost Doomsday Index is an independent editorial score and carries no official standing. Corrections welcome.<br>
-      No cookies, no third-party trackers. Anonymous page counts on a server I run myself.<br>
+      No cookies, no trackers, no analytics of any kind. Nothing about your visit is recorded.<br>
       <a href="https://github.com/pmamico/almostdoomsday.com">GitHub</a> &middot;
       <a href="https://github.com/pmamico/almostdoomsday.com/issues">Issues</a>
     </p>
@@ -1120,33 +1120,6 @@
   /* ======================================================================== */
   /* THE WATCH                                                                 */
   /* ======================================================================== */
-  // Anonymous counters for the watch, so the drop-off and the split at each
-  // decision are visible. The beacon loads asynchronously and the watch starts
-  // immediately, so events are queued until it is ready and dropped if it never
-  // arrives — which is the case locally, in preview, and behind a blocker.
-  const trackQueue = [];
-  let trackTimer = null;
-  function flushTrack() {
-    const gc = window.goatcounter;
-    if (!gc || typeof gc.count !== "function") return;
-    while (trackQueue.length) {
-      try { gc.count(trackQueue.shift()); } catch (e) { /* never break the watch */ }
-    }
-    if (trackTimer) { clearInterval(trackTimer); trackTimer = null; }
-  }
-  const track = (name, title) => {
-    trackQueue.push({ path: name, title, event: true });
-    flushTrack();
-    // Give the beacon a while to show up, then stop waiting.
-    if (trackQueue.length && !trackTimer) {
-      let tries = 0;
-      trackTimer = setInterval(() => {
-        flushTrack();
-        if (++tries > 20) { clearInterval(trackTimer); trackTimer = null; trackQueue.length = 0; }
-      }, 1000);
-    }
-  };
-
   const WATCH_KEY = "almostdoomsday.watch.v1";
   const watchEl = document.getElementById("watch");
   const stageEl = document.getElementById("watch-stage");
@@ -1188,7 +1161,6 @@
     dossierEl.hidden = false;
     dossierEl.scrollTop = 0;
     dossierEl.querySelector(".d-close").focus();
-    track("watch/briefing-reopened", "Watch \u00b7 briefing reopened");
   }
   function closeDossier() {
     if (!dossierOpen) return;
@@ -1448,7 +1420,6 @@
       const finish = (which) => {
         const v = beat[which];
         stopClock();
-        track("watch/" + beat.slug + "-" + which, "Watch \u00b7 " + beat.title + " \u00b7 " + which);
         if (which === "report") filed++; else errors++;
         logNight(beat.title + " \u2014 "
           + (which === "report" ? "reported up the chain" : "logged as a system malfunction")
@@ -1527,7 +1498,6 @@
 
       go.addEventListener("click", () => {
         cleanup();
-        track("watch/decision-report", "Watch \u00b7 the decision \u00b7 report");
         logNight("Missile attack, five objects \u2014 reported up the chain.", "hot");
         resolve("report");
       });
@@ -1541,7 +1511,6 @@
         fill.style.width = (p * 100) + "%";
         if (p >= 1) {
           cancel(); cleanup();
-          track("watch/decision-malfunction", "Watch \u00b7 the decision \u00b7 malfunction");
           logNight("Missile attack, five objects \u2014 logged as a system malfunction.", "hot");
           resolve("deviate");
           return;
@@ -1828,7 +1797,6 @@
       const b = document.getElementById("open-archive");
       b.focus();
       b.addEventListener("click", () => {
-        track("watch/archive-opened", "Watch \u00b7 archive opened");
         resolve();
       });
     });
@@ -1845,17 +1813,13 @@
     watchTime = new Date(Date.UTC(1983, 8, 25, 23, 41, 0));
     watchEl.scrollTop = 0;
 
-    track("watch/started", "Watch \u00b7 started");
     if (await runCover() === "skip") {
-      track("watch/cover-skipped", "Watch \u00b7 left at the title card");
       endWatch();
       return;
     }
     if (!isCurrent(gen)) return;
-    track("watch/taken", "Watch \u00b7 taken");
     await runBriefing(gen);
     if (!isCurrent(gen)) return;
-    track("watch/briefing-read", "Watch \u00b7 briefing read to the end");
     logNight("Watch assumed. Oko nominal, ground radar nominal.");
     for (const beat of BEATS) {
       await scrubTo(beat.at[0], beat.at[1], beat.at[2]);
@@ -1895,7 +1859,6 @@
   });
 
   document.getElementById("watch-skip").addEventListener("click", () => {
-    track("watch/skipped", "Watch \u00b7 skipped");
     endWatch();
   });
   document.getElementById("replay-top").addEventListener("click", runWatch);
@@ -2188,18 +2151,6 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(drawIndexChart, 140);
   });
-
-  /* ---- analytics --------------------------------------------------------- */
-  // Self-hosted GoatCounter: no cookies, no third party, and the script itself
-  // comes from our own box. Only loaded on the live domain, so local work and
-  // preview hosts never record a hit.
-  if (location.hostname === "almostdoomsday.com" || location.hostname === "www.almostdoomsday.com") {
-    const beacon = document.createElement("script");
-    beacon.async = true;
-    beacon.dataset.goatcounter = "https://stats.almostdoomsday.com/count";
-    beacon.src = "https://stats.almostdoomsday.com/count.js";
-    document.body.appendChild(beacon);
-  }
 
   /* ---- boot: the watch runs once per browser ------------------------------ */
   let watchDone = false;
