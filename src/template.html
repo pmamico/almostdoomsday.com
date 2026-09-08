@@ -9,31 +9,31 @@
 
 <style>
   /* ---- tokens ------------------------------------------------------------ */
-  /* A late-night archive: graphite, paper ash, oxidised red and signal brass.
+  /* A cold-war command archive: blackened steel, paper ash, alarm red and signal amber.
      The interface should read as a researched record, not a generic dashboard. */
   :root {
-    --ground: #171613;
-    --panel: #201e19;
-    --panel-2: #29261f;
-    --rule: #454036;
-    --rule-soft: #322e27;
+    --ground: #0b0d0c;
+    --panel: #151815;
+    --panel-2: #20251f;
+    --rule: #5c6256;
+    --rule-soft: #393f37;
 
-    --ink: #eee8da;
-    --ink-2: #b6ae9d;
-    --ink-3: #837a69;
+    --ink: #fff8e8;
+    --ink-2: #d4cbb7;
+    --ink-3: #aaa18f;
 
-    --signal: #b77932;          /* Almost Doomsday Index */
-    --signal-bright: #dfb96f;
-    --instrument: #89a99d;      /* references, sources */
-    --critical: #bd5548;        /* threshold and alarm states */
-    --ok: #728f72;              /* procedure-compliant status */
-    --ok-bright: #a2c39a;
+    --signal: #d88a2e;          /* Almost Doomsday Index */
+    --signal-bright: #ffd07a;
+    --instrument: #9fc9bb;      /* references, sources */
+    --critical: #e05c4d;        /* threshold and alarm states */
+    --ok: #80af82;              /* procedure-compliant status */
+    --ok-bright: #bce0a8;
 
-    --s0: #725437;
-    --s1: #926a35;
-    --s2: #b77932;
-    --s3: #c99345;
-    --s4: #dfb96f;
+    --s0: #8d633a;
+    --s1: #ae7635;
+    --s2: #d88a2e;
+    --s3: #efaa43;
+    --s4: #ffd07a;
 
     --display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
     --prose: "IBM Plex Serif", Georgia, "Times New Roman", serif;
@@ -52,6 +52,7 @@
     font-family: var(--display);
     font-size: 16px;
     line-height: 1.5;
+    font-weight: 500;
     -webkit-font-smoothing: antialiased;
   }
   /* The archive ships in the DOM and is visible without JS; the watch locks it. */
@@ -66,7 +67,7 @@
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background-image: radial-gradient(ellipse at 50% -20%, rgba(223, 185, 111, .075), transparent 55%);
+    background-image: radial-gradient(ellipse at 50% -20%, rgba(255, 208, 122, .1), transparent 55%);
   }
 
   .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gut); }
@@ -403,7 +404,7 @@
   /* ======================================================================== */
   .masthead {
     position: sticky; top: 0; z-index: 40;
-    background: rgba(23, 22, 19, .96);
+    background: rgba(11, 13, 12, .96);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--rule);
   }
@@ -626,12 +627,12 @@
     /* The palette is one step brighter. The instrument-panel hierarchy is kept
        - ink > ink-2 > ink-3 - but every rung clears 4.5:1 on its own ground,
        which the desktop values do not do once the labels are read outdoors. */
-    :root {
-       --ink-2: #c6bda9;
-       --ink-3: #9e947f;
-       --signal: #ca8c3d;
-       --critical: #d66a5c;
-       --s1: #aa793b;
+     :root {
+        --ink-2: #e0d7c4;
+        --ink-3: #beb4a0;
+        --signal: #e69b3b;
+        --critical: #ed6d5d;
+        --s1: #c4863b;
     }
 
      body::before { opacity: .75; }
