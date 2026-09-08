@@ -9,31 +9,31 @@
 
 <style>
   /* ---- tokens ------------------------------------------------------------ */
-  /* Single committed visual world: an instrument console reading an archive.
-     Every colour is painted explicitly so the page holds on any host ground. */
+  /* A late-night archive: graphite, paper ash, oxidised red and signal brass.
+     The interface should read as a researched record, not a generic dashboard. */
   :root {
-    --ground: #0a0e13;
-    --panel: #111821;
-    --panel-2: #16202b;
-    --rule: #24313f;
-    --rule-soft: #1a2531;
+    --ground: #171613;
+    --panel: #201e19;
+    --panel-2: #29261f;
+    --rule: #454036;
+    --rule-soft: #322e27;
 
-    --ink: #e4e6e3;
-    --ink-2: #93a1ae;
-    --ink-3: #67757f;
+    --ink: #eee8da;
+    --ink-2: #b6ae9d;
+    --ink-3: #837a69;
 
-    --signal: #c0812a;          /* Almost Doomsday Index */
-    --signal-bright: #edbe6e;
-    --instrument: #159fc4;      /* instrumentation, links, sources */
-    --critical: #c2454f;        /* threshold and alarm states */
-    --ok: #2e9d7a;              /* procedure-compliant status */
-    --ok-bright: #4cc39c;
+    --signal: #b77932;          /* Almost Doomsday Index */
+    --signal-bright: #dfb96f;
+    --instrument: #89a99d;      /* references, sources */
+    --critical: #bd5548;        /* threshold and alarm states */
+    --ok: #728f72;              /* procedure-compliant status */
+    --ok-bright: #a2c39a;
 
-    --s0: #8f6a28;
-    --s1: #a87527;
-    --s2: #c0812a;
-    --s3: #d69b3f;
-    --s4: #edbe6e;
+    --s0: #725437;
+    --s1: #926a35;
+    --s2: #b77932;
+    --s3: #c99345;
+    --s4: #dfb96f;
 
     --display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
     --prose: "IBM Plex Serif", Georgia, "Times New Roman", serif;
@@ -66,11 +66,7 @@
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background-image:
-      linear-gradient(to right, rgba(36, 49, 63, .32) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(36, 49, 63, .32) 1px, transparent 1px);
-    background-size: 88px 88px;
-    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 78%);
+    background-image: radial-gradient(ellipse at 50% -20%, rgba(223, 185, 111, .075), transparent 55%);
   }
 
   .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gut); }
@@ -407,8 +403,8 @@
   /* ======================================================================== */
   .masthead {
     position: sticky; top: 0; z-index: 40;
-    background: rgba(10, 14, 19, .92);
-    backdrop-filter: blur(6px);
+    background: rgba(23, 22, 19, .96);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--rule);
   }
   .masthead .wrap { display: flex; align-items: center; gap: 1.4rem; min-height: 54px; flex-wrap: wrap; }
@@ -452,12 +448,6 @@
   .sec-head .spacer { flex: 1; }
 
   .panel { position: relative; background: var(--panel); border: 1px solid var(--rule); }
-  .panel::before, .panel::after {
-    content: ""; position: absolute; width: 9px; height: 9px; pointer-events: none;
-    border-color: var(--signal); border-style: solid; opacity: .55;
-  }
-  .panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
-  .panel::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
 
   .panel-head { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; padding: .7rem 1rem; border-bottom: 1px solid var(--rule-soft); }
   .panel-head h3 { margin: 0; font-family: var(--data); font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--ink); }
@@ -637,15 +627,14 @@
        - ink > ink-2 > ink-3 - but every rung clears 4.5:1 on its own ground,
        which the desktop values do not do once the labels are read outdoors. */
     :root {
-      --ink-2: #a8b4bf;
-      --ink-3: #8a97a3;
-      --signal: #cf9033;
-      --critical: #e0656e;
-      --s1: #bd8a33;
+       --ink-2: #c6bda9;
+       --ink-3: #9e947f;
+       --signal: #ca8c3d;
+       --critical: #d66a5c;
+       --s1: #aa793b;
     }
 
-    /* The masthead grid is decorative and costs contrast on a small screen. */
-    body::before { background-size: 64px 64px; opacity: .5; }
+     body::before { opacity: .75; }
   }
 
   @media (max-width: 700px) {
