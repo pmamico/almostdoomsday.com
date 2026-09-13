@@ -1352,17 +1352,27 @@
     return { done, skip: () => { skipped = true; } };
   }
 
-  // Waits for the reader. The watch clock holds while it waits.
+  // Waits for the reader. The watch clock holds while it waits. On touch the
+  // whole screen is the key: a thumb does not aim for a line of small caps.
   function waitForKey(host, label) {
     return new Promise(resolve => {
       stopClock();
       const b = document.createElement("button");
       b.className = "prompt";
-      b.append(caret(), document.createTextNode(touch() ? label.replace(/^Press Enter to/, "Tap to") : label));
+      b.append(caret(), document.createTextNode(touch() ? label.replace(/^Press Enter to/, "Tap anywhere to") : label));
       host.appendChild(b);
       b.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
       b.focus();
-      b.addEventListener("click", () => { b.remove(); resolve(); }, { once: true });
+      const onTap = (ev) => {
+        if (dossierOpen || ev.target.closest("button, a")) return;
+        b.click();
+      };
+      if (touch()) watchEl.addEventListener("click", onTap);
+      b.addEventListener("click", () => {
+        watchEl.removeEventListener("click", onTap);
+        b.remove();
+        resolve();
+      }, { once: true });
     });
   }
 
