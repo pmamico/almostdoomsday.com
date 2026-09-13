@@ -1108,8 +1108,13 @@
   // the controls are buttons either way, so only the label is swapped.
   const touch = () => matchMedia("(hover: none)").matches;
   const handheld = () => matchMedia("(max-width: 700px)").matches;
-  const wait = (ms) => new Promise(r => setTimeout(r, reduced() ? Math.min(ms, 220) : ms));
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  // Reduced motion is honoured where there is motion: the radar sweep, the
+  // trails in flight, the blinking caret, the breathing control, smooth
+  // scrolling and fades. Text arriving a character at a time and a clock
+  // changing its digits are pacing, not motion, and they run for everyone;
+  // a reader who wants none of it has the tap-to-skip and the Skip control.
+  const wait = (ms) => new Promise(r => setTimeout(r, ms));
+  const sleep = wait;
   const pad = (n) => String(n).padStart(2, "0");
 
   const X0 = 1945, X1 = 2027.5;
@@ -1236,7 +1241,6 @@
   function scrubTo(h, m, s) {
     const target = Date.UTC(1983, 8, h < 12 ? 26 : 25, h, m, s);
     stopClock();
-    if (reduced()) { watchTime = new Date(target); paintClock(); return Promise.resolve(); }
     return new Promise(resolve => {
       const id = setInterval(() => {
         const remaining = target - watchTime.getTime();
@@ -1336,7 +1340,6 @@
         if (block.cls) line.className = block.cls;
         host.appendChild(line);
         line.appendChild(cur);
-        if (reduced()) { line.insertBefore(document.createTextNode(text), cur); continue; }
         const node = document.createTextNode("");
         line.insertBefore(node, cur);
         for (let i = 0; i < text.length && !skipped; i++) {
