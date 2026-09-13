@@ -609,8 +609,6 @@
     .watch-bar { gap: .45rem .9rem; }
     .watch-bar .grow { display: none; }
     .score-block { margin-left: 0; text-align: left; }
-    .rows > div { flex-direction: column; align-items: flex-start; gap: .15rem; }
-    .rows .v { text-align: left; }
     .bandkey { grid-template-columns: minmax(0, 1fr); }
     .rung { grid-template-columns: minmax(0, 1fr) auto; }
     .rung .rung-body { grid-column: 1 / -1; }
@@ -712,24 +710,48 @@
     .table-scroll { -webkit-overflow-scrolling: touch; }
 
     /* ---- the watch, on a phone ---- */
-    .watch-bar { padding: .55rem var(--gut); gap: .3rem .6rem; }
-    .watch-clock { font-size: .74rem; letter-spacing: .03em; }
+    /* The bar is one row: clock, then the two controls. The post name is
+       dropped - the briefing opens with it and the standing file repeats it -
+       because every pixel of bar is taken from the alert panel underneath. */
+    .watch-bar { padding: .5rem var(--gut); gap: .3rem .6rem; flex-wrap: nowrap; }
+    .watch-bar > .watch-post { display: none; }
+    .watch-clock { font-size: .78rem; letter-spacing: .03em; white-space: nowrap; }
     .watch-skip { font-size: .68rem; letter-spacing: .1em; padding: .5rem .6rem; min-height: 40px; }
-    .watch-stage { padding-top: clamp(1.2rem, 3vh, 2rem); padding-bottom: 4rem; }
-    /* Three controls and a clock do not fit beside the post name, and the bar
-       sits over the alert panel: the post gets its own line, the clock and the
-       two controls share the next one, and the skip label goes short. */
-    .watch-bar > .watch-post { flex: 1 0 100%; }
     .watch-brief { margin-left: auto; }
     .watch-skip .long { display: none; }
     .watch-skip .short { display: inline; }
+    /* Every screen after the cover reads from the top, like the console it
+       imitates. Vertical centring put the briefing's first line mid-screen and,
+       once the stage was taller than the phone, put the decision screens in a
+       scroll position inherited from the previous one. */
+    .watch:not(.at-cover) .watch-stage {
+      justify-content: flex-start;
+      padding-top: 1rem; padding-bottom: 4rem;
+    }
+    /* The two screens that are a single held moment keep the centre. */
+    .quiet, .cf-final { margin: auto 0; }
 
-    /* Label and text stack rather than sharing a line: at phone widths the
-       fixed label column left about twenty characters for the text. */
-    .standing { padding: .75rem .9rem; }
-    .standing > div { flex-direction: column; gap: .15rem; }
+    /* The alert panel is the context for the decision, so it has to share the
+       first screen with the controls. Label and value sit side by side in a
+       fixed grid: stacked, six rows ran to nearly half the viewport. */
+    .rows > div {
+      display: grid; grid-template-columns: 7.6rem minmax(0, 1fr);
+      gap: .6rem; align-items: baseline; padding: .5rem .9rem;
+    }
+    .rows .k { font-size: .64rem; }
+    .rows .v { font-size: .9rem; text-align: left; }
+
+    /* The rules run in a line each - label as a prefix - instead of the desktop's
+       labelled column, which cost a third of the screen between panel and controls. */
+    .standing { padding: .65rem .9rem; gap: .4rem; margin-top: .9rem; }
+    .standing > div { display: block; }
     .standing .k, .d-fields .k { flex: none; }
-    .standing .t { font-size: .92rem; }
+    .standing .k { display: inline; margin-right: .5rem; }
+    .standing .t { display: inline; font-size: .9rem; }
+    .brief-link { margin-top: .1rem; }
+    .controls-pair { margin-top: 1rem; }
+    /* Once a choice is made the verdict is scrolled to under the bar. */
+    .verdict-panel { scroll-margin-top: 4.2rem; }
     .dossier-bar { padding: .55rem var(--gut); }
     .dossier-bar .d-close { margin-left: auto; }
     .dossier-inner { padding-bottom: 3rem; }
@@ -745,6 +767,7 @@
     .prompt { font-size: .78rem; padding: .7rem 0; min-height: 44px; }
 
     .alert-head { padding: .75rem .9rem; }
+    .alert-head h2 { letter-spacing: .08em; }
     .rows > div { padding: .6rem .9rem; }
     .rows .k { font-size: .68rem; min-width: 0; }
     .rows .v { font-size: .92rem; }
@@ -1114,6 +1137,19 @@
   const stageEl = document.getElementById("watch-stage");
   const clockEl = document.getElementById("watch-clock");
 
+  // Every screen starts at the top of the stage. The stage scrolls on a phone,
+  // and a new screen otherwise inherited the previous one's position - the
+  // alert panel, the context for the decision, opened out of view.
+  function showScreen(html) {
+    stageEl.innerHTML = html;
+    watchEl.scrollTop = 0;
+  }
+  // On a phone, focusing a control must not scroll the screen it belongs to:
+  // the control sits below its context, and the context is what to read first.
+  function focusQuiet(el) {
+    if (el) el.focus(handheld() ? { preventScroll: true } : undefined);
+  }
+
   // Skipping or replaying abandons the run in flight rather than letting two
   // sequences write to the same stage.
   let watchGen = 0;
@@ -1155,7 +1191,7 @@
     if (!dossierOpen) return;
     dossierOpen = false;
     dossierEl.hidden = true;
-    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+    if (lastFocus && document.contains(lastFocus)) focusQuiet(lastFocus);
   }
   // Clicks inside the file never reach the briefing's tap-to-skip handler.
   dossierEl.addEventListener("click", (ev) => {
@@ -1335,7 +1371,7 @@
   // the archive an informed choice rather than the only legible control.
   function runCover() {
     return new Promise(resolve => {
-      stageEl.innerHTML =
+      showScreen(
         '<div class="cover">' +
           '<div class="cover-brand">Almost<b>Doomsday</b></div>' +
           '<p class="cover-line">Close calls in the nuclear age.</p>' +
@@ -1345,17 +1381,17 @@
           '<p class="cover-meta">Around five minutes &middot; three decisions &middot; you can leave at any point</p>' +
           '<button class="btn-open cover-go" id="cover-go">Take the watch</button>' +
           '<button class="cover-skip" id="cover-skip">Go straight to the archive</button>' +
-        '</div>';
+        '</div>');
       watchEl.classList.add("at-cover");
       const leave = (which) => { watchEl.classList.remove("at-cover"); resolve(which); };
-      document.getElementById("cover-go").focus();
+      focusQuiet(document.getElementById("cover-go"));
       document.getElementById("cover-go").addEventListener("click", () => leave("go"));
       document.getElementById("cover-skip").addEventListener("click", () => leave("skip"));
     });
   }
 
   async function runBriefing(gen) {
-    stageEl.innerHTML = '<div class="brief" id="brief"></div>';
+    showScreen('<div class="brief" id="brief"></div>');
     const host = document.getElementById("brief");
     paintClock();
 
@@ -1390,7 +1426,7 @@
 
   function runBeat(beat) {
     return new Promise(resolve => {
-      stageEl.innerHTML =
+      showScreen(
         '<div class="alert">' +
           '<div class="alert-head"><h2>' + beat.title + '</h2></div>' +
           rowsHtml(beat.rows) +
@@ -1404,7 +1440,7 @@
             '<span class="hint">Your own judgement</span>' +
             '<span class="outcome">' + beat.outcome.deviate + '</span></button>' +
         '</div>' +
-        '<div id="beat-out"></div>';
+        '<div id="beat-out"></div>');
 
       const finish = (which) => {
         const v = beat[which];
@@ -1420,19 +1456,25 @@
           '<div class="tally">Reports filed: ' + filed + ' \u00b7 Errors: ' + errors + '</div>' +
           '<button class="btn-next" id="beat-next">Continue the watch</button>';
         const next = document.getElementById("beat-next");
-        next.focus();
+        // The verdict is read before the button that follows it. On a phone
+        // focusing the button would scroll straight past the verdict.
+        if (handheld()) {
+          document.querySelector("#beat-out .verdict-panel")
+            .scrollIntoView({ block: "start", behavior: reduced() ? "auto" : "smooth" });
+        }
+        focusQuiet(next);
         next.addEventListener("click", resolve);
       };
 
       document.getElementById("act-go").addEventListener("click", () => finish("report"));
       document.getElementById("act-dev").addEventListener("click", () => finish("deviate"));
-      document.getElementById("act-go").focus();
+      focusQuiet(document.getElementById("act-go"));
     });
   }
 
   function runMainEvent() {
     return new Promise(resolve => {
-      stageEl.innerHTML =
+      showScreen(
         '<div class="alert">' +
           '<div class="alert-head"><h2>Missile attack \u00b7 United States</h2></div>' +
           '<div class="rows">' +
@@ -1462,7 +1504,7 @@
             '<span class="hold">Press and hold to log</span>' +
             '<span class="fill" id="dev-fill"></span>' +
           '</button>' +
-        '</div>';
+        '</div>');
 
       // The count climbs while you read, and the impact clock runs down. There is
       // no timeout: reading the panel is the point, so it waits for you.
@@ -1490,7 +1532,7 @@
         logNight("Missile attack, five objects \u2014 reported up the chain.", "hot");
         resolve("report");
       });
-      go.focus();
+      focusQuiet(go);
 
       // Deviating takes a deliberate, sustained press. Letting go resets it.
       const HOLD = 2500;
@@ -1535,7 +1577,7 @@
   function runCounterfactual() {
     return new Promise(resolve => {
       stopClock();
-      stageEl.innerHTML =
+      showScreen(
         '<div class="cf-banner">Counterfactual \u00b7 this did not happen \u00b7 speculative reconstruction</div>' +
         '<div class="cf-stage">' +
           '<canvas id="cf-canvas"></canvas>' +
@@ -1543,7 +1585,7 @@
             '<div class="cf-count"><span>Warheads detonated</span><b id="cf-count">0</b></div>' +
           '</div>' +
         '</div>' +
-        '<button class="btn-next" id="cf-skip">Skip</button>';
+        '<button class="btn-next" id="cf-skip">Skip</button>');
 
       const logEl = document.getElementById("cf-log");
       const countEl = document.getElementById("cf-count");
@@ -1674,9 +1716,9 @@
 
       timers.push(setTimeout(async () => {
         if (done) return;
-        stageEl.innerHTML = '<div class="cf-final">' +
+        showScreen('<div class="cf-final">' +
           '<p>You made one decision. It was the last one anybody made.</p>' +
-          '<p class="after">It did not happen. The man on duty that night made the other one.</p></div>';
+          '<p class="after">It did not happen. The man on duty that night made the other one.</p></div>');
         await waitForKey(stageEl.querySelector(".cf-final"), "Press Enter to continue");
         finish();
       }, 15400));
@@ -1686,14 +1728,14 @@
   /* ---- the quiet path ---------------------------------------------------- */
   async function runQuiet() {
     stopClock();
-    stageEl.innerHTML =
+    showScreen(
       '<div class="quiet">' +
         '<div class="big-clock" id="q-clock">23:00</div>' +
         '<div class="caption">Time to impact</div>' +
         '<div class="waiting" id="q-say">Reported as a system malfunction. Now you wait.</div>' +
         '<div class="landed" id="q-landed" style="opacity:0">Nothing arrived.' +
           '<div class="after">It had been a false alert.</div></div>' +
-      '</div>';
+      '</div>');
     const qc = document.getElementById("q-clock");
     const say = document.getElementById("q-say");
     // The other half of the scale. Reporting had a whole counterfactual to carry
@@ -1776,15 +1818,15 @@
     return new Promise(resolve => {
       stopClock();
       const d = DEBRIEF[choice];
-      stageEl.innerHTML =
+      showScreen(
         '<div class="debrief-wrap">' +
           '<span class="verdict ' + d.cls + '">' + d.tag + '</span>' +
           '<h2>26 September 1983</h2>' +
           d.body.split("{N}").join(String(filed)) +
           '<button class="btn-open" id="open-archive">Open the archive \u2014 25 more like this</button>' +
-        '</div>';
+        '</div>');
       const b = document.getElementById("open-archive");
-      b.focus();
+      focusQuiet(b);
       b.addEventListener("click", () => {
         resolve();
       });
