@@ -1698,23 +1698,18 @@
         countEl.textContent = (landed * 17).toLocaleString("en-US");
       }
 
-      if (reduced()) {
-        CF_LOG.forEach(([, text, cls]) => {
-          const d = document.createElement("div");
-          d.className = cls; d.textContent = text; logEl.appendChild(d);
-        });
-        render(14000);
-        setTimeout(finish, 600);
-        return;
-      }
-
+      // Reduced motion drops the sweep and the trails in flight, not the
+      // sequence: the plot advances one still frame per log entry, on the same
+      // timeline, so the count and the ending arrive as they do for everyone.
+      // Skipping it wholesale - as this once did - lost the ending altogether.
+      const still = reduced();
       const loop = (now) => {
         if (done) return;
         const t = now - t0;
         render(t);
         if (t < 15000) requestAnimationFrame(loop);
       };
-      requestAnimationFrame(loop);
+      if (still) render(0); else requestAnimationFrame(loop);
 
       CF_LOG.forEach(([at, text, cls]) => timers.push(setTimeout(() => {
         if (done) return;
@@ -1722,6 +1717,7 @@
         d.className = cls; d.textContent = text;
         logEl.appendChild(d);
         logEl.scrollTop = logEl.scrollHeight;
+        if (still) render(at);
       }, at)));
 
       timers.push(setTimeout(async () => {
@@ -1763,20 +1759,17 @@
       say.style.opacity = "0";
       setTimeout(() => { say.textContent = line[1]; say.style.opacity = "1"; }, reduced() ? 0 : 400);
     };
-    if (reduced()) {
-      qc.textContent = "00:00";
-      say.textContent = WAITING[WAITING.length - 1][1];
-    } else {
-      let left = 23 * 60;
-      await new Promise(done => {
-        const id = setInterval(() => {
-          left -= 60;
-          if (left <= 0) { clearInterval(id); qc.textContent = "00:00"; done(); return; }
-          qc.textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
-          speak(left / 60);
-        }, 420);
-      });
-    }
+    // The countdown runs under reduced motion too: a clock changing its digits
+    // is not motion, and the waiting is what this screen is for.
+    let left = 23 * 60;
+    await new Promise(done => {
+      const id = setInterval(() => {
+        left -= 60;
+        if (left <= 0) { clearInterval(id); qc.textContent = "00:00"; done(); return; }
+        qc.textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
+        speak(left / 60);
+      }, 420);
+    });
     watchTime = new Date(Date.UTC(1983, 8, 26, 0, 38, 0));
     paintClock();
     await wait(900);
