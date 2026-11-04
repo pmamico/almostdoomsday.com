@@ -1,1 +1,4 @@
 .playwright-mcp/
+
+# Third-party / William-related research material: local only, never committed
+research/alberque-*/
