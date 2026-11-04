@@ -314,6 +314,10 @@
     font-family: var(--prose); font-size: clamp(1rem, 1.6vw, 1.1rem); line-height: 1.65;
     color: var(--ink-2); max-width: 54ch; margin: 1.2rem 0 0;
   }
+  .cover-note {
+    font-family: var(--prose); font-size: .9rem; line-height: 1.55;
+    color: var(--ink-2); max-width: 60ch; margin: 1rem 0 0;
+  }
   .cover-meta {
     font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
     color: var(--ink-3); margin: 1.4rem 0 0;
@@ -822,7 +826,7 @@
     <span class="watch-clock" id="watch-clock">25.09.1983 &middot; 23:41:00</span>
     <span class="grow"></span>
     <button class="watch-skip watch-brief" id="watch-brief">Briefing</button>
-    <button class="watch-skip" id="watch-skip"><span class="long">Skip the watch</span><span class="short">Skip</span></button>
+    <button class="watch-skip" id="watch-skip"><span class="long">Browse cases</span><span class="short">Cases</span></button>
   </div>
   <div class="watch-stage" id="watch-stage"></div>
 
@@ -832,7 +836,7 @@
     <div class="dossier-bar">
       <span>Briefing &middot; standing file</span>
       <span class="grow"></span>
-      <button class="watch-skip d-close">Back to the watch</button>
+      <button class="watch-skip d-close">Back to the story</button>
     </div>
     <div class="dossier-inner">
       <section>
@@ -895,7 +899,7 @@
         <div class="d-log" id="dossier-log"></div>
       </section>
 
-      <button class="watch-skip d-close">Back to the watch</button>
+      <button class="watch-skip d-close">Back to the story</button>
     </div>
   </div>
 </div>
@@ -909,7 +913,7 @@
       <a href="#events">Events</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
-      <button id="replay-top">Replay the watch</button>
+      <button id="replay-top">Replay the story</button>
     </nav>
   </div>
 </header>
@@ -1026,7 +1030,7 @@
   <section id="watch-notes">
     <div class="wrap">
       <div class="sec-head">
-        <h2>Watch notes</h2>
+        <h2>About the interactive story</h2>
       </div>
       <div class="replay-block">
         <div class="prose">
@@ -1050,7 +1054,7 @@
             warning system that was confidently wrong, and a procedure that expected a person to pass
             that confidence upward.</p>
         </div>
-        <button class="btn-next" id="replay-bottom">Replay the watch</button>
+        <button class="btn-next" id="replay-bottom">Replay the story</button>
       </div>
     </div>
   </section>
@@ -1263,8 +1267,8 @@
 
   // The briefing is stepped through by the reader, one block per keypress.
   const BRIEFING = [
-    { cls: "hd", lines: ["Duty watch \u2014 Serpukhov-15, Moscow oblast"] },
-    { lines: ["You are the officer on duty at the command centre for Oko,",
+    { cls: "hd", lines: ["Your role \u2014 Soviet Union, September 1983"] },
+    { lines: ["You are on duty at Serpukhov-15, the command centre for Oko,",
               "the Soviet satellite early-warning system."] },
     { lines: ["Oko watches the American missile fields from orbit.",
               "It reports launches. It does not decide what they mean."] },
@@ -1276,8 +1280,8 @@
               "Two hundred and sixty-nine people died. Relations are the worst in twenty years."] },
     // The last block exists to make the standing file discoverable: none of what
     // follows is a memory test, and nobody in that chair worked from memory.
-    { lines: ["None of this has to be held in your head.",
-              "BRIEFING, in the bar above, reopens all of it at any point tonight."] }
+    { lines: ["No need to memorise this.",
+              "The BRIEFING button above reopens these notes whenever you need them."] }
   ];
 
   // Two rehearsals. In both, the green control is correct - and it is correct
@@ -1397,13 +1401,17 @@
       showScreen(
         '<div class="cover">' +
           '<div class="cover-brand">Almost<b>Doomsday</b></div>' +
-          '<p class="cover-line">Close calls in the nuclear age.</p>' +
-          '<p class="cover-body">Before the archive, one of them from the inside: the night of ' +
-          '26 September 1983 at Serpukhov-15, the command centre of the Soviet early-warning ' +
-          'system. You take the duty officer\u2019s chair, with what he knew and nothing more.</p>' +
-          '<p class="cover-meta">Around five minutes &middot; three decisions &middot; you can leave at any point</p>' +
-          '<button class="btn-open cover-go" id="cover-go">Take the watch</button>' +
-          '<button class="cover-skip" id="cover-skip">Go straight to the archive</button>' +
+          '<h1 class="cover-line">How close have we come to nuclear war?</h1>' +
+          '<p class="cover-body">This site brings together false alarms, accidents and crises ' +
+          'involving nuclear weapons, with sources for each account.</p>' +
+          '<p class="cover-body">Start with a short interactive story: you\u2019re on duty in a Soviet ' +
+          'missile-warning centre in 1983. Read the alerts and choose what to report. ' +
+          'No prior knowledge needed.</p>' +
+          '<p class="cover-note">Based on a real incident, with two fictional practice alerts. ' +
+          'Imagined scenes are labelled.</p>' +
+          '<p class="cover-meta">About 5 minutes &middot; 3 decisions &middot; leave at any time</p>' +
+          '<button class="btn-open cover-go" id="cover-go">Start the story</button>' +
+          '<button class="cover-skip" id="cover-skip">Browse the cases instead</button>' +
         '</div>');
       watchEl.classList.add("at-cover");
       const leave = (which) => { watchEl.classList.remove("at-cover"); resolve(which); };
@@ -1443,7 +1451,7 @@
       const spacer = document.createElement("p");
       spacer.className = "blank";
       if (!last) host.appendChild(spacer);
-      await waitForKey(host, last ? "Press Enter to begin the watch" : "Press Enter to continue");
+      await waitForKey(host, last ? "Press Enter to begin the story" : "Press Enter to continue");
     }
   }
 
@@ -1477,7 +1485,7 @@
         document.getElementById("beat-out").innerHTML =
           '<div class="verdict-panel ' + v.cls + '"><div class="tagline">' + v.tag + '</div><p>' + v.text + '</p></div>' +
           '<div class="tally">Reports filed: ' + filed + ' \u00b7 Errors: ' + errors + '</div>' +
-          '<button class="btn-next" id="beat-next">Continue the watch</button>';
+          '<button class="btn-next" id="beat-next">Continue</button>';
         const next = document.getElementById("beat-next");
         // The verdict is read before the button that follows it. On a phone
         // focusing the button would scroll straight past the verdict.
@@ -1839,7 +1847,7 @@
           '<span class="verdict ' + d.cls + '">' + d.tag + '</span>' +
           '<h2>26 September 1983</h2>' +
           d.body.split("{N}").join(String(filed)) +
-          '<button class="btn-open" id="open-archive">Open the archive \u2014 25 more like this</button>' +
+          '<button class="btn-open" id="open-archive">Explore the historical cases</button>' +
         '</div>');
       const b = document.getElementById("open-archive");
       focusQuiet(b);
