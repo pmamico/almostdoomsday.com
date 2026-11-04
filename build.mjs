@@ -23,7 +23,8 @@ for (const e of parsedEvents) {
 const inline = (value) => JSON.stringify(value)
   .replace(/[\u0080-\uffff]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
 
-const html = template.replace("__EVENTS__", () => inline(parsedEvents));
+const html = template.replace("__EVENTS__", () => inline(parsedEvents))
+  .replace("__EVENT_COUNT__", String(parsedEvents.length));
 
 await writeFile(new URL("site/index.html", root), html);
 console.log(`built site/index.html \u2014 ${parsedEvents.length} events, `

@@ -30,31 +30,33 @@
   },
   {
     "id": "1956-suez-false-alarms",
-    "title": "The Suez false alarms",
+    "title": "The Suez warning reports",
     "date_start": "1956-11-05",
-    "date_display": "5 November 1956",
+    "date_display": "5-8 November 1956",
     "categories": ["false_alarm", "crisis_escalation"],
     "location": "US European Command, Europe / Washington",
     "actors": ["United States", "United Kingdom", "Soviet Union"],
     "depth": "draft",
     "confidence": "medium",
     "index": {
-      "total": 58,
+      "total": 54,
       "weapon_readiness": 12,
       "decision_proximity": 9,
-      "information_failure": 16,
+      "information_failure": 12,
       "escalation_context": 16,
       "recovery_fragility": 5
     },
     "story": {
-      "summary": "During the Suez crisis several separate reports arrived at once and briefly appeared to trace the outline of a coordinated Soviet attack.",
-      "almost_happened": "Unidentified aircraft over Turkey, Soviet MiGs over Syria, a downed British bomber and an unexpected Soviet fleet movement were reported within the same window, while Moscow was openly threatening rocket attacks on London and Paris.",
-      "stopped_by": "Each report was checked and dissolved into an ordinary explanation - a flight of swans, an escort flight, a mechanical failure. No alert order was issued on the composite picture.",
-      "uncertainty": "The most colourful version of this night comes from secondary retellings. The core lesson - simultaneous unrelated reports can look like a pattern - is better supported than any single detail."
+      "summary": "During the Suez crisis, reports of aircraft and naval movements fed fears of Soviet intervention. Later accounts combine them into a single night of false alarms.",
+      "almost_happened": "Moscow threatened Britain and France on 5 November. The declassified Navy chronology records reports of Soviet ships moving toward the Mediterranean on 7 November, then Soviet aircraft in Syria and a British aircraft reportedly shot down on 8 November. In this setting, ambiguous reports could be read as signs of a wider confrontation.",
+      "stopped_by": "A ceasefire took effect on 6 November and UN forces entered Egypt on 15 November. These developments eased the confrontation, although US naval forces remained on heightened readiness well beyond the ceasefire.",
+      "uncertainty": "The familiar single-night false-alarm story rests on secondary accounts. The Navy chronology spreads the reports across several days and records a full Sixth Fleet alert; it does not establish a simultaneous bundle of false reports on 5 November. Its date for ending the fleet's 24-hour alert also differs from the Archive's later overview."
     },
     "sources": [
       { "title": "Chatham House - Too Close for Comfort", "url": "https://www.chathamhouse.org/2014/04/too-close-comfort-cases-near-nuclear-use-and-options-policy", "quality": "academic" },
-      { "title": "Nuclear Age Peace Foundation - Nuclear Close Calls", "url": "https://www.wagingpeace.org/nuclear-close-calls/", "quality": "journalistic" }
+      { "title": "Nuclear Age Peace Foundation - Nuclear Close Calls", "url": "https://www.wagingpeace.org/nuclear-close-calls/", "quality": "journalistic" },
+      { "title": "Robert B. Mahoney Jr. / CNA - U.S. Navy Responses, Vol. II, pp. C-9-C-11 (Suez)", "url": "https://nsarchive.gwu.edu/sites/default/files/documents/20515406/doc-3-1977-7-cna-study.pdf#page=17", "quality": "declassified" },
+      { "title": "National Security Archive - Alerts, Crises, and DEFCONs (Suez section)", "url": "https://nsarchive.gwu.edu/briefing-book/nuclear-vault/2021-03-17/alerts-crises-defcons", "quality": "declassified" }
     ]
   },
   {
@@ -113,6 +115,36 @@
     "sources": [
       { "title": "Florence County Museum - The Mars Bluff Bomb", "url": "https://www.flocomuseum.org/featured-objects/mars-bluff-bomb/", "quality": "official" },
       { "title": "DoD narrative summaries of accidents involving nuclear weapons", "url": "https://unredacted.com/2013/10/09/document-friday-narrative-summaries-of-accidents-involving-nuclear-weapons/", "quality": "declassified" }
+    ]
+  },
+  {
+    "id": "1958-taiwan-strait",
+    "title": "Taiwan Strait nuclear contingency",
+    "date_start": "1958-08-23",
+    "date_display": "August-October 1958",
+    "categories": ["crisis_escalation"],
+    "location": "Kinmen (Quemoy), Taiwan Strait / Washington",
+    "actors": ["United States", "People's Republic of China", "Republic of China", "Soviet Union"],
+    "depth": "curated",
+    "confidence": "strong",
+    "index": {
+      "total": 66,
+      "weapon_readiness": 21,
+      "decision_proximity": 15,
+      "information_failure": 4,
+      "escalation_context": 20,
+      "recovery_fragility": 6
+    },
+    "story": {
+      "summary": "China's bombardment of the offshore islands brought US plans for nuclear strikes against the mainland into a live crisis. Eisenhower retained the decision on nuclear use.",
+      "almost_happened": "Heavy shelling of Quemoy began on 23 August. US planners expected nuclear strikes might be needed to defend the islands, and Washington reinforced its forces, including nuclear-armed aircraft. Morton Halperin's declassified RAND study judged that the United States came close to tactical nuclear use and feared a war involving the Soviet Union.",
+      "stopped_by": "Eisenhower required conventional weapons first and reserved nuclear authorization to himself. US escorts and resupply helped sustain the islands. Talks and the October ceasefire eased the crisis; later intermittent shelling allowed supplies to continue.",
+      "uncertainty": "Nuclear use was a contingency, not an issued strike order. Halperin's assessment of the danger is an analytical judgment. His study says officials believed Eisenhower was prepared to authorize nuclear use, while emphasizing that the decision remained his and could still be reversed."
+    },
+    "sources": [
+      { "title": "Morton H. Halperin / RAND - The Taiwan Straits Crisis: An Analysis, pp. 45, 59-61 (1966)", "url": "https://nsarchive.gwu.edu/sites/default/files/documents/20791449/halperin-summary-of-study.pdf", "quality": "declassified" },
+      { "title": "National Security Archive - Alerts, Crises, and DEFCONs (Taiwan documents 10-11)", "url": "https://nsarchive.gwu.edu/briefing-book/nuclear-vault/2021-03-17/alerts-crises-defcons", "quality": "declassified" },
+      { "title": "Robert B. Mahoney Jr. / CNA - U.S. Navy Responses, Vol. II, pp. C-19-C-20 (Quemoy)", "url": "https://nsarchive.gwu.edu/sites/default/files/documents/20515406/doc-3-1977-7-cna-study.pdf#page=27", "quality": "declassified" }
     ]
   },
   {
@@ -352,13 +384,14 @@
     },
     "story": {
       "summary": "A B-52 and a KC-135 collided during refuelling over Spain, dropping four hydrogen bombs on and around a farming village.",
-      "almost_happened": "Two of the four weapons hit the ground hard enough to detonate their conventional explosives, scattering plutonium across hundreds of hectares of farmland. A fourth fell into the sea and took eighty days to find.",
+      "almost_happened": "Two of the four weapons hit the ground hard enough to detonate their conventional explosives, scattering plutonium across hundreds of hectares of farmland. A fourth fell into the sea and was recovered by Navy units on 7 April, eighty days after the crash.",
       "stopped_by": "The one-point safety design held: the high-explosive detonations were asymmetric and produced contamination, not nuclear yield.",
       "uncertainty": "The accident is fully documented. The long-term extent of the contamination and the cleanup obligations are still disputed."
     },
     "sources": [
       { "title": "DoD narrative summaries of accidents involving nuclear weapons", "url": "https://unredacted.com/2013/10/09/document-friday-narrative-summaries-of-accidents-involving-nuclear-weapons/", "quality": "declassified" },
-      { "title": "Union of Concerned Scientists - Close Calls with Nuclear Weapons", "url": "https://www.ucs.org/resources/close-calls-nuclear-weapons", "quality": "academic" }
+      { "title": "Union of Concerned Scientists - Close Calls with Nuclear Weapons", "url": "https://www.ucs.org/resources/close-calls-nuclear-weapons", "quality": "academic" },
+      { "title": "Robert B. Mahoney Jr. / CNA - U.S. Navy Responses, Vol. II, p. D-6 (Palomares recovery)", "url": "https://nsarchive.gwu.edu/sites/default/files/documents/20515406/doc-3-1977-7-cna-study.pdf#page=106", "quality": "declassified" }
     ]
   },
   {
@@ -422,13 +455,13 @@
   {
     "id": "1973-yom-kippur-alert",
     "title": "Yom Kippur War nuclear alert",
-    "date_start": "1973-10-24",
-    "date_display": "October 1973",
+    "date_start": "1973-10-25",
+    "date_display": "Night of 24-25 October 1973",
     "categories": ["crisis_escalation"],
     "location": "Middle East / Washington / Moscow",
     "actors": ["United States", "Soviet Union", "Israel", "Egypt", "Syria"],
-    "depth": "draft",
-    "confidence": "medium",
+    "depth": "curated",
+    "confidence": "strong",
     "index": {
       "total": 59,
       "weapon_readiness": 16,
@@ -439,13 +472,43 @@
     },
     "story": {
       "summary": "As the Arab-Israeli war turned, the United States moved to worldwide DEFCON 3 in response to signals that Soviet forces might intervene directly in Egypt.",
-      "almost_happened": "Israeli nuclear capability, a possible Soviet airborne deployment and an apparent shipment of nuclear material to Egypt combined into a superpower confrontation over a regional war, decided in a night meeting while the US president was distracted by a domestic political crisis.",
-      "stopped_by": "The alert was read in Moscow as a bargaining signal rather than as preparation for attack, and the ceasefire held before either side deployed.",
-      "uncertainty": "Israeli decisions in this war remain officially unacknowledged; several widely repeated claims rest on single-source reporting."
+      "almost_happened": "After ceasefire violations, Egypt requested US and Soviet forces on 24 October to enforce the ceasefire. Fear of unilateral Soviet intervention led Washington to put US forces at DEFCON 3 early on 25 October. Carrier groups were ordered toward the eastern Mediterranean, and Army units in the United States and Europe were alerted.",
+      "stopped_by": "The confrontation did not become a direct US-Soviet war. A UN buffer force and Israeli-Egyptian negotiations helped stabilize the ceasefire. SAC and continental air-defense forces returned to normal DEFCON status on 26 October; the Sixth Fleet remained at higher readiness until 17 November.",
+      "uncertainty": "The US alert and naval movements are documented. They do not establish that a nuclear strike was ordered or imminent. Claims about Israeli nuclear decisions or Soviet nuclear cargoes require separate evidence and are not treated as established facts here."
     },
     "sources": [
       { "title": "Chatham House - 12 times we came close to using nuclear weapons", "url": "https://www.chathamhouse.org/2016/07/12-times-we-came-close-using-nuclear-weapons", "quality": "academic" },
-      { "title": "Chatham House - Too Close for Comfort", "url": "https://www.chathamhouse.org/2014/04/too-close-comfort-cases-near-nuclear-use-and-options-policy", "quality": "academic" }
+      { "title": "Chatham House - Too Close for Comfort", "url": "https://www.chathamhouse.org/2014/04/too-close-comfort-cases-near-nuclear-use-and-options-policy", "quality": "academic" },
+      { "title": "Robert B. Mahoney Jr. / CNA - U.S. Navy Responses, Vol. II, pp. C-71-C-74 (October 1973 alert)", "url": "https://nsarchive.gwu.edu/sites/default/files/documents/20515406/doc-3-1977-7-cna-study.pdf#page=79", "quality": "declassified" }
+    ]
+  },
+  {
+    "id": "1979-mount-hebo-rocket-body",
+    "title": "Mount Hebo rocket-body alarm",
+    "date_start": "1979-10-03",
+    "date_display": "3 October 1979",
+    "categories": ["false_alarm"],
+    "location": "Mount Hebo, Oregon / US missile-warning command posts",
+    "actors": ["NORAD", "United States"],
+    "depth": "draft",
+    "confidence": "medium",
+    "index": {
+      "total": 40,
+      "weapon_readiness": 12,
+      "decision_proximity": 8,
+      "information_failure": 15,
+      "escalation_context": 2,
+      "recovery_fragility": 3
+    },
+    "story": {
+      "summary": "An early-warning radar detected a decaying rocket body and generated a false submarine-launched missile report. The event reached a Threat Assessment Conference.",
+      "almost_happened": "The Mount Hebo SLBM-warning radar picked up a low-orbit rocket body nearing re-entry and generated a false launch and impact report. The 1980 Senate investigation lists it among four events in 1979-1980 that reached the senior military threat-assessment stage.",
+      "stopped_by": "It did not progress to the next conference stage, which would have included the president. The Senate report identifies the object as a rocket body, but gives no detailed account of how operators resolved the warning.",
+      "uncertainty": "The Senate and GAO reports establish the date, radar error and conference level. They do not document an imminent launch decision, specific force movements or the minutes spent resolving this alarm."
+    },
+    "sources": [
+      { "title": "US Senate - Hart-Goldwater report, Recent False Alerts, pp. 4-5 (9 October 1980)", "url": "https://www.govinfo.gov/content/pkg/CPRT-96SPRT68531O/pdf/CPRT-96SPRT68531O.pdf#page=9", "quality": "official" },
+      { "title": "US GAO - NORAD's Missile Warning System: What Went Wrong?, p. 3 (1981)", "url": "https://www.gao.gov/assets/masad-81-30.pdf#page=13", "quality": "official" }
     ]
   },
   {
@@ -459,57 +522,91 @@
     "depth": "curated",
     "confidence": "strong",
     "index": {
-      "total": 72,
+      "total": 66,
       "weapon_readiness": 18,
-      "decision_proximity": 16,
+      "decision_proximity": 12,
       "information_failure": 20,
       "escalation_context": 10,
-      "recovery_fragility": 8
+      "recovery_fragility": 6
     },
     "story": {
-      "summary": "A training tape simulating a full Soviet missile attack was loaded into a live NORAD system. For six minutes, American command centres watched a war that was not happening.",
-      "almost_happened": "Displays at NORAD, SAC, the Pentagon and the alternate command post showed a large-scale submarine and ICBM attack on the United States. Fighter aircraft were launched from bases in the US and Canada, missile crews went to higher readiness, and the National Emergency Airborne Command Post took off - without the president aboard.",
-      "stopped_by": "Direct checks against the raw sensor data - the satellites and the ground radars - showed nothing. That physical confirmation step was what broke the illusion, roughly six minutes in, before the ten-minute point at which a presidential decision would have been sought.",
-      "uncertainty": "The sequence is documented in declassified after-action reporting. How the tape reached the live system was never fully explained in public."
+      "summary": "Test data simulating a mass Soviet missile attack entered NORAD's operational warning system and appeared on command-centre displays. Real sensors showed no attack.",
+      "almost_happened": "A missile-attack test scenario passed from a message generator into NORAD's operational computer and was processed as real warning data. The warning reached other command posts, interceptors were launched, and the National Emergency Airborne Command Post took off without the president. Joint Staff draft messages later described displays showing 1,400 ballistic missiles.",
+      "stopped_by": "Satellite and radar data did not corroborate the displayed attack. The official Aerospace Defense Command history says the warning was assigned low confidence almost immediately, and neither the president nor other senior officials were informed during the incident.",
+      "uncertainty": "Investigators could not establish whether human error, computer error or both caused the test-data intrusion, or reproduce its precise mechanism. The often-retold middle-of-the-night call to Brzezinski cannot be confidently assigned to this mid-morning incident; the Archive also questions the later memoir account."
     },
     "beats": [
-      { "time": "T+0", "text": "Warning displays at four command centres show a mass Soviet launch." },
-      { "time": "T+1", "text": "Threat assessment conference convenes; interceptors are scrambled." },
-      { "time": "T+3", "text": "Missile crews go to higher alert; the doomsday plane launches empty." },
-      { "time": "T+6", "text": "Direct sensor readouts show no launches. The alert is cancelled." },
-      { "time": "after", "text": "Investigators find a test scenario tape running on operational equipment." }
+      { "time": "test data", "text": "A simulated mass attack enters the operational warning computer." },
+      { "time": "cross-check", "text": "Actual warning sensors show no attack; NORAD assigns the display low confidence." },
+      { "time": "precautions", "text": "Interceptors and the emergency airborne command post nevertheless take off." },
+      { "time": "assessment", "text": "The false warning does not become a presidential Missile Attack Conference." },
+      { "time": "after", "text": "Investigators identify the test-data pathway but cannot reproduce the precise failure." }
     ],
     "sources": [
       { "title": "National Security Archive - False warnings of Soviet missile attacks, 1979-1980", "url": "https://nsarchive.gwu.edu/briefing-book/nuclear-vault/2020-03-16/false-warnings-soviet-missile-attacks-during-1979-80-led-alert-actions-us-strategic-forces", "quality": "declassified" },
+      { "title": "Aerospace Defense Command - 1979 history (test-data intrusion and low-confidence assessment)", "url": "https://nsarchive.gwu.edu/document/19911-national-security-archive-doc-13-aerospace", "quality": "declassified" },
+      { "title": "US Senate - Hart-Goldwater report, Recent False Alerts, pp. 4-5 (1980)", "url": "https://www.govinfo.gov/content/pkg/CPRT-96SPRT68531O/pdf/CPRT-96SPRT68531O.pdf#page=9", "quality": "official" },
       { "title": "PBS/NOVA - False Alarms on the Nuclear Front", "url": "https://www.pbs.org/wgbh/nova/missileers/falsealarms.html", "quality": "journalistic" }
+    ]
+  },
+  {
+    "id": "1980-mount-hebo-soviet-test",
+    "title": "Soviet test launch, American warning",
+    "date_start": "1980-03-15",
+    "date_display": "15 March 1980",
+    "categories": ["false_alarm"],
+    "location": "Kuril Islands / Mount Hebo, Oregon / US command posts",
+    "actors": ["Soviet Union", "NORAD", "United States"],
+    "depth": "draft",
+    "confidence": "medium",
+    "index": {
+      "total": 50,
+      "weapon_readiness": 16,
+      "decision_proximity": 9,
+      "information_failure": 16,
+      "escalation_context": 5,
+      "recovery_fragility": 4
+    },
+    "story": {
+      "summary": "Four Soviet submarine-launched missiles were fired in a training exercise. One produced a possible impact area extending into the United States and triggered a Threat Assessment Conference.",
+      "almost_happened": "The Soviet Union launched four SS-N-6 SLBMs from the Kuril Islands during troop training. The Senate report describes an unusual threat fan for one launch; GAO explains that its combined azimuth and trajectory appeared to project an impact point in the United States and identifies Mount Hebo as the radar responsible.",
+      "stopped_by": "The warning did not advance to a presidential Missile Attack Conference. The surviving public summaries identify a Soviet training launch rather than an attack, but do not explain the detailed sequence that resolved the threat assessment.",
+      "uncertainty": "The launches were real; the threat interpretation was the error. The reports do not establish nuclear payloads, bomber launches, a countdown to retaliation, or how close anyone came to requesting presidential authorization. Alberque explicitly identifies the limited public record."
+    },
+    "sources": [
+      { "title": "US Senate - Hart-Goldwater report, Recent False Alerts, pp. 4-5 (9 October 1980)", "url": "https://www.govinfo.gov/content/pkg/CPRT-96SPRT68531O/pdf/CPRT-96SPRT68531O.pdf#page=9", "quality": "official" },
+      { "title": "US GAO - NORAD's Missile Warning System: What Went Wrong?, pp. 3-4 (1981)", "url": "https://www.gao.gov/assets/masad-81-30.pdf#page=13", "quality": "official" },
+      { "title": "William Alberque - On March 15, 1980, the world almost...", "url": "https://walberque.substack.com/p/on-march-15-1980-the-world-almost", "quality": "journalistic" }
     ]
   },
   {
     "id": "1980-46-cent-chip",
     "title": "The 46-cent chip",
     "date_start": "1980-06-03",
-    "date_display": "3 June 1980",
+    "date_display": "3 and 6 June 1980",
     "categories": ["false_alarm"],
     "location": "Cheyenne Mountain, Colorado, USA",
-    "actors": ["NORAD", "Strategic Air Command"],
-    "depth": "draft",
+    "actors": ["NORAD", "Strategic Air Command", "National Military Command Center", "US Pacific Command"],
+    "depth": "curated",
     "confidence": "strong",
     "index": {
-      "total": 70,
+      "total": 65,
       "weapon_readiness": 18,
-      "decision_proximity": 15,
+      "decision_proximity": 12,
       "information_failure": 19,
       "escalation_context": 10,
-      "recovery_fragility": 8
+      "recovery_fragility": 6
     },
     "story": {
-      "summary": "A failing computer chip in a communications multiplexer filled American warning displays with a random and changing number of incoming Soviet missiles.",
-      "almost_happened": "Bomber crews started engines and the airborne command post prepared to launch. The count of attacking missiles kept changing - 2, then 200, then 2 again - across different command centres. The same fault produced another alarm three days later.",
-      "stopped_by": "The nonsensical, inconsistent numbers were themselves the tell: a real attack does not fluctuate. Sensor data again showed nothing.",
-      "uncertainty": "Well documented. The failed component is usually described as a chip worth under a dollar."
+      "summary": "False missile counts appeared at SAC and Pentagon command posts while NORAD's own displays showed no attack. Investigators attributed the June warnings to a communications chip and faulty message design.",
+      "almost_happened": "On 3 June, zeros in routine communications-check messages became twos, producing changing counts of SLBMs and ICBMs. SAC crews started bomber and tanker engines. NEACP taxied into launch position but stayed on the ground; Pacific Command's Blue Eagle command post took off even after NORAD had judged the warning false. Another alarm on 6 June again sent SAC crews to start engines.",
+      "stopped_by": "Independent sensor feeds showed no launches, different command posts saw different counts, and the messages followed no plausible launch sequence. NORAD assessed no threat. Later safeguards changed the check-message format and added checks on outgoing data.",
+      "uncertainty": "The Senate investigation identified a faulty integrated circuit in the communications multiplexer. Later testing did not consistently reproduce the fault. The report says no presidential Missile Attack Conference occurred; the Archive treats the alleged overnight Brzezinski phone calls as uncertain. This entry groups the two June alarms, not the separate 28 May warning."
     },
     "sources": [
       { "title": "National Security Archive - False warnings of Soviet missile attacks, 1979-1980", "url": "https://nsarchive.gwu.edu/briefing-book/nuclear-vault/2020-03-16/false-warnings-soviet-missile-attacks-during-1979-80-led-alert-actions-us-strategic-forces", "quality": "declassified" },
+      { "title": "US Senate - Hart-Goldwater report, Recent False Alerts, pp. 5-8 (June events and safeguards)", "url": "https://www.govinfo.gov/content/pkg/CPRT-96SPRT68531O/pdf/CPRT-96SPRT68531O.pdf#page=9", "quality": "official" },
+      { "title": "Harold Brown to President Carter - False Missile Alert, 7 June 1980", "url": "https://nsarchive.gwu.edu/document/19921-national-security-archive-doc-23-secretary", "quality": "declassified" },
       { "title": "PBS/NOVA - False Alarms on the Nuclear Front", "url": "https://www.pbs.org/wgbh/nova/missileers/falsealarms.html", "quality": "journalistic" }
     ]
   },
@@ -641,31 +738,35 @@
     "date_start": "1995-01-25",
     "date_display": "25 January 1995",
     "categories": ["false_alarm"],
-    "location": "Andoya, Norway / Moscow",
+    "location": "Andøya, Norway / Olenegorsk and Moscow, Russia",
     "actors": ["Russia", "Norway", "United States"],
     "depth": "curated",
     "confidence": "strong",
     "index": {
-      "total": 75,
-      "weapon_readiness": 22,
-      "decision_proximity": 19,
+      "total": 65,
+      "weapon_readiness": 18,
+      "decision_proximity": 15,
       "information_failure": 18,
       "escalation_context": 8,
-      "recovery_fragility": 8
+      "recovery_fragility": 6
     },
     "story": {
-      "summary": "A Norwegian-American scientific rocket studying the aurora looked to Russian early warning like a submarine-launched missile on a trajectory that could blind Moscow's radars.",      "almost_happened": "The Black Brant XII flew higher and faster than any previous launch from Andoya. Its profile resembled a US Trident missile fired to burst high above Russia - the classic opening move to black out early-warning radar before a full strike. Russian nuclear forces went to heightened alert and, for the only confirmed time in history, the Russian president's nuclear briefcase was activated for a possible retaliatory decision.",
-      "stopped_by": "Radar tracking showed the rocket heading away from Russian territory and falling into the sea. Boris Yeltsin's advisors reported no attack, and the alert was stood down within minutes.",
-      "uncertainty": "Norway had notified Russia of the launch weeks earlier; the notice never reached the radar operators. Some analysts argue the alert was less severe than usually reported, but the briefcase activation is broadly accepted."
+      "summary": "A Norwegian-American Black Brant XII research rocket triggered a Russian missile warning that reached Boris Yeltsin and his Cheget nuclear command terminal.",
+      "almost_happened": "Olenegorsk radar detected the four-stage rocket launched from Andøya to study the aurora. Its flight characteristics could resemble a Trident submarine-launched missile. The warning passed up the command chain; Yeltsin later said he used his nuclear briefcase to follow the flight with military leaders. A possible high-altitude strike against warning systems is one explanation of why a single rocket caused concern.",
+      "stopped_by": "Continued tracking established that the rocket would not hit Russia. Norway had issued a diplomatic notice on 21 December 1994, a NOTAM on 16 January and further warnings on 24 January, but these did not prevent the military alarm. Yeltsin and the military monitored the flight without ordering a nuclear strike.",
+      "uncertainty": "Cheget use is supported by Yeltsin's public account, but the severity of the military response is disputed. Alberque contrasts a US EUCOM account of submarine combat readiness with General Vladimir Dvorkin's denial that any retaliatory measures began. Accounts also differ on how the prior notification failed to reach the duty operators. Briefcase activation was not itself a launch order."
     },
     "beats": [
-      { "time": "T+0", "text": "A four-stage research rocket lifts off from Andoya, Norway." },
-      { "time": "T+~1", "text": "Russian early-warning radar at Olenegorsk detects a high, fast trajectory." },
-      { "time": "escalate", "text": "The track is classified as a possible submarine-launched missile; forces go to alert." },
-      { "time": "briefcase", "text": "The Cheget nuclear command terminal is activated in front of the Russian president." },
-      { "time": "stand down", "text": "Tracking shows the rocket falling away from Russia. The alert is cancelled." }
+      { "time": "21 Dec 1994", "text": "Norway's diplomatic note specifies the launch window, rocket types and impact areas." },
+      { "time": "before launch", "text": "A 16 January NOTAM and 24 January air-traffic and shipping warnings follow." },
+      { "time": "25 January", "text": "Black Brant XII lifts off; Russian radar detects it and the warning moves up the chain." },
+      { "time": "assessment", "text": "Yeltsin and military leaders monitor the flight using their command terminals." },
+      { "time": "tracking", "text": "The projected impact is outside Russia; no nuclear strike is ordered." },
+      { "time": "26 January", "text": "Yeltsin publicly describes using his nuclear briefcase the previous day." }
     ],
     "sources": [
+      { "title": "William Alberque - On 25 January 1995, Andøya, Norway nearly ended the world...", "url": "https://walberque.substack.com/p/on-25-january-1995-andya-norway-nearly", "quality": "journalistic" },
+      { "title": "PBS FRONTLINE - Interview with General Vladimir Dvorkin (disputing retaliatory preparations)", "url": "https://www.pbs.org/wgbh/pages/frontline/shows/russia/interviews/dvorkin.html", "quality": "journalistic" },
       { "title": "Union of Concerned Scientists - Nuclear war and the science experiment of January 25, 1995", "url": "https://blog.ucs.org/david-wright/nuclear-war-and-the-science-experiment-of-january-25-1995-603/", "quality": "academic" },
       { "title": "National Museum of Nuclear Science & History - The Norwegian rocket incident", "url": "https://ahf.nuclearmuseum.org/ahf/history/nuclear-close-calls-norwegian-rocket-incident/", "quality": "official" }
     ]
