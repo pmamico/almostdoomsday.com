@@ -921,10 +921,10 @@
         <p class="eyebrow">A record of the times it nearly went wrong</p>
         <h1>How thin<br>was the <em>margin</em>?</h1>
         <p class="deck">
-          29 moments when nuclear weapons, the systems built to control them, or the
-          people reading the screens came close to producing a catastrophe. Each one is scored on a
-          transparent 0&ndash;100 index built from five published components, so you can see what
-          almost happened, what stopped it, and how much of that was luck.
+          29 incidents involving nuclear weapons, the systems built to control them, and
+          the people reading the screens. Each account follows what happened, what prevented disaster,
+          and what remains unclear. The scores help compare five aspects of each case on a common
+          0&ndash;100 scale.
         </p>
       </div>
       <dl class="readout">
@@ -955,7 +955,7 @@
         <div class="panel-head">
           <span class="swatch"></span>
           <h3>Almost Doomsday Index</h3>
-          <span class="sub">editorial score, 0&ndash;100</span>
+          <span class="sub">comparison score, 0&ndash;100</span>
           <span class="count" id="chart-count"></span>
         </div>
         <div class="chart-body" id="chart-index"></div>
@@ -981,42 +981,43 @@
   <section id="method">
     <div class="wrap">
       <div class="sec-head">
-        <h2>How the index is built</h2>
+        <h2>What the scores mean</h2>
       </div>
       <div class="two-col">
         <div>
           <div class="table-scroll">
             <table class="method-table">
-              <thead><tr><th>Component</th><th>Weight</th><th>Question</th></tr></thead>
+              <thead><tr><th>Factor</th><th>Max. points</th><th>What matters</th></tr></thead>
               <tbody>
-                <tr><td>Weapon readiness</td><td class="w">25</td><td>Was a live weapon, warhead or launch capability directly involved?</td></tr>
-                <tr><td>Decision proximity</td><td class="w">25</td><td>How many human or technical steps remained before use or detonation?</td></tr>
-                <tr><td>Information failure</td><td class="w">20</td><td>Did sensors, alarms or communications produce a false picture?</td></tr>
-                <tr><td>Escalation context</td><td class="w">20</td><td>Did a crisis, war or exercise raise the odds of escalation?</td></tr>
-                <tr><td>Recovery fragility</td><td class="w">10</td><td>Did one person, device or coincidence stop it?</td></tr>
+                <tr><td>Weapons involved</td><td class="w">25</td><td>Was a nuclear weapon present, armed or ready to launch?</td></tr>
+                <tr><td>Steps before use</td><td class="w">25</td><td>How close did events get to a launch decision or detonation?</td></tr>
+                <tr><td>Misleading information</td><td class="w">20</td><td>Did warnings, sensor readings or messages give people a false picture?</td></tr>
+                <tr><td>Wider conflict</td><td class="w">20</td><td>Did a war, confrontation or exercise make a mistake more dangerous?</td></tr>
+                <tr><td>Margin for error</td><td class="w">10</td><td>How much depended on a single person, safety device or chance event?</td></tr>
               </tbody>
             </table>
           </div>
           <div class="bands" id="method-bands"></div>
         </div>
         <div class="prose">
-          <p><strong>This is not a probability.</strong> The Almost Doomsday Index is a curated
-            editorial score, not a scientific estimate. It rates single incidents against each other on
-            five published components, and nothing more. Where you disagree with a number, the
-            component breakdown on each event page shows exactly which judgement to argue with.</p>
-          <p><strong>The weighting has a known bias.</strong> Because escalation context and information
-            failure together carry 40 points, a peacetime weapons accident cannot score as high as a
-            crisis incident &mdash; even one, like Goldsboro, that came down to a single switch. That is a
-            deliberate choice: the index measures how close the <em>system</em> came to nuclear war, not
-            only how close one weapon came to detonating. Read the components, not just the total.</p>
-          <p><strong>Confidence varies.</strong> Some entries rest on declassified documents; others on
-            memoirs recorded decades later. Every event carries a source-quality label and, where
-            historians disagree, a &ldquo;known uncertainty&rdquo; note. Where an account is contested,
-            the disagreement is part of the story rather than something to smooth over.</p>
-          <p><strong>A warning is not a launch order.</strong> A threat-assessment conference, a
-            survivability precaution or activation of a command terminal does not by itself establish
-            that nuclear use was imminent. Entries distinguish documented actions from interpretations
-            of the danger, and identify gaps in the public record.</p>
+          <p>The scores are my assessment of the accounts cited for each incident. I use the five
+            factors in the table, give each a number up to its limit, and add the points together.
+            More points mean greater danger on that factor. Each event shows the breakdown so you
+            can see how the total was reached.</p>
+          <p>A score of 70 does not mean a 70% chance of nuclear war. These numbers are a way to
+            compare the incidents on this site, not a calculation of what would have happened. A few
+            points between two cases should not be read as a precise difference in danger.</p>
+          <p>The weights affect the comparison. Misleading information and wider conflict account
+            for up to 40 points, so a false warning during a crisis can score above a serious weapons
+            accident in peacetime. That reflects the risk of a mistake spreading into a wider conflict.
+            The breakdown helps show why different kinds of incident receive similar totals.</p>
+          <p>The references support the historical account; the points are my judgement. Some cases
+            have detailed official records, while others rely on recollections made years later.
+            The source labels tell you what kind of material you are reading. &ldquo;What remains
+            unclear&rdquo; sets out gaps in the record and disagreements about what happened.</p>
+          <p>A warning, aircraft put on alert, or use of a nuclear command terminal does not by
+            itself establish that a launch order was close. Where the record allows, each account
+            sets out the decisions and safeguards that still stood before nuclear use.</p>
         </div>
       </div>
     </div>
@@ -1093,23 +1094,23 @@
     public_warning: "Public warning"
   };
   const COMPONENTS = [
-    ["weapon_readiness", "Weapon readiness", 25],
-    ["decision_proximity", "Decision proximity", 25],
-    ["information_failure", "Information failure", 20],
-    ["escalation_context", "Escalation context", 20],
-    ["recovery_fragility", "Recovery fragility", 10]
+    ["weapon_readiness", "Weapons involved", 25],
+    ["decision_proximity", "Steps before use", 25],
+    ["information_failure", "Misleading information", 20],
+    ["escalation_context", "Wider conflict", 20],
+    ["recovery_fragility", "Margin for error", 10]
   ];
   // The four interpretation bands. The chart, the key under it, the ledger
   // colours and the methodology table all read from this one list.
   const BANDS = [
     { lo: 0,  hi: 30,  name: "Safety incident", ramp: "--s1",
-      text: "A serious nuclear safety incident, but not a direct civilisational risk." },
+      text: "A nuclear safety or warning incident, with few signs of progress toward nuclear use." },
     { lo: 31, hi: 60,  name: "Close call", ramp: "--s2",
-      text: "A real close call; several defensive layers held, or use was still distant." },
+      text: "A serious failure or confrontation, with several safeguards still in place or important gaps in the record." },
     { lo: 61, hi: 85,  name: "Critical", ramp: "--s3",
-      text: "One wrong decision or one skipped check could have been catastrophic." },
+      text: "An especially dangerous combination of ready weapons, warning failures or a wider crisis. The account explains the remaining safeguards." },
     { lo: 86, hi: 100, name: "Extreme", ramp: "--s4",
-      text: "Nuclear use came down to very few remaining steps." }
+      text: "The highest scores in this archive, where several dangers combined. Read the account and its uncertainties to understand the assessment." }
   ];
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2094,7 +2095,7 @@
       '</div>' : "";
 
     const uncertainty = e.story.uncertainty ?
-      '<div class="note"><h4>Known uncertainty</h4><p>' + e.story.uncertainty + '</p></div>' : "";
+      '<div class="note"><h4>What remains unclear</h4><p>' + e.story.uncertainty + '</p></div>' : "";
 
     host.innerHTML =
       '<div class="story-top">' +
@@ -2112,7 +2113,7 @@
         '<div><h4>What happened</h4><p>' + e.story.almost_happened + '</p></div>' +
         '<div><h4>What stopped it</h4><p>' + e.story.stopped_by + '</p></div>' +
       '</div>' +
-      '<div class="breakdown"><h4>Why this score</h4>' + bars + '</div>' +
+      '<div class="breakdown"><h4>How the score adds up</h4>' + bars + '</div>' +
       beats + uncertainty +
       '<div class="src-list"><h4>Sources</h4><ul>' +
         e.sources.map(s => '<li><span class="qual ' + s.quality + '">' + s.quality + '</span>' +
