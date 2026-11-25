@@ -452,6 +452,8 @@ __FONTS__
     letter-spacing: .26em; text-transform: uppercase; color: var(--ink); white-space: nowrap;
   }
   .brand b { color: var(--signal); font-weight: 500; }
+  a.brand { text-decoration: none; }
+  a.brand:hover b { color: var(--signal-bright); }
   .masthead nav { margin-left: auto; display: flex; gap: 1.1rem; flex-wrap: wrap; align-items: center; }
   .masthead nav a, .masthead nav button {
     font-family: var(--data); font-size: .72rem; letter-spacing: .12em;
@@ -993,7 +995,7 @@ __FONTS__
 <!-- ======================= THE ARCHIVE ======================= -->
 <header class="masthead">
   <div class="wrap">
-    <div class="brand">Almost<b>Doomsday</b></div>
+    <a class="brand" href="#" id="brand-top" aria-label="Almost Doomsday, back to the top">Almost<b>Doomsday</b></a>
     <nav>
       <a href="#timeline">Timeline</a>
       <a href="#events">Events</a>
@@ -2386,6 +2388,16 @@ __FONTS__
         row.focus({ preventScroll: true });
       }
     }
+  });
+
+  // The name in the masthead goes back to the top of the page. The top has no
+  // address of its own, so a case address in the bar is dropped with it.
+  document.getElementById("brand-top").addEventListener("click", (ev) => {
+    if (ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    ev.preventDefault();
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    document.title = BASE_TITLE;
+    scrollTo({ top: 0, behavior: scrollBehavior() });
   });
 
   // A case link pasted into an open tab, or typed over the current address.
