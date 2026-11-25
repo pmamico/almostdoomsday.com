@@ -3,37 +3,52 @@
 <!-- Favicon: the index bar stopped short of the threshold line - the margin the site is about.
      Inlined as a data URI so site/ stays a single build artefact. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0e13'/%3E%3Crect x='4' y='5.5' width='24' height='3.5' rx='1.75' fill='%23c2454f'/%3E%3Crect x='10' y='13.5' width='12' height='15.5' rx='1.5' fill='%23edbe6e'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+<script>
+  // Decided before first paint: a visitor who opened a link (any #hash) reads
+  // what they were sent; only a first, link-less visit opens on the story.
+  // Without this the archive painted for a moment and was then locked away.
+  (function () {
+    var seen = false;
+    try { seen = localStorage.getItem("almostdoomsday.watch.v1") === "1"; } catch (e) { /* storage blocked */ }
+    if (!location.hash && !seen) document.documentElement.classList.add("watch-pending");
+  })();
+</script>
 
 <style>
+  /* ---- fonts ------------------------------------------------------------- */
+  /* IBM Plex (SIL OFL 1.1, see src/fonts/OFL.txt), latin subset, inlined by
+     build.mjs so that no request leaves this page for a third party. */
+__FONTS__
+
   /* ---- tokens ------------------------------------------------------------ */
   /* A cold-war command archive: blackened steel, paper ash, alarm red and signal amber.
      The interface should read as a researched record, not a generic dashboard. */
+  /* Every text colour clears 4.5:1 on --panel-2, the darkest ground it sits on
+     is lighter than that, and --rule clears 3:1 as a control border. */
   :root {
     --ground: #0b0d0c;
     --panel: #151815;
     --panel-2: #20251f;
-    --rule: #5c6256;
-    --rule-soft: #393f37;
+    --rule: #6b7265;
+    --rule-soft: #3d443b;
 
     --ink: #fff8e8;
-    --ink-2: #d4cbb7;
-    --ink-3: #aaa18f;
+    --ink-2: #e0d7c4;
+    --ink-3: #beb4a0;
 
-    --signal: #d88a2e;          /* Almost Doomsday Index */
+    --signal: #e69b3b;          /* Almost Doomsday Index */
     --signal-bright: #ffd07a;
     --instrument: #9fc9bb;      /* references, sources */
-    --critical: #e05c4d;        /* threshold and alarm states */
+    --critical: #ed6d5d;        /* threshold and alarm states */
     --ok: #80af82;              /* procedure-compliant status */
     --ok-bright: #bce0a8;
 
-    --s0: #8d633a;
-    --s1: #ae7635;
-    --s2: #d88a2e;
-    --s3: #efaa43;
-    --s4: #ffd07a;
+    /* The four index bands. They differ in hue as well as lightness - four
+       shades of one amber could not be told apart on the chart. */
+    --s1: #a8a08c;              /* safety incident: ash */
+    --s2: #d9a441;              /* close call: amber */
+    --s3: #f07b3f;              /* critical: orange */
+    --s4: #ff5a4e;              /* extreme: alarm red */
 
     --display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
     --prose: "IBM Plex Serif", Georgia, "Times New Roman", serif;
@@ -59,7 +74,10 @@
   body.locked { overflow: hidden; }
   body.locked > header.masthead,
   body.locked > main,
-  body.locked > footer { display: none; }
+  body.locked > footer,
+  .watch-pending body > header.masthead,
+  .watch-pending body > main,
+  .watch-pending body > footer { display: none; }
 
   body::before {
     content: "";
@@ -72,7 +90,7 @@
 
   .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gut); }
 
-  a { color: var(--instrument); text-decoration-color: rgba(21, 159, 196, .4); text-underline-offset: 2px; }
+  a { color: var(--instrument); text-decoration-color: rgba(159, 201, 187, .4); text-underline-offset: 2px; }
   a:hover { text-decoration-color: var(--instrument); }
   :focus-visible { outline: 2px solid var(--signal-bright); outline-offset: 2px; }
 
@@ -80,7 +98,7 @@
 
   .eyebrow {
     font-family: var(--data);
-    font-size: .68rem;
+    font-size: .74rem;
     letter-spacing: .22em;
     text-transform: uppercase;
     color: var(--ink-3);
@@ -110,12 +128,12 @@
   }
   .watch-bar .grow { flex: 1; }
   .watch-skip {
-    font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
     background: transparent; border: 1px solid var(--rule); color: var(--ink-3);
     padding: .3rem .6rem; cursor: pointer;
   }
   .watch-skip:hover { color: var(--ink-2); border-color: var(--ink-3); }
-  .watch-brief { color: var(--signal-bright); border-color: rgba(237, 190, 110, .38); }
+  .watch-brief { color: var(--signal-bright); border-color: rgba(255, 208, 122, .38); }
   .watch-brief:hover { color: var(--signal-bright); border-color: var(--signal-bright); }
   .watch-skip .short { display: none; }
 
@@ -160,7 +178,7 @@
   .rows { display: grid; gap: 1px; background: var(--rule-soft); }
   .rows > div { background: var(--panel-2); padding: .55rem 1.1rem; display: flex; gap: 1rem; align-items: baseline; }
   .rows .k {
-    font-family: var(--data); font-size: .64rem; letter-spacing: .15em;
+    font-family: var(--data); font-size: .72rem; letter-spacing: .15em;
     text-transform: uppercase; color: var(--ink-3); flex: 1; min-width: 9rem;
   }
   .rows .v { font-family: var(--data); font-size: .82rem; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
@@ -176,34 +194,33 @@
   }
   .act .lbl { font-size: 1.06rem; font-weight: 500; display: block; }
   .act .hint {
-    display: block; font-family: var(--data); font-size: .66rem; letter-spacing: .12em;
+    display: block; font-family: var(--data); font-size: .72rem; letter-spacing: .12em;
     text-transform: uppercase; color: var(--ink-3); margin-top: .3rem;
   }
   .act:disabled { cursor: default; opacity: .35; }
 
   /* The protocol-compliant control: approved, inviting, always in the same place. */
-  .act-go { border-color: rgba(46, 157, 122, .5); background: rgba(46, 157, 122, .08); }
+  .act-go { border-color: rgba(128, 175, 130, .5); background: rgba(128, 175, 130, .08); }
   .act-go .lbl { color: var(--ok-bright); }
   .act-go .hint { color: var(--ok); }
-  .act-go:hover:not(:disabled) { border-color: var(--ok); background: rgba(46, 157, 122, .16); }
+  .act-go:hover:not(:disabled) { border-color: var(--ok); background: rgba(128, 175, 130, .16); }
   @media (prefers-reduced-motion: no-preference) {
     .act-go:not(:disabled) { animation: breathe 3.6s ease-in-out infinite; }
     @keyframes breathe {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(46, 157, 122, 0); }
-      50% { box-shadow: 0 0 0 3px rgba(46, 157, 122, .13); }
+      0%, 100% { box-shadow: 0 0 0 0 rgba(128, 175, 130, 0); }
+      50% { box-shadow: 0 0 0 3px rgba(128, 175, 130, .13); }
     }
   }
 
-  /* Deviating from procedure: no colour, no encouragement, and it must be held. */
+  /* Deviating from procedure: no colour, no encouragement, and it must be confirmed. */
   .act-deviate { background: transparent; border-color: var(--rule); }
   .act-deviate .lbl { color: var(--ink-2); font-weight: 400; }
   .act-deviate:hover:not(:disabled) { border-color: var(--ink-3); }
-  .act-deviate .frictions { margin: .7rem 0 0; padding: 0; display: grid; gap: .3rem; }
-  .act-deviate .frictions li {
-    list-style: none; font-family: var(--prose); font-size: .86rem;
-    color: var(--ink-3); line-height: 1.45;
+  .act-deviate .friction {
+    display: block; margin-top: .7rem; font-family: var(--prose); font-size: .9rem;
+    color: var(--ink-2); line-height: 1.45;
   }
-  .act-deviate .frictions li:last-child { color: var(--ink-2); }
+  .act-deviate[aria-expanded="true"] { border-color: var(--critical); }
   /* Both controls say what the officer expects to follow - never what does
      follow. Without this only one side of the scale was ever visible: the
      report leads somewhere frightening, and staying silent read as free. */
@@ -211,15 +228,32 @@
     display: block; font-family: var(--prose); font-size: .88rem; line-height: 1.55;
     color: var(--ink-3); margin-top: .6rem; max-width: 62ch;
   }
-  .act-deviate .hold {
-    display: block; font-family: var(--data); font-size: .64rem; letter-spacing: .16em;
+  .act-deviate .then {
+    display: block; font-family: var(--data); font-size: .72rem; letter-spacing: .14em;
     text-transform: uppercase; color: var(--ink-3); margin-top: .8rem;
   }
-  .act-deviate .fill { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--critical); }
+
+  /* The second step of deviating. A deliberate act, but one any input can make:
+     the earlier press-and-hold could not be performed with a screen reader or a
+     switch, which send a plain click. */
+  .confirm {
+    border: 1px solid var(--critical); border-top: 0; background: var(--panel);
+    padding: .95rem 1.15rem 1.05rem; margin-top: -.8rem;
+  }
+  .confirm p { margin: 0; font-family: var(--prose); font-size: .95rem; line-height: 1.55; color: var(--ink); max-width: 62ch; }
+  .confirm-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .9rem; }
+  .confirm-row button {
+    font-family: var(--data); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: .65rem 1rem; min-height: 44px; cursor: pointer; background: transparent;
+    border: 1px solid var(--rule); color: var(--ink-2);
+  }
+  .confirm-row .yes { border-color: var(--critical); color: var(--ink); background: rgba(237, 109, 93, .12); }
+  .confirm-row .yes:hover { background: rgba(237, 109, 93, .22); }
+  .confirm-row .no:hover { color: var(--ink); border-color: var(--ink-3); }
 
   .verdict-panel { margin-top: 1.4rem; border-left: 2px solid var(--rule); padding: .2rem 0 .2rem 1.1rem; }
   .verdict-panel .tagline {
-    font-family: var(--data); font-size: .68rem; letter-spacing: .16em;
+    font-family: var(--data); font-size: .74rem; letter-spacing: .16em;
     text-transform: uppercase; margin-bottom: .5rem;
   }
   .verdict-panel.ok { border-color: var(--ok); }
@@ -228,7 +262,7 @@
   .verdict-panel.bad .tagline { color: var(--critical); }
   .verdict-panel p { font-family: var(--prose); font-size: .95rem; line-height: 1.65; color: var(--ink-2); margin: 0; max-width: 62ch; }
   .tally {
-    font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    font-family: var(--data); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
     color: var(--ink-3); margin-top: 1.2rem;
   }
   .btn-next {
@@ -239,8 +273,8 @@
   .btn-next:hover { color: var(--ink); border-color: var(--ink-3); }
 
   .cf-banner {
-    font-family: var(--data); font-size: .64rem; letter-spacing: .18em; text-transform: uppercase;
-    color: var(--critical); border: 1px solid rgba(194, 69, 79, .4);
+    font-family: var(--data); font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--critical); border: 1px solid rgba(237, 109, 93, .4);
     padding: .45rem .8rem; margin-bottom: 1rem; text-align: center;
   }
   .cf-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
@@ -251,7 +285,7 @@
   .cf-log div.hot { color: var(--critical); }
   .cf-log div.big { color: var(--ink); font-size: .78rem; letter-spacing: .06em; }
   .cf-count { margin-bottom: .8rem; }
-  .cf-count span { display: block; font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); }
+  .cf-count span { display: block; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); }
   .cf-count b {
     font-weight: 400; font-variant-numeric: tabular-nums;
     font-size: clamp(1.5rem, 4vw, 2.1rem); color: var(--critical);
@@ -286,8 +320,8 @@
     font-family: var(--data); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
     padding: .5rem .85rem; border: 1px solid var(--rule); display: inline-block;
   }
-  .debrief-wrap .verdict.match { color: var(--signal-bright); border-color: rgba(237, 190, 110, .45); }
-  .debrief-wrap .verdict.diff { color: var(--critical); border-color: rgba(194, 69, 79, .5); }
+  .debrief-wrap .verdict.match { color: var(--signal-bright); border-color: rgba(255, 208, 122, .45); }
+  .debrief-wrap .verdict.diff { color: var(--critical); border-color: rgba(237, 109, 93, .5); }
   .btn-open {
     margin-top: 1.8rem; font-family: var(--data); font-size: .74rem; letter-spacing: .18em;
     text-transform: uppercase; background: var(--signal); border: 1px solid var(--signal);
@@ -319,7 +353,7 @@
     color: var(--ink-2); max-width: 60ch; margin: 1rem 0 0;
   }
   .cover-meta {
-    font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    font-family: var(--data); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
     color: var(--ink-3); margin: 1.4rem 0 0;
   }
   .cover-go { margin-top: 1.6rem; font-size: .8rem; padding: .95rem 1.7rem; }
@@ -341,13 +375,13 @@
   }
   .standing > div { display: flex; gap: 1rem; align-items: baseline; }
   .standing .k {
-    font-family: var(--data); font-size: .6rem; letter-spacing: .15em;
+    font-family: var(--data); font-size: .7rem; letter-spacing: .15em;
     text-transform: uppercase; color: var(--ink-3); flex: 0 0 8.5rem;
   }
   .standing .t { font-family: var(--prose); font-size: .88rem; line-height: 1.55; color: var(--ink-2); }
   .brief-link {
     justify-self: start; background: none; border: 0; padding: .2rem 0; cursor: pointer;
-    font-family: var(--data); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+    font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
     color: var(--instrument); text-decoration: underline; text-underline-offset: 3px;
   }
   .brief-link:hover { color: var(--ink); }
@@ -387,7 +421,7 @@
   .d-fields { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule); }
   .d-fields > div { background: var(--panel); padding: .6rem 1rem; display: flex; gap: 1rem; align-items: baseline; }
   .d-fields .k {
-    font-family: var(--data); font-size: .64rem; letter-spacing: .14em;
+    font-family: var(--data); font-size: .72rem; letter-spacing: .14em;
     text-transform: uppercase; color: var(--ink-3); flex: 0 0 9.5rem;
   }
   .d-fields .t { font-family: var(--prose); font-size: .9rem; line-height: 1.55; color: var(--ink-2); }
@@ -399,7 +433,7 @@
   .d-log > div.hot { color: var(--ink); }
   .d-empty { font-family: var(--prose); font-size: .92rem; color: var(--ink-3); }
   .d-tally {
-    font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
     color: var(--ink-3); margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--rule-soft);
   }
 
@@ -426,6 +460,10 @@
   }
   .masthead nav a:hover, .masthead nav button:hover { color: var(--ink); }
   .masthead nav button { color: var(--signal); }
+  .masthead nav .short { display: none; }
+  @media (max-width: 380px) {
+    .masthead nav { mask-image: linear-gradient(to right, #000 85%, transparent); }
+  }
 
   .hero { padding: clamp(2.4rem, 7vw, 5.2rem) 0 clamp(1.6rem, 4vw, 2.6rem); }
   .hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.4rem); align-items: end; }
@@ -441,7 +479,7 @@
   .readout { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 0; }
   .readout div { background: var(--panel); padding: .85rem 1rem; display: flex; align-items: baseline; gap: .75rem; }
   .readout dt {
-    font-family: var(--data); font-size: .68rem; letter-spacing: .14em;
+    font-family: var(--data); font-size: .74rem; letter-spacing: .14em;
     text-transform: uppercase; color: var(--ink-3); flex: 1;
   }
   .readout dd { margin: 0; font-family: var(--data); font-size: 1.28rem; color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -456,8 +494,8 @@
 
   .panel-head { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; padding: .7rem 1rem; border-bottom: 1px solid var(--rule-soft); }
   .panel-head h3 { margin: 0; font-family: var(--data); font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; color: var(--ink); }
-  .panel-head .sub { font-family: var(--data); font-size: .68rem; color: var(--ink-3); letter-spacing: .06em; }
-  .panel-head .count { margin-left: auto; font-family: var(--data); font-size: .68rem; color: var(--signal-bright); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .panel-head .sub { font-family: var(--data); font-size: .74rem; color: var(--ink-3); letter-spacing: .06em; }
+  .panel-head .count { margin-left: auto; font-family: var(--data); font-size: .74rem; color: var(--signal-bright); letter-spacing: .1em; font-variant-numeric: tabular-nums; }
   .swatch { width: 9px; height: 9px; flex: 0 0 auto; background: var(--signal); }
 
   .controls { display: flex; gap: .55rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
@@ -478,9 +516,9 @@
   .chart-body { padding: .4rem .3rem 0; }
   svg { display: block; width: 100%; height: auto; overflow: visible; }
   .grid-line { stroke: var(--rule-soft); stroke-width: 1; }
-  .axis-label { font-family: var(--data); font-size: 10px; fill: var(--ink-3); letter-spacing: .08em; }
-  .band-label { font-family: var(--data); font-size: 9.5px; letter-spacing: .12em; }
-  .band-range { font-family: var(--data); font-size: 9px; fill: var(--ink-3); letter-spacing: .08em; }
+  .axis-label { font-family: var(--data); font-size: 11px; fill: var(--ink-3); letter-spacing: .08em; }
+  .band-label { font-family: var(--data); font-size: 11px; letter-spacing: .12em; }
+  .band-range { font-family: var(--data); font-size: 10px; fill: var(--ink-3); letter-spacing: .08em; }
 
   .bandkey {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -489,17 +527,35 @@
   .bandkey > div { background: var(--panel); padding: .75rem .9rem; }
   .bandkey .hd { display: flex; align-items: center; gap: .5rem; margin-bottom: .35rem; flex-wrap: wrap; }
   .bandkey .sw { width: 9px; height: 9px; flex: 0 0 auto; }
-  .bandkey .nm { font-family: var(--data); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
-  .bandkey .rg { font-family: var(--data); font-size: .64rem; letter-spacing: .08em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .bandkey .nm { font-family: var(--data); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+  .bandkey .rg { font-family: var(--data); font-size: .72rem; letter-spacing: .08em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
   .bandkey p { margin: 0; font-family: var(--prose); font-size: .83rem; line-height: 1.5; color: var(--ink-2); }
   .dot { cursor: pointer; stroke: var(--panel); stroke-width: 2; }
   .dot-hit { cursor: pointer; fill: transparent; }
   .sel-ring { fill: none; stroke: var(--signal-bright); stroke-width: 1.5; }
   .sel-stem { stroke: var(--signal-bright); stroke-width: 1; stroke-dasharray: 2 3; opacity: .5; }
-  .dot-label { font-family: var(--data); font-size: 10px; fill: var(--ink-2); letter-spacing: .04em; pointer-events: none; }
+  /* A halo in the panel colour keeps the label legible where it crosses other dots. */
+  .dot-label {
+    font-family: var(--data); font-size: 11.5px; fill: var(--ink); letter-spacing: .04em; pointer-events: none;
+    paint-order: stroke; stroke: var(--panel); stroke-width: 4px; stroke-linejoin: round;
+  }
+
+  /* What the chart has selected, and the way into it. On a phone a tap on a
+     dot only selects - it used to throw the page down to the ledger, so the
+     chart could not be explored at all. */
+  .chart-sel {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .9rem;
+    padding: .65rem 1rem; border-top: 1px solid var(--rule-soft);
+    font-family: var(--data); font-size: .76rem; color: var(--ink-3);
+  }
+  .chart-sel b { font-family: var(--display); font-size: .95rem; font-weight: 600; color: var(--ink); }
+  .chart-sel a { margin-left: auto; text-transform: uppercase; letter-spacing: .12em; font-size: .74rem; }
+  .chart-sel:empty { display: none; }
 
   @media (prefers-reduced-motion: no-preference) {
-    .dot { animation: fade-in .5s ease both; }
+    /* Dots fade in once, when the chart first appears or the filter changes -
+       not on every selection, which made the whole chart flicker. */
+    .dot.enter { animation: fade-in .5s ease both; }
     @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
     .pulse { animation: pulse 3.4s ease-out infinite; transform-origin: center; }
     @keyframes pulse {
@@ -516,13 +572,13 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, .55);
   }
   .tooltip strong { display: block; font-size: .88rem; font-weight: 600; }
-  .tooltip span { font-family: var(--data); font-size: .68rem; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+  .tooltip span { font-family: var(--data); font-size: .74rem; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
   .tooltip .val { color: var(--signal-bright); }
 
   .table-scroll { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; font-family: var(--data); font-size: .74rem; }
   th, td { text-align: left; padding: .5rem .9rem .5rem 0; border-bottom: 1px solid var(--rule-soft); }
-  th { color: var(--ink-3); font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: .64rem; }
+  th { color: var(--ink-3); font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: .72rem; }
   td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
   .explorer { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); background: var(--panel); border: 1px solid var(--rule); align-items: start; }
@@ -535,26 +591,51 @@
     gap: .6rem; align-items: center; width: 100%; text-align: left;
     padding: .6rem .8rem; background: transparent; border: 0;
     border-bottom: 1px solid var(--rule-soft); cursor: pointer; color: var(--ink-2);
-    font-family: var(--display); font-size: .9rem;
+    font-family: var(--display); font-size: .9rem; text-decoration: none;
   }
+  .ledger ol { margin: 0; padding: 0; list-style: none; }
+  .ledger-row:focus-visible { outline-offset: -2px; }
   .ledger-row:hover { background: var(--panel-2); color: var(--ink); }
-  .ledger-row[aria-current="true"] { background: var(--panel-2); color: var(--ink); box-shadow: inset 2px 0 0 var(--signal-bright); }
+  .ledger-row[aria-current="page"] { background: var(--panel-2); color: var(--ink); box-shadow: inset 2px 0 0 var(--signal-bright); }
   .ledger-row .yr { font-family: var(--data); font-size: .74rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
   .ledger-row .ttl { line-height: 1.25; }
   .ledger-row .sc { font-family: var(--data); font-size: .82rem; text-align: right; font-variant-numeric: tabular-nums; }
   .ledger-empty { padding: 1.2rem; font-family: var(--data); font-size: .76rem; color: var(--ink-3); }
 
-  .story { background: var(--panel); padding: clamp(1.1rem, 2.4vw, 1.9rem); }
+  .story { background: var(--panel); padding: clamp(1.1rem, 2.4vw, 1.9rem); scroll-margin-top: 62px; }
+  .story:focus { outline: none; }
+  .story-links { display: flex; flex-wrap: wrap; gap: .2rem 1.4rem; margin-top: .55rem; }
+  .permalink {
+    display: inline-block; font-family: var(--data); font-size: .72rem;
+    letter-spacing: .12em; text-transform: uppercase;
+  }
+  .story-nav {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px;
+    margin-top: 1.6rem; background: var(--rule-soft); border: 1px solid var(--rule-soft);
+  }
+  .story-nav a {
+    background: var(--panel); padding: .75rem .9rem; text-decoration: none; color: var(--ink-2);
+    display: flex; flex-direction: column; gap: .15rem; min-height: 48px;
+  }
+  .story-nav a:hover { background: var(--panel-2); color: var(--ink); }
+  .story-nav a.next { text-align: right; grid-column: 2; }
+  .story-nav .k { font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--instrument); }
+  .story-nav .t { font-size: .95rem; line-height: 1.3; }
+  .to-list { display: none; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
   .story-top { display: flex; gap: 1.4rem; align-items: flex-start; flex-wrap: wrap; border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
   .story-top h3 { margin: .1rem 0 .35rem; font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 600; letter-spacing: -.015em; }
   .story-meta { font-family: var(--data); font-size: .72rem; color: var(--ink-3); letter-spacing: .06em; }
   .score-block { margin-left: auto; text-align: right; }
   .score-block .big { font-family: var(--data); font-size: 2.9rem; line-height: 1; color: var(--signal-bright); font-variant-numeric: tabular-nums; }
   .score-block .big span { font-size: 1rem; color: var(--ink-3); }
-  .score-block .band { font-family: var(--data); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-top: .3rem; }
+  .score-block .band { font-family: var(--data); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-top: .3rem; }
 
   .story-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.2rem, 3vw, 2.4rem); margin-top: 1.4rem; }
-  .story h4 { font-family: var(--data); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin: 0 0 .5rem; }
+  .story h4 { font-family: var(--data); font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin: 0 0 .5rem; }
   .story p { font-family: var(--prose); font-size: .96rem; line-height: 1.68; color: var(--ink); margin: 0 0 .9rem; max-width: 65ch; }
 
   .breakdown { margin-top: 1.5rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
@@ -576,10 +657,10 @@
   .src-list ul { margin: 0; padding: 0; display: grid; gap: .5rem; }
   .src-list li { list-style: none; display: flex; gap: .7rem; align-items: baseline; font-size: .88rem; }
   .qual {
-    font-family: var(--data); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
+    font-family: var(--data); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
     color: var(--ink-3); border: 1px solid var(--rule); padding: .1rem .35rem; flex: 0 0 auto;
   }
-  .qual.declassified, .qual.official { color: var(--instrument); border-color: rgba(21, 159, 196, .35); }
+  .qual.declassified, .qual.official { color: var(--instrument); border-color: rgba(159, 201, 187, .35); }
 
   .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.4rem, 3.5vw, 3rem); }
   .prose { font-family: var(--prose); font-size: .96rem; line-height: 1.68; color: var(--ink-2); max-width: 66ch; }
@@ -592,6 +673,7 @@
 
   .replay-block { border: 1px solid var(--rule); background: var(--panel); padding: clamp(1.2rem, 3vw, 2rem); }
 
+  .acknowledgements { margin-bottom: 1.8rem; }
   .source-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.6rem; }
   .source-groups ul { margin: .7rem 0 0; padding: 0; display: grid; gap: .55rem; }
   .source-groups li { list-style: none; font-size: .88rem; line-height: 1.45; }
@@ -605,7 +687,8 @@
     .hero-grid, .story-cols, .two-col, .cf-stage { grid-template-columns: minmax(0, 1fr); }
     .bandkey { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .explorer { grid-template-columns: minmax(0, 1fr); }
-    .ledger { max-height: 320px; position: static; border-right: 0; border-bottom: 1px solid var(--rule); }
+    .ledger { max-height: none; overflow: visible; position: static; border-right: 0; border-bottom: 1px solid var(--rule); }
+    .to-list { display: inline-block; }
     .readout { margin-top: 1.5rem; }
     .cf-log { max-height: 220px; }
   }
@@ -614,30 +697,17 @@
     .watch-bar .grow { display: none; }
     .score-block { margin-left: 0; text-align: left; }
     .bandkey { grid-template-columns: minmax(0, 1fr); }
-    .rung { grid-template-columns: minmax(0, 1fr) auto; }
-    .rung .rung-body { grid-column: 1 / -1; }
   }
 
   /* ======================================================================== */
   /* HANDHELD                                                                  */
   /* ======================================================================== */
   /* Everything below this line is scoped to narrow viewports and to coarse
-     pointers. The desktop console is deliberately untouched: a phone is read at
-     arm's length in daylight, so it gets more contrast, larger touch targets and
-     a chart that is plotted rather than merely shrunk. */
+     pointers. A phone is read at arm's length in daylight, so it gets larger
+     touch targets and a chart that is plotted rather than merely shrunk. (The
+     brighter palette it once had alone is now the palette everywhere.) */
   @media (max-width: 940px) {
-    /* The palette is one step brighter. The instrument-panel hierarchy is kept
-       - ink > ink-2 > ink-3 - but every rung clears 4.5:1 on its own ground,
-       which the desktop values do not do once the labels are read outdoors. */
-     :root {
-        --ink-2: #e0d7c4;
-        --ink-3: #beb4a0;
-        --signal: #e69b3b;
-        --critical: #ed6d5d;
-        --s1: #c4863b;
-    }
-
-     body::before { opacity: .75; }
+    body::before { opacity: .75; }
   }
 
   @media (max-width: 700px) {
@@ -645,25 +715,30 @@
     section { scroll-margin-top: 96px; }
     .story { scroll-margin-top: 96px; }
 
-    /* The nav is not dropped on a phone - it becomes a single scrolling rail,
-       so Timeline/Events/Method/Sources stay reachable without a burger menu. */
-    .masthead .wrap { gap: .5rem; align-items: stretch; padding-top: .45rem; padding-bottom: .45rem; }
+    /* The nav is not dropped on a phone - it becomes one row under the brand,
+       so every section stays reachable without a burger menu. Labels are
+       shortened and spread so the row fits a 360px phone without scrolling; it
+       still scrolls below that, and then the right edge fades to say so. */
+    .masthead .wrap { gap: .2rem; align-items: stretch; padding-top: .45rem; padding-bottom: 0; }
     .brand { align-self: center; font-size: .82rem; letter-spacing: .2em; }
     .masthead nav {
-      margin-left: 0; width: 100%; flex-wrap: nowrap; gap: 0;
+      margin-left: 0; width: 100%; flex-wrap: nowrap; gap: 0; justify-content: space-between;
       overflow-x: auto; overscroll-behavior-x: contain;
       scrollbar-width: none; -webkit-overflow-scrolling: touch;
       border-top: 1px solid var(--rule-soft);
     }
     .masthead nav::-webkit-scrollbar { display: none; }
     .masthead nav a, .masthead nav button {
-      flex: 0 0 auto; font-size: .74rem;
-      padding: .7rem .75rem; min-height: 44px; display: flex; align-items: center;
+      flex: 0 0 auto; font-size: .74rem; letter-spacing: .06em;
+      padding: .7rem .5rem; min-height: 44px; display: flex; align-items: center;
     }
     .masthead nav a:first-child { padding-left: 0; }
+    .masthead nav button { padding-right: 0; }
+    .masthead nav .long { display: none; }
+    .masthead nav .short { display: inline; }
 
     /* Touch targets. 44px is the floor for anything you are meant to hit. */
-    .chip { font-size: .74rem; padding: .7rem .85rem; min-height: 44px; }
+    .chip { font-size: .74rem; letter-spacing: .06em; padding: .7rem .7rem; min-height: 44px; }
     .search {
       /* 16px exactly: anything smaller makes iOS Safari zoom on focus and the
          reader is then stranded at 2x with no way back. */
@@ -672,9 +747,9 @@
     }
     .controls { gap: .5rem; }
 
-    /* The ledger is a nested scroller inside a scrolling page, which is a poor
-       trade on touch. It gets taller, and its rows get thumb-sized. */
-    .ledger { max-height: 46vh; overscroll-behavior-y: contain; }
+    /* Ledger rows are thumb-sized. (The ledger no longer scrolls inside the
+       page once stacked - see the 940px block - since a nested scroller traps
+       the thumb; a case has its own way back to the list instead.) */
     .ledger-row {
       grid-template-columns: 3.2rem minmax(0, 1fr) 2.4rem;
       padding: .75rem .85rem; min-height: 48px; font-size: .95rem;
@@ -710,6 +785,25 @@
     /* The list gap exceeds twice the padding, so neighbouring hit boxes in a
        source list never overlap. */
     .src-list ul, .source-groups ul { gap: 1.15rem; }
+    /* The quality label sits above its source: beside it, the label column
+       left the title a third of the width to wrap in. */
+    .src-list li { flex-direction: column; gap: .1rem; }
+    .story-links { gap: 0 1.4rem; }
+    .permalink { padding-block: .45rem; }
+
+    /* The method table becomes one card per factor: three columns at 390px
+       broke every description into a three-word column. */
+    .method-table thead { display: none; }
+    .method-table tr {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .2rem 1rem;
+      padding: .75rem 0; border-bottom: 1px solid var(--rule-soft);
+    }
+    .method-table td { border: 0; padding: 0; }
+    .method-table td:first-child { color: var(--ink); font-size: .8rem; }
+    .method-table td.w::before { content: "max "; color: var(--ink-3); }
+    .method-table td:nth-child(3) {
+      grid-column: 1 / -1; font-family: var(--prose); font-size: .95rem; line-height: 1.5;
+    }
     .sec-head { gap: .5rem; }
     .table-scroll { -webkit-overflow-scrolling: touch; }
 
@@ -720,7 +814,7 @@
     .watch-bar { padding: .5rem var(--gut); gap: .3rem .6rem; flex-wrap: nowrap; }
     .watch-bar > .watch-post { display: none; }
     .watch-clock { font-size: .78rem; letter-spacing: .03em; white-space: nowrap; }
-    .watch-skip { font-size: .68rem; letter-spacing: .1em; padding: .5rem .6rem; min-height: 40px; }
+    .watch-skip { font-size: .74rem; letter-spacing: .1em; padding: .5rem .6rem; min-height: 40px; }
     .watch-brief { margin-left: auto; }
     .watch-skip .long { display: none; }
     .watch-skip .short { display: inline; }
@@ -740,10 +834,10 @@
        fixed grid: stacked, six rows ran to nearly half the viewport. */
     .rows > div {
       display: grid; grid-template-columns: 7.6rem minmax(0, 1fr);
-      gap: .6rem; align-items: baseline; padding: .5rem .9rem;
+      gap: .6rem; align-items: baseline; padding: .6rem .9rem;
     }
-    .rows .k { font-size: .64rem; }
-    .rows .v { font-size: .9rem; text-align: left; }
+    .rows .k { font-size: .74rem; min-width: 0; }
+    .rows .v { font-size: .92rem; text-align: left; }
 
     /* The rules run in a line each - label as a prefix - instead of the desktop's
        labelled column, which cost a third of the screen between panel and controls. */
@@ -772,9 +866,6 @@
 
     .alert-head { padding: .75rem .9rem; }
     .alert-head h2 { letter-spacing: .08em; }
-    .rows > div { padding: .6rem .9rem; }
-    .rows .k { font-size: .68rem; min-width: 0; }
-    .rows .v { font-size: .92rem; }
     /* Ground radar reads empty on the night that matters. Side by side that is
        a visibly blank field; stacked it would be a dangling empty line, so the
        row collapses to the label and the silence stays legible. */
@@ -782,17 +873,12 @@
 
     .act { padding: .95rem 1rem; }
     .act .lbl { font-size: 1.02rem; }
-    .act-deviate .frictions li, .act .outcome { font-size: .92rem; }
+    .act-deviate .friction, .act .outcome { font-size: .92rem; }
+    .confirm { padding: .85rem 1rem 1rem; }
+    .confirm p { font-size: 1rem; }
+    .confirm-row button { flex: 1 1 auto; }
     .cover-go, .cover-skip { min-height: 44px; }
     .cover-skip { padding: .8rem 0; }
-    /* A 2.5-second press on touch otherwise raises the text-selection callout
-       and the magnifier, both of which cancel the gesture. */
-    .act-deviate {
-      touch-action: none;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none; user-select: none;
-    }
-    .act-deviate .fill { height: 3px; }
 
     .btn-next, .btn-open { min-height: 44px; padding: .75rem 1.2rem; }
     .verdict-panel p { font-size: 1rem; }
@@ -807,7 +893,7 @@
       background: var(--panel); margin: 0 0 .6rem;
       padding: .7rem 0 .5rem; border-bottom: 1px solid var(--rule-soft);
     }
-    .cf-banner { letter-spacing: .12em; font-size: .66rem; padding: .55rem .7rem; }
+    .cf-banner { letter-spacing: .12em; font-size: .72rem; padding: .55rem .7rem; }
     .debrief-wrap .verdict { font-size: .72rem; padding: .55rem .8rem; }
   }
 
@@ -815,7 +901,7 @@
   @media (hover: none) {
     .chip:hover, .ledger-row:hover, .btn-next:hover, .watch-skip:hover { background: none; }
     .ledger-row:hover { background: transparent; color: var(--ink-2); }
-    .ledger-row[aria-current="true"] { background: var(--panel-2); color: var(--ink); }
+    .ledger-row[aria-current="page"] { background: var(--panel-2); color: var(--ink); }
   }
 </style>
 
@@ -913,7 +999,7 @@
       <a href="#events">Events</a>
       <a href="#method">Method</a>
       <a href="#sources">Sources</a>
-      <button id="replay-top">Replay the story</button>
+      <button id="replay-top"><span class="long">Replay the story</span><span class="short">Replay</span></button>
     </nav>
   </div>
 </header>
@@ -942,7 +1028,7 @@
   <section id="timeline">
     <div class="wrap">
       <div class="sec-head">
-        <h2>Eighty years of near misses</h2>
+        <h2>Seven decades of near misses</h2>
       </div>
 
       <div class="controls">
@@ -963,6 +1049,7 @@
           <span class="count" id="chart-count"></span>
         </div>
         <div class="chart-body" id="chart-index"></div>
+        <div class="chart-sel" id="chart-sel"></div>
         <div class="bandkey" id="bandkey"></div>
       </div>
     </div>
@@ -976,8 +1063,9 @@
         <button class="chip" id="sort-toggle" aria-pressed="false">Sort: chronological</button>
       </div>
       <div class="explorer">
-        <div class="ledger" id="ledger" role="listbox" aria-label="Close-call events"></div>
-        <article class="story" id="story" aria-live="polite"></article>
+        <nav class="ledger" id="ledger" aria-label="Cases"></nav>
+        <article class="story" id="story" tabindex="-1"></article>
+        <p class="sr-only" id="story-status" role="status"></p>
       </div>
     </div>
   </section>
@@ -991,13 +1079,13 @@
         <div>
           <div class="table-scroll">
             <table class="method-table">
-              <thead><tr><th>Factor</th><th>Max. points</th><th>What matters</th></tr></thead>
+              <thead><tr><th>Factor</th><th>Max. points</th><th>More points mean&hellip;</th></tr></thead>
               <tbody>
-                <tr><td>Weapons involved</td><td class="w">25</td><td>Was a nuclear weapon present, armed or ready to launch?</td></tr>
-                <tr><td>Steps before use</td><td class="w">25</td><td>How close did events get to a launch decision or detonation?</td></tr>
-                <tr><td>Misleading information</td><td class="w">20</td><td>Did warnings, sensor readings or messages give people a false picture?</td></tr>
-                <tr><td>Wider conflict</td><td class="w">20</td><td>Did a war, confrontation or exercise make a mistake more dangerous?</td></tr>
-                <tr><td>Margin for error</td><td class="w">10</td><td>How much depended on a single person, safety device or chance event?</td></tr>
+                <tr><td>Weapon readiness</td><td class="w">25</td><td>Nuclear weapons were present and closer to usable: armed, loaded or on alert.</td></tr>
+                <tr><td>Closeness to use</td><td class="w">25</td><td>Fewer steps were left before a launch decision or a detonation.</td></tr>
+                <tr><td>Misleading information</td><td class="w">20</td><td>Warnings, sensor readings or messages gave people a falser or more convincing picture.</td></tr>
+                <tr><td>Wider conflict</td><td class="w">20</td><td>A war, confrontation or exercise made a mistake more dangerous.</td></tr>
+                <tr><td>Thin margin</td><td class="w">10</td><td>More depended on a single person, safety device or chance event.</td></tr>
               </tbody>
             </table>
           </div>
@@ -1006,11 +1094,14 @@
         <div class="prose">
           <p>The scores are my assessment of the accounts cited for each incident. I use the five
             factors in the table, give each a number up to its limit, and add the points together.
-            More points mean greater danger on that factor. Each event shows the breakdown so you
+            On every factor, more points mean greater danger. Each event shows the breakdown so you
             can see how the total was reached.</p>
           <p>A score of 70 does not mean a 70% chance of nuclear war. These numbers are a way to
             compare the incidents on this site, not a calculation of what would have happened. A few
             points between two cases should not be read as a precise difference in danger.</p>
+          <p>The same goes for the four bands. They are reading aids, and their boundaries are drawn
+            for readability, not measured: a case at 85 sits in a different band from one at 86, but
+            it is not meaningfully safer.</p>
           <p>The weights affect the comparison. Misleading information and wider conflict account
             for up to 40 points, so a false warning during a crisis can score above a serious weapons
             accident in peacetime. That reflects the risk of a mistake spreading into a wider conflict.
@@ -1064,12 +1155,12 @@
       <div class="sec-head">
         <h2>Sources</h2>
       </div>
-      <div class="source-groups" id="source-groups"></div>
-      <div class="prose">
+      <div class="prose acknowledgements">
         <p><strong>Acknowledgements.</strong> Special thanks to
           <a href="https://walberque.substack.com/" target="_blank" rel="noopener noreferrer">William Alberque</a>
           for sharing research and documentary sources that helped expand and correct this archive.</p>
       </div>
+      <div class="source-groups" id="source-groups"></div>
     </div>
   </section>
 
@@ -1078,31 +1169,27 @@
 <footer>
   <div class="wrap">
     <p>
-      No cookies, no trackers, no analytics of any kind. Nothing about your visit is recorded.<br>
+      No analytics, no trackers, no ads, and no third-party requests: fonts and data ship inside this page.
+      The site sets no cookies of its own. The hosting network (Cloudflare) may set a short-lived
+      technical cookie for bot protection, and keeps the usual server access logs. Your browser&rsquo;s
+      local storage keeps one flag, so the story opens only on your first visit.<br>
       <a href="https://github.com/pmamico/almostdoomsday.com">GitHub</a> &middot;
       <a href="https://github.com/pmamico/almostdoomsday.com/issues">Issues</a>
     </p>
   </div>
 </footer>
 
-<div class="tooltip" id="tooltip" role="status"></div>
+<div class="tooltip" id="tooltip" aria-hidden="true"></div>
 
 <script>
   const EVENTS = __EVENTS__;
 
-  const CAT_LABELS = {
-    false_alarm: "False alarm",
-    broken_arrow: "Broken arrow",
-    crisis_escalation: "Crisis escalation",
-    command_control: "Command & control",
-    public_warning: "Public warning"
-  };
   const COMPONENTS = [
-    ["weapon_readiness", "Weapons involved", 25],
-    ["decision_proximity", "Steps before use", 25],
+    ["weapon_readiness", "Weapon readiness", 25],
+    ["decision_proximity", "Closeness to use", 25],
     ["information_failure", "Misleading information", 20],
     ["escalation_context", "Wider conflict", 20],
-    ["recovery_fragility", "Margin for error", 10]
+    ["recovery_fragility", "Thin margin", 10]
   ];
   // The four interpretation bands. The chart, the key under it, the ledger
   // colours and the methodology table all read from this one list.
@@ -1122,16 +1209,13 @@
   // the controls are buttons either way, so only the label is swapped.
   const touch = () => matchMedia("(hover: none)").matches;
   const handheld = () => matchMedia("(max-width: 700px)").matches;
-  // Reduced motion is honoured where there is motion: the radar sweep, the
-  // trails in flight, the blinking caret, the breathing control, smooth
-  // scrolling and fades. Text arriving a character at a time and a clock
-  // changing its digits are pacing, not motion, and they run for everyone;
-  // a reader who wants none of it has the tap-to-skip and the Skip control.
-  const wait = (ms) => new Promise(r => setTimeout(r, ms));
-  const sleep = wait;
+  // The archive stacks the story under the ledger below this width.
+  const stacked = () => matchMedia("(max-width: 940px)").matches;
   const pad = (n) => String(n).padStart(2, "0");
+  // The data is curated, but it is still text going into innerHTML.
+  const esc = (v) => String(v).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
-  const X0 = 1945, X1 = 2027.5;
   const state = { cat: "all", q: "", sort: "date", selected: "1962-b59-arkhipov" };
 
   EVENTS.forEach(e => {
@@ -1139,6 +1223,13 @@
     e.x = d.getUTCFullYear() + (d.getUTCMonth() * 30.4 + d.getUTCDate()) / 365;
     e.year = d.getUTCFullYear();
   });
+  const byId = new Map(EVENTS.map(e => [e.id, e]));
+  // The time axis runs from just before the first decade line to just after
+  // the last, rather than a fixed 1945-2027 that left both ends empty.
+  const FIRST_YEAR = Math.min(...EVENTS.map(e => e.year));
+  const LAST_YEAR = Math.max(...EVENTS.map(e => e.year));
+  const DECADE0 = Math.floor(FIRST_YEAR / 10) * 10, DECADE1 = Math.ceil((LAST_YEAR + 1) / 10) * 10;
+  const X0 = DECADE0 - 2.5, X1 = DECADE1 + 1.5;
 
   const bandFor = (t) => BANDS.find(b => t >= b.lo && t <= b.hi) || BANDS[0];
   const scoreColor = (t) => css(bandFor(t).ramp);
@@ -1165,14 +1256,38 @@
   }
   // On a phone, focusing a control must not scroll the screen it belongs to:
   // the control sits below its context, and the context is what to read first.
+  // Focus serves the keyboard; on a touch screen it only paints a stray ring.
   function focusQuiet(el) {
-    if (el) el.focus(handheld() ? { preventScroll: true } : undefined);
+    if (el && !touch()) el.focus(handheld() ? { preventScroll: true } : undefined);
   }
 
   // Skipping or replaying abandons the run in flight rather than letting two
-  // sequences write to the same stage.
+  // sequences write to the same stage. Every timer, interval, animation frame
+  // and stage-wide listener a run starts is registered here and torn down with
+  // it - before this, a skipped counterfactual could still draw its last
+  // screen over a fresh replay fifteen seconds later.
   let watchGen = 0;
   const isCurrent = (g) => g === watchGen;
+  let runCleanups = [];
+  const onCleanup = (fn) => { runCleanups.push(fn); };
+  function resetRun() {
+    watchGen++;
+    const fns = runCleanups;
+    runCleanups = [];
+    fns.forEach(fn => { try { fn(); } catch (e) { /* already gone */ } });
+    stopClock();
+  }
+  const later = (fn, ms) => { const id = setTimeout(fn, ms); onCleanup(() => clearTimeout(id)); return id; };
+  const every = (fn, ms) => { const id = setInterval(fn, ms); onCleanup(() => clearInterval(id)); return id; };
+  const frame = (fn) => { const id = requestAnimationFrame(fn); onCleanup(() => cancelAnimationFrame(id)); return id; };
+  const listen = (target, type, fn, opts) => {
+    target.addEventListener(type, fn, opts);
+    onCleanup(() => target.removeEventListener(type, fn, opts));
+    return () => target.removeEventListener(type, fn, opts);
+  };
+  // A wait that belongs to the run: abandoned, it simply never resolves, and
+  // whatever was awaiting it is left behind with nothing to write to.
+  const wait = (ms) => new Promise(r => later(r, ms));
 
   /* ---- the standing file ------------------------------------------------- */
   // The briefing scrolls away as it is typed, and every screen after it asks for
@@ -1256,7 +1371,7 @@
     const target = Date.UTC(1983, 8, h < 12 ? 26 : 25, h, m, s);
     stopClock();
     return new Promise(resolve => {
-      const id = setInterval(() => {
+      const id = every(() => {
         const remaining = target - watchTime.getTime();
         if (remaining <= 0) { clearInterval(id); watchTime = new Date(target); paintClock(); resolve(); return; }
         watchTime = new Date(watchTime.getTime() + Math.max(1000, Math.min(remaining, 45000)));
@@ -1359,18 +1474,19 @@
         for (let i = 0; i < text.length && !skipped; i++) {
           node.textContent = text.slice(0, i + 1);
           const ch = text[i];
-          await sleep(ch === "." || ch === ":" ? 190 : ch === "," ? 95 : 22 + Math.random() * 26);
+          await wait(ch === "." || ch === ":" ? 190 : ch === "," ? 95 : 22 + Math.random() * 26);
         }
         node.textContent = text;
-        if (!skipped) await sleep(260);
+        if (!skipped) await wait(260);
       }
       cur.remove();
     })();
     return { done, skip: () => { skipped = true; } };
   }
 
-  // Waits for the reader. The watch clock holds while it waits. On touch the
-  // whole screen is the key: a thumb does not aim for a line of small caps.
+  // Waits for the reader. The watch clock holds while it waits. The whole
+  // screen is the key - a thumb does not aim for a line of small caps, and a
+  // mouse should not have to either - and the prompt itself takes Enter.
   function waitForKey(host, label) {
     return new Promise(resolve => {
       stopClock();
@@ -1379,14 +1495,14 @@
       b.append(caret(), document.createTextNode(touch() ? label.replace(/^Press Enter to/, "Tap anywhere to") : label));
       host.appendChild(b);
       b.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
-      b.focus();
-      const onTap = (ev) => {
-        if (dossierOpen || ev.target.closest("button, a")) return;
+      // Focus serves the keyboard; on touch it only paints a stray focus ring.
+      if (!touch()) b.focus({ preventScroll: true });
+      const off = listen(watchEl, "click", (ev) => {
+        if (dossierOpen || ev.target === b || ev.target.closest("button, a")) return;
         b.click();
-      };
-      if (touch()) watchEl.addEventListener("click", onTap);
+      });
       b.addEventListener("click", () => {
-        watchEl.removeEventListener("click", onTap);
+        off();
         b.remove();
         resolve();
       }, { once: true });
@@ -1440,11 +1556,11 @@
           t.skip();
         }
       };
-      document.addEventListener("keydown", onSkip);
-      watchEl.addEventListener("click", onSkip);
+      const offKey = listen(document, "keydown", onSkip);
+      const offClick = listen(watchEl, "click", onSkip);
       await t.done;
-      document.removeEventListener("keydown", onSkip);
-      watchEl.removeEventListener("click", onSkip);
+      offKey();
+      offClick();
       if (!isCurrent(gen)) return;
 
       const last = i === BRIEFING.length - 1;
@@ -1526,15 +1642,13 @@
             'hands, and what is left of the clock is not yours.</span></button>' +
           '<button class="act act-deviate" id="act-dev">' +
             '<span class="lbl">Log as system malfunction</span>' +
-            '<ul class="frictions">' +
-              '<li>No fault is indicated. The system reports its highest confidence.</li>' +
-            '</ul>' +
+            '<span class="friction">No fault is indicated. The system reports its highest confidence.</span>' +
             '<span class="outcome">If you are right, the night never happened. If you are wrong, the first ' +
             'warning of an attack was yours to give and you did not give it, and the country meets it with ' +
             'nothing. You find out in twenty-three minutes.</span>' +
-            '<span class="hold">Press and hold to log</span>' +
-            '<span class="fill" id="dev-fill"></span>' +
+            '<span class="then">Asks you to confirm</span>' +
           '</button>' +
+          '<div id="dev-confirm"></div>' +
         '</div>');
 
       // The count climbs while you read, and the impact clock runs down. There is
@@ -1542,21 +1656,23 @@
       const objEl = document.getElementById("obj-count");
       const impactEl = document.getElementById("impact");
       let impactLeft = 23 * 60;
-      const impactTimer = setInterval(() => {
+      const impactTimer = every(() => {
         if (dossierOpen) return;
         impactLeft = Math.max(0, impactLeft - 1);
         impactEl.textContent = pad(Math.floor(impactLeft / 60)) + ":" + pad(impactLeft % 60);
       }, 1000);
       const bumps = [
-        setTimeout(() => { objEl.textContent = "2"; objEl.classList.add("flash"); }, 5000),
-        setTimeout(() => { objEl.classList.remove("flash"); }, 6300),
-        setTimeout(() => { objEl.textContent = "5"; objEl.classList.add("flash"); }, 9000)
+        later(() => { objEl.textContent = "2"; objEl.classList.add("flash"); }, 5000),
+        later(() => { objEl.classList.remove("flash"); }, 6300),
+        later(() => { objEl.textContent = "5"; objEl.classList.add("flash"); }, 9000)
       ];
       const cleanup = () => { clearInterval(impactTimer); bumps.forEach(clearTimeout); };
 
       const go = document.getElementById("act-go");
       const dev = document.getElementById("act-dev");
-      const fill = document.getElementById("dev-fill");
+      const confirmHost = document.getElementById("dev-confirm");
+      dev.setAttribute("aria-expanded", "false");
+      dev.setAttribute("aria-controls", "dev-confirm");
 
       go.addEventListener("click", () => {
         cleanup();
@@ -1565,29 +1681,37 @@
       });
       focusQuiet(go);
 
-      // Deviating takes a deliberate, sustained press. Letting go resets it.
-      const HOLD = 2500;
-      let raf = null, start = 0;
-      const step = (now) => {
-        const p = Math.min(1, (now - start) / HOLD);
-        fill.style.width = (p * 100) + "%";
-        if (p >= 1) {
-          cancel(); cleanup();
+      // Deviating takes a second, deliberate step: the procedure is one press,
+      // overruling it is two. It used to be a press-and-hold, which a screen
+      // reader or a switch - both of which send a plain click - could not do.
+      const closeConfirm = (refocus) => {
+        confirmHost.innerHTML = "";
+        dev.setAttribute("aria-expanded", "false");
+        if (refocus) focusQuiet(dev);
+      };
+      dev.addEventListener("click", () => {
+        if (dev.getAttribute("aria-expanded") === "true") { closeConfirm(true); return; }
+        dev.setAttribute("aria-expanded", "true");
+        confirmHost.innerHTML =
+          '<div class="confirm" role="group" aria-labelledby="confirm-q">' +
+            '<p id="confirm-q">Log five launch detections, rated at the highest confidence, as a system ' +
+            'malfunction? Nothing goes up the chain.</p>' +
+            '<div class="confirm-row">' +
+              '<button class="yes" id="confirm-yes">Confirm \u2014 log as malfunction</button>' +
+              '<button class="no" id="confirm-no">Go back</button>' +
+            '</div>' +
+          '</div>';
+        const yes = document.getElementById("confirm-yes");
+        yes.addEventListener("click", () => {
+          cleanup();
           logNight("Missile attack, five objects \u2014 logged as a system malfunction.", "hot");
           resolve("deviate");
-          return;
-        }
-        raf = requestAnimationFrame(step);
-      };
-      const cancel = () => { if (raf) cancelAnimationFrame(raf); raf = null; fill.style.width = "0%"; };
-      const begin = (ev) => { ev.preventDefault(); if (raf) return; start = performance.now(); raf = requestAnimationFrame(step); };
-      dev.addEventListener("pointerdown", begin);
-      dev.addEventListener("pointerup", cancel);
-      dev.addEventListener("pointerleave", cancel);
-      dev.addEventListener("pointercancel", cancel);
-      dev.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") begin(ev); });
-      dev.addEventListener("keyup", cancel);
-      dev.addEventListener("blur", cancel);
+        });
+        document.getElementById("confirm-no").addEventListener("click", () => closeConfirm(true));
+        confirmHost.querySelector(".confirm").scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+        // The question is what to read first; the keyboard lands on it.
+        if (!touch()) yes.focus({ preventScroll: true });
+      });
     });
   }
 
@@ -1681,8 +1805,8 @@
         const sweepA = (t / 1400) % (Math.PI * 2);
         const [sx2, sy2] = pol(sweepA, R);
         const g = ctx.createLinearGradient(cx, cy, sx2, sy2);
-        g.addColorStop(0, "rgba(21,159,196,0)");
-        g.addColorStop(1, "rgba(21,159,196,.45)");
+        g.addColorStop(0, "rgba(159, 201, 187,0)");
+        g.addColorStop(1, "rgba(159, 201, 187,.45)");
         ctx.strokeStyle = g; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(sx2, sy2); ctx.stroke();
 
@@ -1691,7 +1815,7 @@
           const p = (t - tr.t0) / tr.dur;
           if (p <= 0) continue;
           const q = Math.min(1, p);
-          ctx.strokeStyle = tr.inbound ? "rgba(194,69,79,.55)" : "rgba(147,161,174,.38)";
+          ctx.strokeStyle = tr.inbound ? "rgba(237, 109, 93,.55)" : "rgba(147,161,174,.38)";
           ctx.lineWidth = 1.2;
           ctx.beginPath();
           for (let s = 0; s <= 24; s++) {
@@ -1712,7 +1836,7 @@
               ctx.lineWidth = 2;
               ctx.beginPath(); ctx.arc(ex, ey, 2 + age * 22, 0, Math.PI * 2); ctx.stroke();
             }
-            ctx.fillStyle = "rgba(194,69,79,.75)";
+            ctx.fillStyle = "rgba(237, 109, 93,.75)";
             ctx.beginPath(); ctx.arc(ex, ey, 2.4, 0, Math.PI * 2); ctx.fill();
           }
         }
@@ -1728,11 +1852,11 @@
         if (done) return;
         const t = now - t0;
         render(t);
-        if (t < 15000) requestAnimationFrame(loop);
+        if (t < 15000) frame(loop);
       };
-      if (still) render(0); else requestAnimationFrame(loop);
+      if (still) render(0); else frame(loop);
 
-      CF_LOG.forEach(([at, text, cls]) => timers.push(setTimeout(() => {
+      CF_LOG.forEach(([at, text, cls]) => timers.push(later(() => {
         if (done) return;
         const d = document.createElement("div");
         d.className = cls; d.textContent = text;
@@ -1741,7 +1865,7 @@
         if (still) render(at);
       }, at)));
 
-      timers.push(setTimeout(async () => {
+      timers.push(later(async () => {
         if (done) return;
         showScreen('<div class="cf-final">' +
           '<p>You made one decision. It was the last one anybody made.</p>' +
@@ -1778,13 +1902,13 @@
       const line = WAITING.find(([m]) => m === minsLeft);
       if (!line) return;
       say.style.opacity = "0";
-      setTimeout(() => { say.textContent = line[1]; say.style.opacity = "1"; }, reduced() ? 0 : 400);
+      later(() => { say.textContent = line[1]; say.style.opacity = "1"; }, reduced() ? 0 : 400);
     };
     // The countdown runs under reduced motion too: a clock changing its digits
     // is not motion, and the waiting is what this screen is for.
     let left = 23 * 60;
     await new Promise(done => {
-      const id = setInterval(() => {
+      const id = every(() => {
         left -= 60;
         if (left <= 0) { clearInterval(id); qc.textContent = "00:00"; done(); return; }
         qc.textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
@@ -1829,8 +1953,8 @@
         'accepting that if you were wrong, the first warning of an attack would have been yours to give, and ' +
         'you withheld it. That is why the control was hard to press.</p>' +
         '<p><strong>What happened.</strong> Sunlight reflecting off high-altitude cloud had been read by the ' +
-        'Oko satellites as launch plumes. Petrov received no award; the incident was classified and the ' +
-        'satellite system\u2019s flaw was quietly corrected.</p>' +
+        'Oko satellites as launch plumes. The system had been operational for about a year, and this may ' +
+        'have been the first time that rare alignment of sun, cloud and satellite had occurred.</p>' +
         '<p><strong>Where the drama stops.</strong> Petrov did not personally hold the fate of the world in ' +
         'his hands, and he said so himself. Corroboration and a political decision would still have been ' +
         'required. What the record does show is a warning system that was confidently wrong, and a procedure ' +
@@ -1858,8 +1982,10 @@
   }
 
   async function runWatch() {
-    const gen = ++watchGen;
+    resetRun();
+    const gen = watchGen;
     document.body.classList.add("locked");
+    document.documentElement.classList.remove("watch-pending");
     watchEl.hidden = false;
     filed = 0; errors = 0;
     watchLog.length = 0;
@@ -1896,8 +2022,7 @@
   }
 
   function endWatch() {
-    watchGen++;
-    stopClock();
+    resetRun();
     closeDossier();
     watchEl.classList.remove("at-cover");
     watchEl.hidden = true;
@@ -1905,7 +2030,7 @@
     document.body.classList.remove("locked");
     try { localStorage.setItem(WATCH_KEY, "1"); } catch (e) { /* private mode */ }
     window.scrollTo(0, 0);
-    drawIndexChart();
+    drawIndexChart(true);
   }
 
   // Any "open the full briefing" link on the stage, whichever screen drew it.
@@ -1922,20 +2047,46 @@
   /* ======================================================================== */
   /* THE ARCHIVE                                                               */
   /* ======================================================================== */
+  const EXTREME_FROM = BANDS[BANDS.length - 1].lo;
   document.getElementById("stat-count").textContent = EVENTS.length;
   document.getElementById("stat-max").textContent = Math.max(...EVENTS.map(e => e.index.total));
-  document.getElementById("stat-extreme").textContent = EVENTS.filter(e => e.index.total >= 86).length + " events";
+  document.getElementById("stat-extreme").textContent =
+    EVENTS.filter(e => e.index.total >= EXTREME_FROM).length + " events";
+
+  const BASE_TITLE = document.title;
+  const storyEl = document.getElementById("story");
+  const statusEl = document.getElementById("story-status");
+  const scrollBehavior = () => reduced() ? "auto" : "smooth";
+
+  /* ---- links: every case has its own address ----------------------------- */
+  // A case is addressed as #<id>, e.g. /#1983-petrov. Opening such a link
+  // shows that case and never the story; choosing a case rewrites the address
+  // (without adding history entries) so it can be copied or shared as it is.
+  const caseFromHash = () => {
+    let id = location.hash.slice(1);
+    try { id = decodeURIComponent(id); } catch (e) { /* malformed: no case */ }
+    return byId.has(id) ? id : null;
+  };
+  const caseUrl = (id) => location.href.split("#")[0] + "#" + id;
+  let urlFollowsSelection = false;
+  function setCaseAddress(id) {
+    urlFollowsSelection = true;
+    if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+  }
 
   const tip = document.getElementById("tooltip");
-  function showTip(evt, html) {
-    tip.innerHTML = html;
-    tip.style.opacity = "1";
+  function placeTip(evt) {
     const p = 14, r = tip.getBoundingClientRect();
     let x = evt.clientX + p, y = evt.clientY + p;
     if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - p;
     if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - p;
     tip.style.left = x + "px";
     tip.style.top = y + "px";
+  }
+  function showTip(evt, html) {
+    tip.innerHTML = html;
+    tip.style.opacity = "1";
+    placeTip(evt);
   }
   const hideTip = () => { tip.style.opacity = "0"; };
   // Safety net: the tooltip must never outlive the mark it describes.
@@ -1950,11 +2101,13 @@
     return node;
   };
 
-  function drawIndexChart() {
+  // `animate` is for the chart's first appearance and for a new filter; a
+  // selection only moves the ring, so the dots do not all fade in again.
+  function drawIndexChart(animate = false) {
     const host = document.getElementById("chart-index");
     const w = host.clientWidth || 900;
     // On a phone the plot is squarer rather than shrunk: at the desktop 0.42
-    // aspect the eighty-year x-axis compresses the 1960s cluster into one blob.
+    // aspect the seventy-year x-axis compresses the 1960s cluster into one blob.
     const narrow = w < 560;
     const h = narrow
       ? Math.max(300, Math.min(400, w * 1.05))
@@ -1962,8 +2115,8 @@
     // A gutter on the right so band names never sit on top of a data point.
     const gutter = w > 720 ? 104 : 0;
     const p = narrow
-      ? { t: 20, r: 14, b: 30, l: 34 }
-      : { t: 20, r: 24 + gutter, b: 28, l: 46 };
+      ? { t: 26, r: 14, b: 30, l: 34 }
+      : { t: 26, r: 24 + gutter, b: 28, l: 46 };
     const iw = w - p.l - p.r, ih = h - p.t - p.b;
     const sx = (x) => p.l + (x - X0) / (X1 - X0) * iw;
     const sy = (v) => p.t + (1 - v / 100) * ih;
@@ -1973,7 +2126,8 @@
       shown.length === EVENTS.length ? EVENTS.length + " events" : shown.length + " / " + EVENTS.length + " events";
 
     const svg = el("svg", { viewBox: "0 0 " + w + " " + h, width: w, height: h, role: "img",
-      "aria-label": "Scatter plot of nuclear close calls from 1950 to 2018, scored 0 to 100. The same data is listed in the event ledger below." });
+      "aria-label": "Scatter plot of " + EVENTS.length + " nuclear close calls from " + FIRST_YEAR + " to " +
+        LAST_YEAR + ", scored 0 to 100. The same cases are listed in the event ledger below." });
 
     // Bands first, as ground the points sit on.
     BANDS.forEach((b, i) => {
@@ -1993,45 +2147,50 @@
           class: "band-label", x: w - p.r + 12, y: (top + bottom) / 2 + 3.5, fill: css(b.ramp)
         }, b.name.toUpperCase()));
         svg.appendChild(el("text", {
-          class: "band-range", x: w - p.r + 12, y: (top + bottom) / 2 + 16
+          class: "band-range", x: w - p.r + 12, y: (top + bottom) / 2 + 17
         }, b.lo + "\u2013" + b.hi));
       }
     });
     svg.appendChild(el("text", { class: "axis-label", x: p.l - 10, y: sy(100) + 3.5, "text-anchor": "end" }, "100"));
+    // The axis title sits over the plot, clear of the "100" beside it.
+    svg.appendChild(el("text", { class: "axis-label", x: p.l, y: p.t - 10 }, "INDEX"));
 
     // Every decade is still ruled, but on a phone only every other one is
     // labelled - eight four-digit years across 320px run into one another.
-    for (let y = 1950; y <= 2020; y += 10) {
+    for (let y = DECADE0; y <= DECADE1; y += 10) {
       svg.appendChild(el("line", { class: "grid-line", x1: sx(y), x2: sx(y), y1: p.t, y2: p.t + ih }));
-      if (narrow && y % 20 !== 0) continue;
+      if (narrow && (y - DECADE0) % 20 !== 0) continue;
       svg.appendChild(el("text", { class: "axis-label", x: sx(y), y: h - 8, "text-anchor": "middle" },
         narrow ? "'" + String(y).slice(2) : y));
     }
-    svg.appendChild(el("text", { class: "axis-label", x: p.l - 10, y: p.t - 6, "text-anchor": "end" }, "INDEX"));
 
-    const noMotion = reduced();
+    const enter = animate && !reduced();
     shown.slice().sort((a, b) => a.index.total - b.index.total).forEach((e, i) => {
       const cx = sx(e.x), cy = sy(e.index.total);
       const r = 4 + e.index.total / 100 * 4.5;
 
-      if (e.index.total >= 86 && !noMotion) {
+      if (e.index.total >= EXTREME_FROM && !reduced()) {
         svg.appendChild(el("circle", { class: "pulse", cx, cy, r: 7, fill: "none",
           stroke: scoreColor(e.index.total), "stroke-width": 1 }));
       }
-      const dot = el("circle", { class: "dot", cx, cy, r, fill: scoreColor(e.index.total) });
-      if (!noMotion) dot.style.animationDelay = (i * 22) + "ms";
+      const dot = el("circle", { class: enter ? "dot enter" : "dot", cx, cy, r, fill: scoreColor(e.index.total) });
+      if (enter) dot.style.animationDelay = (i * 22) + "ms";
       svg.appendChild(dot);
 
       // A fingertip is about 9mm. The hit circle grows to match, but not so far
       // that neighbouring marks in the 1962 cluster swallow each other.
       const hit = el("circle", { class: "dot-hit", cx, cy, r: narrow ? Math.max(r + 6, 11) : Math.max(r + 8, 13) });
-      hit.addEventListener("mousemove", (ev) => showTip(ev,
-        "<strong>" + e.title + "</strong><span>" + e.date_display + " &middot; index <b class=\"val\">" + e.index.total + "</b></span>"));
+      hit.addEventListener("mouseenter", (ev) => showTip(ev,
+        "<strong>" + esc(e.title) + "</strong><span>" + esc(e.date_display) +
+        " &middot; index <b class=\"val\">" + e.index.total + "</b></span>"));
+      hit.addEventListener("mousemove", placeTip);
       hit.addEventListener("mouseleave", hideTip);
+      // Where the story sits beside the ledger, a click carries the reader to
+      // it. Where it is stacked far below, a tap only selects: the caption
+      // under the chart names the case and offers the way down.
       hit.addEventListener("click", () => {
         hideTip();
-        select(e.id);
-        document.getElementById("events").scrollIntoView({ behavior: noMotion ? "auto" : "smooth", block: "start" });
+        openCase(e.id, { scroll: !stacked() });
       });
       svg.appendChild(hit);
 
@@ -2041,7 +2200,7 @@
         if (narrow) {
           // Beside the dot there is no room, so the title sits above it, centred
           // and pulled back inside the plot rather than off the panel edge.
-          const half = e.title.length * 2.9;
+          const half = e.title.length * 3.4;
           const lx = Math.min(Math.max(cx, p.l + half), w - p.r - half);
           const above = cy - r - 9 > p.t + 8;
           svg.appendChild(el("text", { class: "dot-label", x: lx,
@@ -2054,41 +2213,49 @@
     });
 
     host.replaceChildren(svg);
+    drawChartSel();
   }
 
+  function drawChartSel() {
+    const host = document.getElementById("chart-sel");
+    const e = byId.get(state.selected);
+    if (!e || !visible().includes(e)) { host.innerHTML = ""; return; }
+    host.innerHTML =
+      '<span>Selected</span><b>' + esc(e.title) + '</b>' +
+      '<span>' + e.year + ' &middot; index ' + e.index.total + ' &middot; ' + esc(bandName(e.index.total)) + '</span>' +
+      '<a href="#' + esc(e.id) + '" data-case="' + esc(e.id) + '" data-scroll>Read the case &darr;</a>';
+  }
+
+  const sortedVisible = () => visible().sort((a, b) =>
+    state.sort === "date" ? a.x - b.x : b.index.total - a.index.total);
+
+  // The ledger is a list of links: each opens its case in place, and each can
+  // be opened in a new tab or copied like any other link. Selecting only moves
+  // aria-current - rebuilding the rows threw keyboard focus back to the top.
   function drawLedger() {
     const host = document.getElementById("ledger");
-    const list = visible().sort((a, b) =>
-      state.sort === "date" ? a.x - b.x : b.index.total - a.index.total);
-
+    const list = sortedVisible();
     if (!list.length) {
       host.innerHTML = '<p class="ledger-empty">No events match this filter.</p>';
       return;
     }
-    host.replaceChildren(...list.map(e => {
-      const b = document.createElement("button");
-      b.className = "ledger-row";
-      b.setAttribute("role", "option");
-      b.setAttribute("aria-current", String(e.id === state.selected));
-      b.setAttribute("aria-selected", String(e.id === state.selected));
-      b.innerHTML =
+    host.innerHTML = '<ol>' + list.map(e =>
+      '<li><a class="ledger-row" href="#' + esc(e.id) + '" data-case="' + esc(e.id) + '"' +
+        (e.id === state.selected ? ' aria-current="page"' : '') + '>' +
         '<span class="yr num">' + e.year + '</span>' +
-        '<span class="ttl">' + e.title + '</span>' +
-        '<span class="sc" style="color:' + scoreColor(e.index.total) + '">' + e.index.total + '</span>';
-      // On a phone the story sits below the ledger rather than beside it, so a
-      // tap that only rewrote off-screen content would read as a dead control.
-      b.addEventListener("click", () => {
-        select(e.id);
-        if (handheld()) document.getElementById("story")
-          .scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" });
-      });
-      return b;
-    }));
+        '<span class="ttl">' + esc(e.title) + '</span>' +
+        '<span class="sc" style="color:' + scoreColor(e.index.total) + '">' + e.index.total + '</span>' +
+      '</a></li>').join("") + '</ol>';
+  }
+  function markLedger() {
+    document.querySelectorAll("#ledger .ledger-row").forEach(a => {
+      if (a.dataset.case === state.selected) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
   }
 
   function drawStory() {
-    const e = EVENTS.find(x => x.id === state.selected);
-    const host = document.getElementById("story");
+    const e = byId.get(state.selected);
     const bars = COMPONENTS.map(([key, label, max]) => {
       const v = e.index[key];
       return '<div class="bar-row">' +
@@ -2099,62 +2266,145 @@
     }).join("");
 
     const beats = e.beats ? '<div class="beats"><h4>How it unfolded</h4>' +
-      e.beats.map(b => '<div class="beat"><span class="t">' + b.time + '</span><span class="x">' + b.text + '</span></div>').join("") +
+      e.beats.map(b => '<div class="beat"><span class="t">' + esc(b.time) + '</span><span class="x">' + esc(b.text) + '</span></div>').join("") +
       '</div>' : "";
 
     const uncertainty = e.story.uncertainty ?
-      '<div class="note"><h4>What remains unclear</h4><p>' + e.story.uncertainty + '</p></div>' : "";
+      '<div class="note"><h4>What remains unclear</h4><p>' + esc(e.story.uncertainty) + '</p></div>' : "";
 
-    host.innerHTML =
+    // Neighbours in the ledger's current order and filter.
+    const list = sortedVisible();
+    const at = list.indexOf(e);
+    const prev = at > 0 ? list[at - 1] : null;
+    const next = at >= 0 && at < list.length - 1 ? list[at + 1] : null;
+    const navLink = (x, cls, label) => x
+      ? '<a class="' + cls + '" href="#' + esc(x.id) + '" data-case="' + esc(x.id) + '" data-scroll>' +
+          '<span class="k">' + label + '</span><span class="t">' + esc(x.title) + '</span></a>'
+      : "";
+
+    storyEl.innerHTML =
       '<div class="story-top">' +
         '<div>' +
-          '<p class="eyebrow">' + e.date_display + '</p>' +
-          '<h3>' + e.title + '</h3>' +
-          '<p class="story-meta">' + e.location + ' &middot; ' + e.actors.join(" / ") + '</p>' +
+          '<p class="eyebrow">' + esc(e.date_display) + '</p>' +
+          '<h3>' + esc(e.title) + '</h3>' +
+          '<p class="story-meta">' + esc(e.location) + ' &middot; ' + e.actors.map(esc).join(" / ") + '</p>' +
+          '<div class="story-links">' +
+            '<a class="permalink" href="#' + esc(e.id) + '" data-copy>Copy link to this case</a>' +
+            '<a class="permalink to-list" href="#events" data-to-list>&uarr; Back to the list</a>' +
+          '</div>' +
         '</div>' +
         '<div class="score-block">' +
           '<div class="big">' + e.index.total + '<span>/100</span></div>' +
-          '<div class="band">' + bandName(e.index.total) + '</div>' +
+          '<div class="band">' + esc(bandName(e.index.total)) + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="story-cols">' +
-        '<div><h4>What happened</h4><p>' + e.story.almost_happened + '</p></div>' +
-        '<div><h4>What stopped it</h4><p>' + e.story.stopped_by + '</p></div>' +
+        '<div><h4>What happened</h4><p>' + esc(e.story.almost_happened) + '</p></div>' +
+        '<div><h4>What stopped it</h4><p>' + esc(e.story.stopped_by) + '</p></div>' +
       '</div>' +
       '<div class="breakdown"><h4>How the score adds up</h4>' + bars + '</div>' +
       beats + uncertainty +
       '<div class="src-list"><h4>Sources</h4><ul>' +
-        e.sources.map(s => '<li><span class="qual ' + s.quality + '">' + s.quality + '</span>' +
-          '<a href="' + s.url + '" target="_blank" rel="noopener noreferrer">' + s.title + '</a></li>').join("") +
-      '</ul></div>';
+        e.sources.map(s => '<li><span class="qual ' + esc(s.quality) + '">' + esc(s.quality) + '</span>' +
+          '<a href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer">' + esc(s.title) + '</a></li>').join("") +
+      '</ul></div>' +
+      (prev || next ? '<nav class="story-nav" aria-label="Neighbouring cases">' +
+        navLink(prev, "prev", "&larr; Previous") + navLink(next, "next", "Next &rarr;") + '</nav>' : "");
   }
 
   function select(id) {
     state.selected = id;
     drawStory();
-    drawLedger();
+    markLedger();
     drawIndexChart();
   }
 
-  function refresh() {
+  // Opening a case: select it, put it in the address bar and, where asked,
+  // bring it into view. Focus moves to the story only when the page scrolls
+  // to it; otherwise it stays where the reader is working.
+  function openCase(id, { scroll = false, focus = scroll } = {}) {
+    const e = byId.get(id);
+    if (!e) return;
+    if (!visible().includes(e)) clearFilters();
+    select(id);
+    setCaseAddress(id);
+    document.title = e.title + " (" + e.year + ") \u00b7 " + BASE_TITLE;
+    statusEl.textContent = "Showing " + e.title + ", " + e.year + ", index " + e.index.total + ".";
+    if (scroll) storyEl.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+    if (focus) storyEl.focus({ preventScroll: true });
+  }
+
+  function refresh(animate = false) {
     const vis = visible();
-    if (vis.length && !vis.some(e => e.id === state.selected)) state.selected = vis[0].id;
-    drawIndexChart();
+    if (vis.length && !vis.some(e => e.id === state.selected)) {
+      state.selected = vis[0].id;
+      if (urlFollowsSelection) setCaseAddress(state.selected);
+    }
+    drawIndexChart(animate);
     drawLedger();
     drawStory();
   }
+
+  function clearFilters() {
+    state.cat = "all";
+    state.q = "";
+    document.getElementById("search").value = "";
+    document.querySelectorAll(".chip[data-cat]").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.cat === "all")));
+    refresh();
+  }
+
+  // One handler for every case link on the page: ledger rows, the chart
+  // caption, previous/next. A modified click (new tab, new window) is left to
+  // the browser, which already has the right address.
+  document.addEventListener("click", (ev) => {
+    const a = ev.target.closest("a[data-case]");
+    if (!a || ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    ev.preventDefault();
+    // A row tapped where the story is stacked below would otherwise rewrite
+    // content off-screen and read as a dead control.
+    const scroll = a.hasAttribute("data-scroll") || (a.classList.contains("ledger-row") && stacked());
+    openCase(a.dataset.case, { scroll });
+  });
+
+  storyEl.addEventListener("click", async (ev) => {
+    const copy = ev.target.closest("[data-copy]");
+    if (copy) {
+      ev.preventDefault();
+      setCaseAddress(state.selected);
+      let ok = false;
+      try { await navigator.clipboard.writeText(caseUrl(state.selected)); ok = true; } catch (e) { /* no clipboard */ }
+      copy.textContent = ok ? "Link copied" : "The link is in the address bar";
+      setTimeout(() => { if (copy.isConnected) copy.textContent = "Copy link to this case"; }, 2400);
+      return;
+    }
+    if (ev.target.closest("[data-to-list]")) {
+      ev.preventDefault();
+      const row = document.querySelector('#ledger .ledger-row[aria-current="page"]');
+      if (row) {
+        row.scrollIntoView({ behavior: scrollBehavior(), block: "center" });
+        row.focus({ preventScroll: true });
+      }
+    }
+  });
+
+  // A case link pasted into an open tab, or typed over the current address.
+  addEventListener("hashchange", () => {
+    const id = caseFromHash();
+    if (id) openCase(id, { scroll: true });
+  });
 
   document.querySelectorAll(".chip[data-cat]").forEach(btn => {
     btn.addEventListener("click", () => {
       state.cat = btn.dataset.cat;
       document.querySelectorAll(".chip[data-cat]").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
-      refresh();
+      refresh(true);
     });
   });
   let searchTimer;
   document.getElementById("search").addEventListener("input", (ev) => {
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => { state.q = ev.target.value.trim().toLowerCase(); refresh(); }, 120);
+    searchTimer = setTimeout(() => { state.q = ev.target.value.trim().toLowerCase(); refresh(true); }, 120);
   });
   const sortBtn = document.getElementById("sort-toggle");
   sortBtn.addEventListener("click", () => {
@@ -2162,6 +2412,7 @@
     sortBtn.textContent = "Sort: " + (state.sort === "date" ? "chronological" : "by index");
     sortBtn.setAttribute("aria-pressed", String(state.sort === "score"));
     drawLedger();
+    drawStory();
   });
 
   const GROUPS = {
@@ -2176,7 +2427,7 @@
     const items = [...seenSources.values()].filter(s => s.quality === q);
     if (!items.length) return "";
     return '<div><h3 class="eyebrow">' + label + '</h3><ul>' + items.map(s =>
-      '<li><a href="' + s.url + '" target="_blank" rel="noopener noreferrer">' + s.title + '</a></li>').join("") + '</ul></div>';
+      '<li><a href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer">' + esc(s.title) + '</a></li>').join("") + '</ul></div>';
   }).join("");
 
   /* ---- band key and methodology bands ------------------------------------ */
@@ -2194,21 +2445,30 @@
     '<div><span class="r" style="color:' + css(b.ramp) + '">' + b.lo + '\u2013' + b.hi + '</span>' +
     '<span class="d"><b style="color:var(--ink);font-weight:500">' + b.name + '.</b> ' + b.text + '</span></div>').join("");
 
-  refresh();
-
   let resizeTimer, lastChartWidth = innerWidth;
   addEventListener("resize", () => {
     // A mobile browser fires resize every time the address bar hides or shows.
-    // The chart only depends on width, so ignore height-only changes - otherwise
-    // the dots replay their entry animation on every scroll.
+    // The chart only depends on width, so ignore height-only changes.
     if (innerWidth === lastChartWidth) return;
     lastChartWidth = innerWidth;
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(drawIndexChart, 140);
+    resizeTimer = setTimeout(() => drawIndexChart(), 140);
   });
 
-  /* ---- boot: the watch runs once per browser ------------------------------ */
+  /* ---- boot --------------------------------------------------------------- */
+  // A link wins: a case address opens that case, a section address scrolls
+  // there as any anchor does. Only a first visit with no address in hand
+  // opens on the story, and only once per browser.
+  const linkedCase = caseFromHash();
+  if (linkedCase) state.selected = linkedCase;
+  refresh(true);
   let watchDone = false;
-  try { watchDone = localStorage.getItem(WATCH_KEY) === "1"; } catch (e) { /* private mode */ }
-  if (!watchDone) runWatch();
+  try { watchDone = localStorage.getItem(WATCH_KEY) === "1"; } catch (e) { /* storage blocked */ }
+  if (linkedCase) {
+    urlFollowsSelection = true;
+    openCase(linkedCase, { scroll: false, focus: false });
+    storyEl.scrollIntoView({ block: "start" });
+  } else if (!location.hash && !watchDone) {
+    runWatch();
+  }
 </script>
